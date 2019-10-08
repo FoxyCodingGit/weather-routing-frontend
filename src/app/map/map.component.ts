@@ -70,7 +70,14 @@ export class MapComponent implements OnInit {
       strokeWeight: 2
     });
 
+    this.PlaceStartEndMArkers(tempCoords);
+
     flightPath.setMap(this.map);
   }
 
+  private PlaceStartEndMArkers(tempCoords: google.maps.LatLng[]) {
+    new google.maps.Marker({position: tempCoords[0], map: this.map});
+    new google.maps.Marker({position: tempCoords[tempCoords.length-1], map: this.map});
+    
+  }
 }
