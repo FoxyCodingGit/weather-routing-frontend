@@ -16,7 +16,9 @@ export class MapComponent implements OnInit {
   public lattitude: number;
   public longitude: number;
 
-  private routes: google.maps.Polyline[] = [];
+  private routes: google.maps.Polyline[] = []; // Currently not used
+
+  public probToRain: number = 10000;
 
   private kesgraveHighschoolMarker: google.maps.Marker;
 
@@ -24,22 +26,21 @@ export class MapComponent implements OnInit {
 
   ngOnInit(): void {
     this.generateMap();
-
-    const kesgraveHighschoolLocation = {lat: 52.066921, lng: 1.245011};
-    this.kesgraveHighschoolMarker = new google.maps.Marker({position: kesgraveHighschoolLocation, map: this.map});
-
-    this.addListeners();
   }
 
   public onRoutingSubmit(data: any): void {
     this.mapRoutingService.GetRoute(data.startLat, data.startLng, data.endLat, data.endLng).subscribe(
       (route) => {
-        const mapRoute = new google.maps.Polyline({
+        let mapRoute = new google.maps.Polyline({ // DO NOT MAKE CONST!!!
           path: route,
           geodesic: true,
           strokeColor: '#F00',
           strokeOpacity: 1.0,
           strokeWeight: 2
+        });
+
+        mapRoute.addListener('click', () => {
+          this.getRainPercentageOfRoute(mapRoute);
         });
 
         this.placeStartEndMarkers(route);
@@ -85,7 +86,7 @@ export class MapComponent implements OnInit {
       }
     }
 
-    console.log("hello" + averageRainProb / fiveWeatherPoints.length);
+    this.probToRain = averageRainProb / fiveWeatherPoints.length;
   }
 
   private generateMap() {
@@ -99,12 +100,5 @@ export class MapComponent implements OnInit {
   private placeStartEndMarkers(route: google.maps.LatLng[]) {
     const startMarker = new google.maps.Marker({position: route[0], map: this.map});
     const endMarker = new google.maps.Marker({position: route[route.length - 1], map: this.map});
-  }
-
-  private addListeners(): void { // HACKY - press kesgrave highschool marker to get rain prob of first route created.
-    this.kesgraveHighschoolMarker.addListener('click', () => {
-      console.log("clicked");
-      this.getRainPercentageOfRoute(this.routes[0]);
-    });
   }
 }
