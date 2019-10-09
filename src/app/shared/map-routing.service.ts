@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map } from 'rxjs/operators';
-import { PointFromAPI } from '../map/Model/PointFromAPI';
+import { Point } from '../map/Model/Point';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +16,9 @@ export class MapRoutingService {
   public GetRoute(startLat: number, startLng: number, endLat: number, endLng: number): Observable<google.maps.LatLng[]> {
     const url = `${this.baseURL}/${startLat}/${startLng}/${endLat}/${endLng}`;
 
-    return this.http.get<Array<PointFromAPI>>(url)
+    return this.http.get<Array<Point>>(url)
       .pipe(
-        map(arrayRee => arrayRee.map(thing => new google.maps.LatLng(thing.latitude, thing.longitude))),
+        map(points => points.map(point => new google.maps.LatLng(point.latitude, point.longitude))),
         catchError(this.handleError<google.maps.LatLng[]>([]))
       );
   }

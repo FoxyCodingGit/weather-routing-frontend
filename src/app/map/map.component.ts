@@ -34,9 +34,9 @@ export class MapComponent implements OnInit {
           strokeOpacity: 1.0,
           strokeWeight: 2
         });
-        
+
         this.placeStartEndMarkers(route);
-    
+
         mapRoute.setMap(this.map);
       }
     );
