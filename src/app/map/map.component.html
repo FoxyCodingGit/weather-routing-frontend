@@ -1,20 +1,12 @@
-<div id="map" style="width:100%;height:400px"></div>
+<div id="map" style="width:100%;height:400px"></div>  
 
-<form #latLongForm = "ngForm" (ngSubmit)="onSubmit(latLongForm.value)">
-    Lattitude: <input type="text" name="lat" ngModel><br>
-    Longitude: <input type="text" name="lng" ngModel><br>
-    <input type="submit" value="SUBMIT">
-</form>
-  
-
-<h1>ROUTING</h1>
+<h1>Routing</h1>
 <form #RouteForm = "ngForm" (ngSubmit)="onRoutingSubmit(RouteForm.value)">
     <h2>Start:</h2><br>
-    Lattitude: <input type="text" name="startLat" ngModel><br>
-    Longitude: <input type="text" name="startLng" ngModel><br>
-    <hr>
+    Lattitude: <input type="text" name="startLat" ngModel="52.054982"><br>
+    Longitude: <input type="text" name="startLng" ngModel="1.217401"><br>
     <h2>End:</h2><br>
-    Lattitude: <input type="text" name="EndLat" ngModel><br>
-    Longitude: <input type="text" name="EndLng" ngModel><br>
+    Lattitude: <input type="text" name="endLat" ngModel="52.061350"><br>
+    Longitude: <input type="text" name="endLng" ngModel="1.266059"><br>
     <input type="submit" value="SUBMIT">
 </form>
