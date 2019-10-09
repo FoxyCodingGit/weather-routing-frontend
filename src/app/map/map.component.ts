@@ -69,35 +69,20 @@ export class MapComponent implements OnInit {
         routePath[Math.round(routePathLenth - 1)].lng())
     ];
 
-    const marker2 = new google.maps.Marker({
-      map: this.map,
-      position: {lat: routePath[Math.round((routePathLenth - 1) * 0.25)].lat(), lng: routePath[Math.round((routePathLenth - 1) * 0.25)].lng()},
-      icon: {
-        url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-      }
-    });
-
-    const marker3 = new google.maps.Marker({
-      map: this.map,
-      position: {lat: routePath[Math.round((routePathLenth - 1) * 0.5)].lat(), lng: routePath[Math.round((routePathLenth - 1) * 0.5)].lng()},
-      icon: {
-        url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-      }
-    });
-
-    const marker4 = new google.maps.Marker({
-      map: this.map,
-      position: {lat: routePath[Math.round((routePathLenth - 1) * 0.75)].lat(), lng: routePath[Math.round((routePathLenth - 1) * 0.75)].lng()},
-      icon: {
-        url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-      }
-    });
-
     let averageRainProb = 0;
 
-    for (let i: number = 0; i < fiveWeatherPoints.length; i++) {
-      console.log(i);
+    for (let i = 0; i < fiveWeatherPoints.length; i++) {
       await this.weatherService.GetRainProbForPoint(fiveWeatherPoints[i].lat(), fiveWeatherPoints[i].lng()).toPromise().then(prob => averageRainProb += prob);
+
+      if (i !== 0 && i !== fiveWeatherPoints.length - 1) {
+        new google.maps.Marker({
+          map: this.map,
+          position: {lat: routePath[Math.round((routePathLenth - 1) * (0.25 * i))].lat(), lng: routePath[Math.round((routePathLenth - 1) * (0.25 * i))].lng()},
+          icon: {
+            url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+          }
+        });
+      }
     }
 
     console.log("hello" + averageRainProb / fiveWeatherPoints.length);
@@ -122,9 +107,4 @@ export class MapComponent implements OnInit {
       this.getRainPercentageOfRoute(this.routes[0]);
     });
   }
-
-
-
-
-
 }
