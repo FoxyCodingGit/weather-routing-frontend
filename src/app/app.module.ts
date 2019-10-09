@@ -20,7 +20,7 @@ import { HttpClientModule } from '@angular/common/http';
     FormsModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [], // Do i need to put services here?
   bootstrap: [AppComponent]
 })
 export class AppModule { }
