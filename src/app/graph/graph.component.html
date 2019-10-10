@@ -1,0 +1,15 @@
+<div style="width: 40%;">
+    <canvas
+        baseChart
+        [chartType]="'line'"
+        [datasets]="chartData"
+        [labels]="chartLabels"
+        [options]="chartOptions"
+        [legend]="true"
+        (chartClick)="onChartClick($event)">
+    </canvas>
+</div>
+
+<button (click)="newDataPoint([900, 50, 300], 'May')">
+Add data point
+</button>

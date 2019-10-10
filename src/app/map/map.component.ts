@@ -89,6 +89,10 @@ export class MapComponent implements OnInit {
     this.probToRain = averageRainProb / fiveWeatherPoints.length;
   }
 
+  public GenerateGraph() {
+    
+  }
+
   private generateMap() {
     const mapProperties = {
       center: new google.maps.LatLng(52.0626, 1.2339),
