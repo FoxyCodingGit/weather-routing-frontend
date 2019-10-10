@@ -3,6 +3,8 @@ import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { catchError, map } from 'rxjs/operators';
 import { Point } from '../map/Model/Point';
+import { RouteFromAPI } from '../map/Model/RouteFromAPI';
+import { RouteIWant } from '../map/Model/RouteIWant';
 
 @Injectable({
   providedIn: 'root'
@@ -13,14 +15,19 @@ export class MapRoutingService {
 
   constructor(private http: HttpClient) { }
 
-  public GetRoute(startLat: number, startLng: number, endLat: number, endLng: number): Observable<google.maps.LatLng[]> {
-    const url = `${this.baseURL}/${startLat}/${startLng}/${endLat}/${endLng}`;
+  public GetRoute(travelMode: string, startLat: number, startLng: number, endLat: number, endLng: number): Observable<RouteIWant> {
+    const url = `${this.baseURL}/${travelMode}/${startLat}/${startLng}/${endLat}/${endLng}`;
 
-    return this.http.get<Array<Point>>(url)
+    return this.http.get<RouteFromAPI>(url)
       .pipe(
-        map(points => points.map(point => new google.maps.LatLng(point.latitude, point.longitude))),
-        catchError(this.handleError<google.maps.LatLng[]>([]))
-      );
+        map(whatsReturnedFromApi => {
+            return new RouteIWant(whatsReturnedFromApi.points.map(
+              point => {
+                return new google.maps.LatLng(point.latitude, point.longitude);
+              }), whatsReturnedFromApi.travelTimeInSeconds, whatsReturnedFromApi.distance);
+          }),
+          catchError(this.handleError<RouteIWant>(new RouteIWant([], 0, 0)))
+        );
   }
 
   private handleError<T>(result?: T): any {

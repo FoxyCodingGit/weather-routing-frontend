@@ -22,6 +22,17 @@ export class WeatherService {
       );
   }
 
+  public GetRainProbForPointReachableInAnHour(lat: number, lng: number, minuteWillReach: number): Observable<number> {
+    debugger;
+    const url = `${this.baseURL}/rainProb/minutely/${lat}/${lng}/${minuteWillReach}`; // do backend for this.
+
+    return this.http.get<number>(url)
+      .pipe(
+        map(percentage => percentage * 100),
+        catchError(this.handleError<number>(0))
+      );
+  }
+
   private handleError<T>(result?: T): any {
     return (error: any): Observable<T> => {
       // TODO: send the error to remote logging infrastructure
