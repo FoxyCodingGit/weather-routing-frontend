@@ -48,7 +48,7 @@ export class MapComponent implements OnInit {
         });
 
         mapRoute.addListener('click', () => {
-          this.getRainPercentageOfRoute(mapRoute, pointsTimeDistance.travelTimeInSeconds, pointsTimeDistance.distance);
+          this.getRainPercentageOverInterval(mapRoute);
         });
 
         this.placeStartEndMarkers(pointsTimeDistance.points);
@@ -63,7 +63,21 @@ export class MapComponent implements OnInit {
     );
   }
 
-  public async getRainPercentageOfRoute(routePoints: google.maps.Polyline, travelTimeInSeconds: number, distance: number): Promise<void> {
+  public async getRainPercentageOverInterval(routePoints: google.maps.Polyline, min: number = 0, max: number = 20, intervalSize: number = 5) {
+
+    let rainPercentagesForDifferentTimes: number[] = [];
+
+    for (let focusedTime = min; focusedTime <= max; focusedTime += intervalSize) { // This is calling route information of a point everytime. Should only get gernal weather informaion of a point once.
+      console.log("WHEN YOU LEAVE AT " + focusedTime + "mins from now!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+      await this.getRainPercentageOfRoute(routePoints, focusedTime).then(probForThisRoute => {
+        rainPercentagesForDifferentTimes.push(probForThisRoute);
+      });
+    }
+
+    return rainPercentagesForDifferentTimes;
+  }
+
+  private async getRainPercentageOfRoute(routePoints: google.maps.Polyline, whenToStartFrom: number = 0): Promise<number> {
     const routePath: google.maps.LatLng[] = routePoints.getPath().getArray();
     const routePathLength: number = routePath.length;
 
@@ -83,15 +97,15 @@ export class MapComponent implements OnInit {
       
       var minuteneedToSearchFor = this.WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath, weatherPointLocationInRoute); // dont need distance.
 
-      debugger;
-
       await this.weatherService.GetRainProbForPoint(weatherPoints[i].lat(), weatherPoints[i].lng()).toPromise().then(prob => averageRainProb += prob);
 
 
+        let timeWithStartTimeTakenIntoAccount = minuteneedToSearchFor + whenToStartFrom;
+
       if (minuteneedToSearchFor < 60) {
         let rainProbAtTimeYouWouldGetThere = await this.weatherService.GetRainProbForPointReachableInAnHour(routePath[i].lat(),
-        routePath[i].lng(), minuteneedToSearchFor).toPromise().then(prob => {
-          console.log("prob to rain at " + i + " space at "+ minuteneedToSearchFor + " minutes is: " + prob);
+        routePath[i].lng(), timeWithStartTimeTakenIntoAccount).toPromise().then(prob => {
+          console.log("prob to rain at " + i + " space at "+ timeWithStartTimeTakenIntoAccount + " minutes is: " + prob);
         });
       } else {
         console.log("time to get to " + i + " space is over an hour");
@@ -101,7 +115,7 @@ export class MapComponent implements OnInit {
       this.placeWeatherMarkers(i, routePath, routePathLength);
     }
         
-    this.probToRain = averageRainProb / this.howManyWeatherMarkerChecks;
+    return this.probToRain = averageRainProb / this.howManyWeatherMarkerChecks;
   }
 
   private placeWeatherMarkers(i: number, routePath: google.maps.LatLng[], routePathLength: number) {
@@ -123,8 +137,6 @@ export class MapComponent implements OnInit {
       distance += this.distanceToNextLatLngValue(routePath, i);
     }
 
-    debugger;
-
     const howLongItWillTakeInSecondsToGetThere = distance * this.averageWalkingDistanceMetersPerSecond;
 
     return Math.round(howLongItWillTakeInSecondsToGetThere / 60);
@@ -136,7 +148,7 @@ export class MapComponent implements OnInit {
 
   private generateMap() {
     const mapProperties = {
-      center: new google.maps.LatLng(52.0626, 1.2339),
+      center: new google.maps.LatLng(54.987193, -3.260105),
       zoom: 14
     };
     this.map = new google.maps.Map(document.getElementById('map'), mapProperties);
