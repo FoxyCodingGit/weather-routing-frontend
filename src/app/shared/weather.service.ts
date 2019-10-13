@@ -23,7 +23,6 @@ export class WeatherService {
   }
 
   public GetRainProbForPointReachableInAnHour(lat: number, lng: number, minuteWillReach: number): Observable<number> {
-    debugger;
     const url = `${this.baseURL}/rainProb/minutely/${lat}/${lng}/${minuteWillReach}`; // do backend for this.
 
     return this.http.get<number>(url)

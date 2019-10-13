@@ -20,6 +20,8 @@ export class MapComponent implements OnInit {
   public lattitude: number;
   public longitude: number;
 
+  private howManyWeatherMarkerChecks: number = 5;
+
   private routes: PolytimeandTime[] = []; // still not used
 
   private averageWalkingDistanceMetersPerSecond: number = 1.4;
@@ -65,62 +67,65 @@ export class MapComponent implements OnInit {
     const routePath: google.maps.LatLng[] = routePoints.getPath().getArray();
     const routePathLength: number = routePath.length;
 
-    // TESTING //////////////
 
-    let weatherPointLocationInRoute = Math.round((routePathLength - 1) * 0.5);
-
-    var minuteneedToSearchFor = this.WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath, travelTimeInSeconds, weatherPointLocationInRoute); // dont need distance.
-
-    debugger;
-    if (minuteneedToSearchFor < 60) {
-      console.log("get there in " + minuteneedToSearchFor + " minutes");
-      let rainProbAtTimeYouWouldGetThere = this.weatherService.GetRainProbForPointReachableInAnHour(routePath[Math.round((routePathLength - 1) * 0.5)].lat(),
-      routePath[Math.round((routePathLength - 1) * 0.5)].lng(), minuteneedToSearchFor).toPromise().then(prob => {
-        console.log("prob to rain: " + prob);
-      });
-    }
-
-    ////////////////////////
-
-    const fiveWeatherPoints: google.maps.LatLng[] = [
-      new google.maps.LatLng(routePath[0].lat(), routePath[0].lng()),
-      new google.maps.LatLng(routePath[Math.round((routePathLength - 1) * 0.25)].lat(),
-        routePath[Math.round((routePathLength - 1) * 0.25)].lng()),
-      new google.maps.LatLng(routePath[Math.round((routePathLength - 1) * 0.5)].lat(),
-        routePath[Math.round((routePathLength - 1) * 0.5)].lng()),
-      new google.maps.LatLng(routePath[Math.round((routePathLength - 1) * 0.75)].lat(),
-        routePath[Math.round((routePathLength - 1) * 0.75)].lng()),
-      new google.maps.LatLng(routePath[Math.round(routePathLength - 1)].lat(),
-        routePath[Math.round(routePathLength - 1)].lng())
-    ];
-
+    let weatherPoints: google.maps.LatLng[] = [];
     let averageRainProb = 0;
+    
+    for (let i = 0; i <= this.howManyWeatherMarkerChecks; i++) {
 
-    for (let i = 0; i < fiveWeatherPoints.length; i++) {
-      await this.weatherService.GetRainProbForPoint(fiveWeatherPoints[i].lat(), fiveWeatherPoints[i].lng()).toPromise().then(prob => averageRainProb += prob);
+      let weatherPointLocationInRoute = Math.round((routePathLength - 1) * (i / this.howManyWeatherMarkerChecks));
+      
+      weatherPoints.push(
+         new google.maps.LatLng(routePath[weatherPointLocationInRoute].lat(), // length - 1 is kinda a hack to have last marker on the last array space. Tecnically all fractions are based on 1 lower than route length given
+         routePath[weatherPointLocationInRoute].lng()
+         )
+      );
+      
+      var minuteneedToSearchFor = this.WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath, weatherPointLocationInRoute); // dont need distance.
 
-      if (i !== 0 && i !== fiveWeatherPoints.length - 1) {
-        new google.maps.Marker({
-          map: this.map,
-          position: {lat: routePath[Math.round((routePathLength - 1) * (0.25 * i))].lat(), lng: routePath[Math.round((routePathLength - 1) * (0.25 * i))].lng()},
-          icon: {
-            url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-          }
+      debugger;
+
+      await this.weatherService.GetRainProbForPoint(weatherPoints[i].lat(), weatherPoints[i].lng()).toPromise().then(prob => averageRainProb += prob);
+
+
+      if (minuteneedToSearchFor < 60) {
+        let rainProbAtTimeYouWouldGetThere = await this.weatherService.GetRainProbForPointReachableInAnHour(routePath[i].lat(),
+        routePath[i].lng(), minuteneedToSearchFor).toPromise().then(prob => {
+          console.log("prob to rain at " + i + " space at "+ minuteneedToSearchFor + " minutes is: " + prob);
         });
+      } else {
+        console.log("time to get to " + i + " space is over an hour");
       }
-    }
 
-    this.probToRain = averageRainProb / fiveWeatherPoints.length;
+
+      this.placeWeatherMarkers(i, routePath, routePathLength);
+    }
+        
+    this.probToRain = averageRainProb / this.howManyWeatherMarkerChecks;
   }
 
-  private WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath: google.maps.LatLng[], travelTimeInSeconds: number, weatherPointLocationInArray: number): number {
+  private placeWeatherMarkers(i: number, routePath: google.maps.LatLng[], routePathLength: number) {
+    if (i !== 0 && i !== this.howManyWeatherMarkerChecks - 1) {
+      new google.maps.Marker({
+        map: this.map,
+        position: { lat: routePath[Math.round((routePathLength - 1) * (i / this.howManyWeatherMarkerChecks))].lat(), lng: routePath[Math.round((routePathLength - 1) * (i / this.howManyWeatherMarkerChecks))].lng() },
+        icon: {
+          url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+        }
+      });
+    }
+  }
+
+  private WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath: google.maps.LatLng[], weatherPointLocationInArray: number): number {
     let distance = 0;
 
     for (let i = 0; i < weatherPointLocationInArray; i++) {
       distance += this.distanceToNextLatLngValue(routePath, i);
     }
 
-    let howLongItWillTakeInSecondsToGetThere = distance * this.averageWalkingDistanceMetersPerSecond;
+    debugger;
+
+    const howLongItWillTakeInSecondsToGetThere = distance * this.averageWalkingDistanceMetersPerSecond;
 
     return Math.round(howLongItWillTakeInSecondsToGetThere / 60);
   }
