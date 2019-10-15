@@ -42,4 +42,12 @@ export class GraphComponent implements OnInit {
 
   }
 
+  public graphRainPercentageForRoute(percentages: number[]) {
+    this.chartData.forEach((dataset, index) => {
+      this.chartData[index] = Object.assign({}, this.chartData[index], {
+        data: [...this.chartData[index].data, percentages[index]]
+      });
+    });
+  }
+
 }

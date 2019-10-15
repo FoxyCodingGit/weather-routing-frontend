@@ -12,7 +12,7 @@ import { GraphComponent } from '../graph/graph.component';
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit {
-  @ViewChild(GraphComponent, {static: false}) child: GraphComponent;
+  @ViewChild(GraphComponent, {static: false}) child: GraphComponent; // THINKS IS UNDEFINED LOOK INTO.
 
   @ViewChild('hello', {static: false}) mapElement: any;
   map: google.maps.Map;
@@ -48,7 +48,9 @@ export class MapComponent implements OnInit {
         });
 
         mapRoute.addListener('click', () => {
-          this.getRainPercentageOverInterval(mapRoute);
+          this.getRainPercentageOverInterval(mapRoute).then(percentages => {
+            this.child.graphRainPercentageForRoute(percentages);
+          });
         });
 
         this.placeStartEndMarkers(pointsTimeDistance.points);
@@ -56,14 +58,11 @@ export class MapComponent implements OnInit {
         this.routes.push(new PolytimeandTime(mapRoute, pointsTimeDistance.travelTimeInSeconds));
 
         mapRoute.setMap(this.map);
-
-        // this.child.newDataPoint();
-
       }
     );
   }
 
-  public async getRainPercentageOverInterval(routePoints: google.maps.Polyline, min: number = 0, max: number = 20, intervalSize: number = 5) {
+  public async getRainPercentageOverInterval(routePoints: google.maps.Polyline, min: number = 0, max: number = 20, intervalSize: number = 5): Promise<number[]> { // DOES IT HAVE TO BE A PROMISE. WHATS STOPPING FROM OBEING OBSERVABLE AND WAT DA BENEFIT??
 
     let rainPercentagesForDifferentTimes: number[] = [];
 
@@ -73,7 +72,7 @@ export class MapComponent implements OnInit {
         rainPercentagesForDifferentTimes.push(probForThisRoute);
       });
     }
-
+    
     return rainPercentagesForDifferentTimes;
   }
 
