@@ -20,18 +20,25 @@ export class MapComponent implements OnInit {
   public lattitude: number;
   public longitude: number;
 
-  private howManyWeatherMarkerChecks = 4;
+  private howManyWeatherMarkerChecks = 3;
 
   private graphTimeMin = 0;
   private graphTimeMax = 20;
-  private graphTimeInterval = 5;
+  private graphTimeInterval = 20;
 
   private routes: PolytimeandTime[] = []; // still not used
 
   private averageWalkingDistanceMetersPerSecond = 1.4;
 
   public probToRain = -1;
-  
+
+  private StartOrEndIsFocused = 0;
+
+  public startLat = 50.965446;
+  public startLng = 0.096790;
+  public endLat = 50.976310;
+  public endLng = 0.098611;
+
   constructor(private mapRoutingService: MapRoutingService, private weatherService: WeatherService) { }
 
   ngOnInit(): void {
@@ -163,6 +170,22 @@ export class MapComponent implements OnInit {
       zoom: 14
     };
     this.map = new google.maps.Map(document.getElementById('map'), mapProperties);
+
+    this.map.addListener('click', (e: google.maps.MouseEvent) => {
+      this.updateLatLngValues(e);
+    });
+  }
+
+  private updateLatLngValues(e: google.maps.MouseEvent): void {
+    if (this.StartOrEndIsFocused === 0) {
+      this.startLat = e.latLng.lat();
+      this.startLng = e.latLng.lng();
+      this.StartOrEndIsFocused = 1;
+    } else {
+      this.endLat = e.latLng.lat();
+      this.endLng = e.latLng.lng();
+      this.StartOrEndIsFocused = 0;
+    }
   }
 
   private placeStartEndMarkers(routePoints: google.maps.LatLng[]) {
