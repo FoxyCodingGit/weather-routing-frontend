@@ -3,11 +3,11 @@
 <h1>Routing</h1>
 <form #RouteForm = "ngForm" (ngSubmit)="onRoutingSubmit(RouteForm.value)">
     <h2>Start:</h2><br>
-    Lattitude: <input type="text" name="startLat" ngModel="54.987193"><br>
-    Longitude: <input type="text" name="startLng" ngModel="-3.260105"><br>
+    Lattitude: <input type="text" name="startLat" ngModel="50.965446"><br>
+    Longitude: <input type="text" name="startLng" ngModel="0.096790"><br>
     <h2>End:</h2><br>
-    Lattitude: <input type="text" name="endLat" ngModel="54.974119"><br>
-    Longitude: <input type="text" name="endLng" ngModel="-3.269971"><br>
+    Lattitude: <input type="text" name="endLat" ngModel="50.976310"><br>
+    Longitude: <input type="text" name="endLng" ngModel="0.098611"><br>
     <h2>How You Are Travelling:</h2>
     <select name=travelMode ngModel>
         <option value="pedestrian">Pedestrian</option>
@@ -20,3 +20,5 @@
 
 <h3>Prob to rain</h3>
 <p>{{probToRain}}</p>
+
+<app-graph></app-graph>

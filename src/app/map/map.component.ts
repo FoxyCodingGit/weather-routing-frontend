@@ -20,7 +20,11 @@ export class MapComponent implements OnInit {
   public lattitude: number;
   public longitude: number;
 
-  private howManyWeatherMarkerChecks: number = 5;
+  private howManyWeatherMarkerChecks: number = 4;
+
+  private graphTimeMin: number = 0;
+  private graphTimeMax: number = 20;
+  private graphTimeInterval: number = 5;
 
   private routes: PolytimeandTime[] = []; // still not used
 
@@ -62,13 +66,13 @@ export class MapComponent implements OnInit {
     );
   }
 
-  public async getRainPercentageOverInterval(routePoints: google.maps.Polyline, min: number = 0, max: number = 20, intervalSize: number = 5): Promise<number[]> { // DOES IT HAVE TO BE A PROMISE. WHATS STOPPING FROM OBEING OBSERVABLE AND WAT DA BENEFIT??
+  public async getRainPercentageOverInterval(routePoints: google.maps.Polyline): Promise<number[]> { // DOES IT HAVE TO BE A PROMISE. WHATS STOPPING FROM OBEING OBSERVABLE AND WAT DA BENEFIT??
 
     let rainPercentagesForDifferentTimes: number[] = [];
 
-    for (let focusedTime = min; focusedTime <= max; focusedTime += intervalSize) { // This is calling route information of a point everytime. Should only get gernal weather informaion of a point once.
+    for (let focusedTime = this.graphTimeMin; focusedTime <= this.graphTimeMax; focusedTime += this.graphTimeInterval) { // This is calling route information of a point everytime. Should only get gernal weather informaion of a point once.
       console.log("WHEN YOU LEAVE AT " + focusedTime + "mins from now!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-      await this.getRainPercentageOfRoute(routePoints, focusedTime).then(probForThisRoute => {
+      await this.getRainPercentageOfRoute(routePoints, focusedTime).then(probForThisRoute => { // HERE
         rainPercentagesForDifferentTimes.push(probForThisRoute);
       });
     }
@@ -82,29 +86,35 @@ export class MapComponent implements OnInit {
 
 
     let weatherPoints: google.maps.LatLng[] = [];
-    let averageRainProb = 0;
+    let prbabilityCollection = 0;
     
-    for (let i = 0; i <= this.howManyWeatherMarkerChecks; i++) {
+    for (let i = 0; i < this.howManyWeatherMarkerChecks; i++) {
 
-      let weatherPointLocationInRoute = Math.round((routePathLength - 1) * (i / this.howManyWeatherMarkerChecks));
+      let weatherPointLocationInRoute = Math.round(routePathLength * (i / this.howManyWeatherMarkerChecks));
+
+      if (weatherPointLocationInRoute !== 0) {
+        weatherPointLocationInRoute--;
+      }
       
       weatherPoints.push(
-         new google.maps.LatLng(routePath[weatherPointLocationInRoute].lat(), // length - 1 is kinda a hack to have last marker on the last array space. Tecnically all fractions are based on 1 lower than route length given
+         new google.maps.LatLng(routePath[weatherPointLocationInRoute].lat(),
          routePath[weatherPointLocationInRoute].lng()
          )
       );
       
       var minuteneedToSearchFor = this.WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath, weatherPointLocationInRoute); // dont need distance.
 
-      await this.weatherService.GetRainProbForPoint(weatherPoints[i].lat(), weatherPoints[i].lng()).toPromise().then(prob => averageRainProb += prob);
+      // THIS GETS CURRENT TIME WHICH IS NOT USEFUL AS WILL BE AT START AND NOT AT MINUTE I WORK OUT THEY WILL BE THERE.
+      //await this.weatherService.GetRainProbForPoint(weatherPoints[i].lat(), weatherPoints[i].lng()).toPromise().then(prob => averageRainProb += prob);
 
 
         let timeWithStartTimeTakenIntoAccount = minuteneedToSearchFor + whenToStartFrom;
 
       if (minuteneedToSearchFor < 60) {
-        let rainProbAtTimeYouWouldGetThere = await this.weatherService.GetRainProbForPointReachableInAnHour(routePath[i].lat(),
+        await this.weatherService.GetRainProbForPointReachableInAnHour(routePath[i].lat(),
         routePath[i].lng(), timeWithStartTimeTakenIntoAccount).toPromise().then(prob => {
           console.log("prob to rain at " + i + " space at "+ timeWithStartTimeTakenIntoAccount + " minutes is: " + prob);
+          prbabilityCollection += prob;
         });
       } else {
         console.log("time to get to " + i + " space is over an hour");
@@ -113,8 +123,9 @@ export class MapComponent implements OnInit {
 
       this.placeWeatherMarkers(i, routePath, routePathLength);
     }
-        
-    return this.probToRain = averageRainProb / this.howManyWeatherMarkerChecks;
+
+    this.probToRain = prbabilityCollection / this.howManyWeatherMarkerChecks;
+    return prbabilityCollection / this.howManyWeatherMarkerChecks;
   }
 
   private placeWeatherMarkers(i: number, routePath: google.maps.LatLng[], routePathLength: number) {
@@ -147,7 +158,7 @@ export class MapComponent implements OnInit {
 
   private generateMap() {
     const mapProperties = {
-      center: new google.maps.LatLng(54.987193, -3.260105),
+      center: new google.maps.LatLng(50.965446, 0.096790),
       zoom: 14
     };
     this.map = new google.maps.Map(document.getElementById('map'), mapProperties);
