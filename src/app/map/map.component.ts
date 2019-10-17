@@ -12,7 +12,7 @@ import { GraphComponent } from '../graph/graph.component';
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit {
-  @ViewChild(GraphComponent, {static: false}) child: GraphComponent; // THINKS IS UNDEFINED LOOK INTO.
+  @ViewChild(GraphComponent, {static: false}) child: GraphComponent;
 
   @ViewChild('hello', {static: false}) mapElement: any;
   map: google.maps.Map;
