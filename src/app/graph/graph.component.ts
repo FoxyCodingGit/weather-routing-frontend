@@ -8,14 +8,9 @@ import { Color } from 'ng2-charts';
 })
 export class GraphComponent implements OnInit {
 
-    public chartColours: Color[] = [
+  public chartColours: Color[] = [
     {backgroundColor: 'rgba(0, 255, 0, 0.1)'}
   ];
-
-  constructor() { }
-
-  ngOnInit() {
-  }
 
   public chartOptions = {
     responsive: true,
@@ -36,6 +31,13 @@ export class GraphComponent implements OnInit {
   public chartData = [{ data: [0, 20, 50, 100], label: 'Account A' }];
 
   public chartLabels = ['5', '10', '15', '20'];
+
+  constructor() { }
+
+  ngOnInit() {
+  }
+
+
 
   onChartClick(event) {
     console.log(event);
