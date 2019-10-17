@@ -20,20 +20,18 @@ export class MapComponent implements OnInit {
   public lattitude: number;
   public longitude: number;
 
-  private howManyWeatherMarkerChecks: number = 4;
+  private howManyWeatherMarkerChecks = 4;
 
-  private graphTimeMin: number = 0;
-  private graphTimeMax: number = 20;
-  private graphTimeInterval: number = 5;
+  private graphTimeMin = 0;
+  private graphTimeMax = 20;
+  private graphTimeInterval = 5;
 
   private routes: PolytimeandTime[] = []; // still not used
 
-  private averageWalkingDistanceMetersPerSecond: number = 1.4;
+  private averageWalkingDistanceMetersPerSecond = 1.4;
 
-  public probToRain: number = -1;
-
-  private kesgraveHighschoolMarker: google.maps.Marker;
-
+  public probToRain = -1;
+  
   constructor(private mapRoutingService: MapRoutingService, private weatherService: WeatherService) { }
 
   ngOnInit(): void {
@@ -52,7 +50,7 @@ export class MapComponent implements OnInit {
         });
 
         mapRoute.addListener('click', () => {
-          this.getRainPercentageOverInterval(mapRoute).then(percentages => {
+          this.getRainPercentagesOverInterval(mapRoute).then(percentages => {
             this.child.graphRainPercentageForRoute(percentages);
           });
         });
@@ -66,17 +64,19 @@ export class MapComponent implements OnInit {
     );
   }
 
-  public async getRainPercentageOverInterval(routePoints: google.maps.Polyline): Promise<number[]> { // DOES IT HAVE TO BE A PROMISE. WHATS STOPPING FROM OBEING OBSERVABLE AND WAT DA BENEFIT??
+  // DOES IT HAVE TO BE A PROMISE. WHATS STOPPING FROM OBEING OBSERVABLE AND WAT DA BENEFIT??
+  public async getRainPercentagesOverInterval(routePoints: google.maps.Polyline): Promise<number[]> {
 
     let rainPercentagesForDifferentTimes: number[] = [];
 
-    for (let focusedTime = this.graphTimeMin; focusedTime <= this.graphTimeMax; focusedTime += this.graphTimeInterval) { // This is calling route information of a point everytime. Should only get gernal weather informaion of a point once.
-      console.log("WHEN YOU LEAVE AT " + focusedTime + "mins from now!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    // This is calling route information of a point everytime. Should only get gernal weather informaion of a point once.
+    for (let focusedTime = this.graphTimeMin; focusedTime <= this.graphTimeMax; focusedTime += this.graphTimeInterval) {
+      console.log('When you leave ' + focusedTime + ' mins from now!!!');
       await this.getRainPercentageOfRoute(routePoints, focusedTime).then(probForThisRoute => { // HERE
         rainPercentagesForDifferentTimes.push(probForThisRoute);
       });
     }
-    
+
     return rainPercentagesForDifferentTimes;
   }
 
@@ -87,37 +87,26 @@ export class MapComponent implements OnInit {
 
     let weatherPoints: google.maps.LatLng[] = [];
     let prbabilityCollection = 0;
-    
+
+    let weatherPointLocationInRoute: number;
+    let minuteneedToSearchFor: number;
+    let timeWithStartTimeTakenIntoAccount: number;
+
+
     for (let i = 0; i < this.howManyWeatherMarkerChecks; i++) {
+      weatherPointLocationInRoute = this.addWeatherMarkerLocationInRoute(routePathLength, i, weatherPoints, routePath);
+      minuteneedToSearchFor = this.WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath, weatherPointLocationInRoute);
 
-      let weatherPointLocationInRoute = Math.round(routePathLength * (i / this.howManyWeatherMarkerChecks));
-
-      if (weatherPointLocationInRoute !== 0) {
-        weatherPointLocationInRoute--;
-      }
-      
-      weatherPoints.push(
-         new google.maps.LatLng(routePath[weatherPointLocationInRoute].lat(),
-         routePath[weatherPointLocationInRoute].lng()
-         )
-      );
-      
-      var minuteneedToSearchFor = this.WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath, weatherPointLocationInRoute); // dont need distance.
-
-      // THIS GETS CURRENT TIME WHICH IS NOT USEFUL AS WILL BE AT START AND NOT AT MINUTE I WORK OUT THEY WILL BE THERE.
-      //await this.weatherService.GetRainProbForPoint(weatherPoints[i].lat(), weatherPoints[i].lng()).toPromise().then(prob => averageRainProb += prob);
-
-
-        let timeWithStartTimeTakenIntoAccount = minuteneedToSearchFor + whenToStartFrom;
+      timeWithStartTimeTakenIntoAccount = minuteneedToSearchFor + whenToStartFrom;
 
       if (minuteneedToSearchFor < 60) {
         await this.weatherService.GetRainProbForPointReachableInAnHour(routePath[i].lat(),
         routePath[i].lng(), timeWithStartTimeTakenIntoAccount).toPromise().then(prob => {
-          console.log("prob to rain at " + i + " space at "+ timeWithStartTimeTakenIntoAccount + " minutes is: " + prob);
+          console.log('prob to rain at ' + i + ' space at ' + timeWithStartTimeTakenIntoAccount + ' minutes is: ' + prob);
           prbabilityCollection += prob;
         });
       } else {
-        console.log("time to get to " + i + " space is over an hour");
+        console.log('time to get to ' + i + ' space is over an hour');
       }
 
 
@@ -128,11 +117,23 @@ export class MapComponent implements OnInit {
     return prbabilityCollection / this.howManyWeatherMarkerChecks;
   }
 
+  private addWeatherMarkerLocationInRoute(routePathLength: number, i: number,
+                                          weatherPoints: google.maps.LatLng[],
+                                          routePath: google.maps.LatLng[]) {
+    let weatherPointLocationInRoute = Math.round(routePathLength * (i / this.howManyWeatherMarkerChecks));
+    if (weatherPointLocationInRoute !== 0) {
+      weatherPointLocationInRoute--;
+    }
+    weatherPoints.push(new google.maps.LatLng(routePath[weatherPointLocationInRoute].lat(), routePath[weatherPointLocationInRoute].lng()));
+    return weatherPointLocationInRoute;
+  }
+
   private placeWeatherMarkers(i: number, routePath: google.maps.LatLng[], routePathLength: number) {
     if (i !== 0 && i !== this.howManyWeatherMarkerChecks - 1) {
-      new google.maps.Marker({
+      let weatherMarker = new google.maps.Marker({
         map: this.map,
-        position: { lat: routePath[Math.round((routePathLength - 1) * (i / this.howManyWeatherMarkerChecks))].lat(), lng: routePath[Math.round((routePathLength - 1) * (i / this.howManyWeatherMarkerChecks))].lng() },
+        position: { lat: routePath[Math.round((routePathLength - 1) * (i / this.howManyWeatherMarkerChecks))].lat(),
+          lng: routePath[Math.round((routePathLength - 1) * (i / this.howManyWeatherMarkerChecks))].lng() },
         icon: {
           url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
         }
