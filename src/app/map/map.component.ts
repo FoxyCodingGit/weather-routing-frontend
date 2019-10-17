@@ -56,6 +56,11 @@ export class MapComponent implements OnInit {
           strokeWeight: 2
         });
 
+        // do it when submit pressed. Do it again if route is created.
+        this.getRainPercentagesOverInterval(mapRoute).then(percentages => {
+          this.child.graphRainPercentageForRoute(percentages);
+        });
+
         mapRoute.addListener('click', () => {
           this.getRainPercentagesOverInterval(mapRoute).then(percentages => {
             this.child.graphRainPercentageForRoute(percentages);

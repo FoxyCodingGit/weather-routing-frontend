@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Color } from 'ng2-charts';
 
 @Component({
   selector: 'app-graph',
@@ -6,6 +7,10 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./graph.component.scss']
 })
 export class GraphComponent implements OnInit {
+
+    public chartColours: Color[] = [
+    {backgroundColor: 'rgba(0, 255, 0, 0.1)'}
+  ];
 
   constructor() { }
 
@@ -36,22 +41,18 @@ export class GraphComponent implements OnInit {
     console.log(event);
   }
 
-  public newDataPoint(dataArr = [100, 100, 100], label) {
 
-    this.chartData.forEach((dataset, index) => {
-      this.chartData[index] = Object.assign({}, this.chartData[index], {
-        data: [...this.chartData[index].data, dataArr[index]]
-      });
-    });
-
-    this.chartLabels = [...this.chartLabels, label];
-
-  }
 
   public graphRainPercentageForRoute(percentages: number[]) {
     this.chartData.push({
       data: percentages,
       label: 'adamTestRee'
     });
+    this.chartColours.push({backgroundColor: 'rgba(' + randomIntFromInterval(0, 255) + ', ' + randomIntFromInterval(0, 255) +
+    ', ' + randomIntFromInterval(0, 255) + ', 0.1)'});
   }
+}
+
+function randomIntFromInterval(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
 }
