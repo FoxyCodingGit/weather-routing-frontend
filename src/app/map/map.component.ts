@@ -51,7 +51,7 @@ export class MapComponent implements OnInit {
         let mapRoute = new google.maps.Polyline({ // DO NOT MAKE CONST!!!
           path: routeInformation.points,
           geodesic: true,
-          strokeColor: routeInformation.colour,
+          strokeColor: routeInformation.colour + ', 1)',
           strokeOpacity: 1.0,
           strokeWeight: 2
         });

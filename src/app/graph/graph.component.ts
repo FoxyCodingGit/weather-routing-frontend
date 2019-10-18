@@ -54,7 +54,7 @@ export class GraphComponent implements OnInit {
       data: percentages,
       label: route.name
     });
-    this.chartColours.push({backgroundColor: route.color});
+    this.chartColours.push({backgroundColor: route.color + ', 0.6)'});
 
     this.updateBestRoute();
   }

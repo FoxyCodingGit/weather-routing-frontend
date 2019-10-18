@@ -5,7 +5,7 @@ export class RouteIWant {
         this.travelTimeInSeconds = travelTimeInSeconds;
         this.distance = distance;
         this.colour = 'rgba(' + this.randomIntFromInterval(0, 200) + ', ' + this.randomIntFromInterval(0, 200)
-        + ', ' + this.randomIntFromInterval(0, 200) + ', 1)';
+        + ', ' + this.randomIntFromInterval(0, 200);
     }
 
     public points: google.maps.LatLng[];
