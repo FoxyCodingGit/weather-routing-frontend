@@ -44,8 +44,8 @@ export class GraphComponent implements OnInit {
   ngOnInit() {
   }
 
-  onChartClick(event) {
-    console.log(event);
+  onChartClick() {
+    console.log("The chart has been clicked on!");
   }
 
   // use time taken to do time to do / rain weighting :)

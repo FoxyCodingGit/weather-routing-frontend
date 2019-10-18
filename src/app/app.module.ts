@@ -9,13 +9,15 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { GraphComponent } from './graph/graph.component';
 import { ChartsModule } from 'ng2-charts';
+import { BarGraphComponent } from './bar-graph/bar-graph.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
     MapComponent,
-    GraphComponent
+    GraphComponent,
+    BarGraphComponent
   ],
   imports: [
     BrowserModule,
