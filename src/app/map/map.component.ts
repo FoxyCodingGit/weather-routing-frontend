@@ -43,6 +43,7 @@ export class MapComponent implements OnInit {
 
   ngOnInit(): void {
     this.generateMap();
+    this.displayUserLocation();
   }
 
   public onRoutingSubmit(data: any): void {
@@ -200,5 +201,25 @@ export class MapComponent implements OnInit {
   private placeStartEndMarkers(routePoints: google.maps.LatLng[]) {
     const startMarker = new google.maps.Marker({position: routePoints[0], map: this.map});
     const endMarker = new google.maps.Marker({position: routePoints[routePoints.length - 1], map: this.map});
+  }
+
+  private displayUserLocation(): void {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        var pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        let userMarker = new google.maps.Marker({
+          map: this.map,
+          position: { lat: pos.lat, lng: pos.lng },
+          icon: {
+            url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png"
+          }
+        });
+      });
+    } else {
+      alert('The user has not allowed to know its locaiton.');
+    }
   }
 }
