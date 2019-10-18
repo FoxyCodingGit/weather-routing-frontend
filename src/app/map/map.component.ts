@@ -39,6 +39,8 @@ export class MapComponent implements OnInit {
   public endLat = 50.976310;
   public endLng = 0.098611;
 
+  private userMarker: google.maps.Marker;
+
   constructor(private mapRoutingService: MapRoutingService, private weatherService: WeatherService) { }
 
   ngOnInit(): void {
@@ -77,8 +79,13 @@ export class MapComponent implements OnInit {
             this.child.graphRainPercentageForRoute(percentages, thisRoute);
           });
         });
-}
+      }
     );
+  }
+
+  public startRoute(): void {
+    this.map.setCenter({lat: this.userMarker.getPosition().lat(), lng: this.userMarker.getPosition().lng()});
+    //navigator.geolocation.watchPosition(() => console.log('success'), () => console.log('error'));
   }
 
   // DOES IT HAVE TO BE A PROMISE. WHATS STOPPING FROM OBEING OBSERVABLE AND WAT DA BENEFIT??
@@ -210,7 +217,7 @@ export class MapComponent implements OnInit {
           lat: position.coords.latitude,
           lng: position.coords.longitude
         };
-        let userMarker = new google.maps.Marker({
+        this.userMarker = new google.maps.Marker({
           map: this.map,
           position: { lat: pos.lat, lng: pos.lng },
           icon: {
