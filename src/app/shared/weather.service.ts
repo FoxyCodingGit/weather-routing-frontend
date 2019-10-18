@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { MinutelyRainData } from '../map/Model/MinutelyRainData';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +29,16 @@ export class WeatherService {
     return this.http.get<number>(url)
       .pipe(
         map(percentage => percentage * 100),
+        catchError(this.handleError<number>(0))
+      );
+  }
+
+  // can be delelted as replaced
+  public GetRainMinutelyDataForWeatherPoint(lat: number, lng: number): Observable<MinutelyRainData[]> {
+    const url = `${this.baseURL}/rain/minutely/${lat}/${lng}`; // do backend for this.
+
+    return this.http.get<MinutelyRainData[]>(url)
+      .pipe(
         catchError(this.handleError<number>(0))
       );
   }

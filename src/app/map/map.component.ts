@@ -5,6 +5,8 @@ import { MapRoutingService } from '../shared/map-routing.service';
 import { WeatherService } from '../shared/weather.service';
 import { GraphComponent } from '../graph/graph.component';
 import { RouteInteractive } from './Model/routeInteractive';
+import { BarGraphComponent } from '../bar-graph/bar-graph.component';
+import { MinutelyRainData } from './Model/MinutelyRainData';
 
 @Component({
   selector: 'app-map',
@@ -12,7 +14,8 @@ import { RouteInteractive } from './Model/routeInteractive';
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit {
-  @ViewChild(GraphComponent, {static: false}) child: GraphComponent;
+  @ViewChild(GraphComponent, {static: false}) rainPercentageGraph: GraphComponent;
+  @ViewChild(BarGraphComponent, {static: false}) rainIntensityGraph: BarGraphComponent;
 
   @ViewChild('hello', {static: false}) mapElement: any;
   map: google.maps.Map;
@@ -24,7 +27,7 @@ export class MapComponent implements OnInit {
 
   private graphTimeMin = 0;
   private graphTimeMax = 20;
-  private graphTimeInterval = 20;
+  private graphTimeInterval = 5;
 
   private routes: RouteInteractive[] = []; // still not used
 
@@ -71,12 +74,13 @@ export class MapComponent implements OnInit {
 
         // do it when submit pressed. Do it again if route is created.
         // this.getRainPercentagesOverInterval(mapRoute).then(percentages => {
-        //   this.child.graphRainPercentageForRoute(percentages);
+        //   this.rainPercentageGraph.graphRainPercentageForRoute(percentages);
         // });
 
         mapRoute.addListener('click', () => {
           this.getRainPercentagesOverInterval(mapRoute).then(percentages => {
-            this.child.graphRainPercentageForRoute(percentages, thisRoute);
+            this.rainPercentageGraph.graphRainPercentageForRoute(percentages, thisRoute);
+            this.rainIntensityGraph.graphIntensity();
           });
         });
       }
@@ -88,63 +92,61 @@ export class MapComponent implements OnInit {
     //navigator.geolocation.watchPosition(() => console.log('success'), () => console.log('error'));
   }
 
-  // DOES IT HAVE TO BE A PROMISE. WHATS STOPPING FROM OBEING OBSERVABLE AND WAT DA BENEFIT??
+
   public async getRainPercentagesOverInterval(routePoints: google.maps.Polyline): Promise<number[]> {
-
     let rainPercentagesForDifferentTimes: number[] = [];
+    let MinutelyDatForThisWeatherMarkers: MinutelyRainData[][] = [];
 
-    // This is calling route information of a point everytime. Should only get gernal weather informaion of a point once.
-    for (let focusedTime = this.graphTimeMin; focusedTime <= this.graphTimeMax; focusedTime += this.graphTimeInterval) {
-      console.log('When you leave ' + focusedTime + ' mins from now!!!');
-      await this.getRainPercentageOfRoute(routePoints, focusedTime).then(probForThisRoute => { // HERE
-        rainPercentagesForDifferentTimes.push(probForThisRoute);
+    for (let i = 0; i < this.howManyWeatherMarkerChecks; i++) {
+
+      const routePath: google.maps.LatLng[] = routePoints.getPath().getArray();
+      const routePathLength: number = routePath.length;
+
+      console.log(routePathLength);
+
+      this.placeWeatherMarkers(i, routePath, routePathLength);
+
+      let weatherPoints: google.maps.LatLng[] = []; // this varaible is not used
+
+      let weatherPointLocationInRoute = this.addWeatherMarkerLocationInRoute(routePathLength, i, weatherPoints, routePath);
+
+      await this.weatherService.GetRainMinutelyDataForWeatherPoint(routePath[weatherPointLocationInRoute].lat(),
+      routePath[weatherPointLocationInRoute].lng()).toPromise().then(minutelyRainData => {
+        MinutelyDatForThisWeatherMarkers.push(minutelyRainData);
+        console.log("got minute data for weather marker: " + i + "at leg number: " + weatherPointLocationInRoute);
       });
     }
 
-    return rainPercentagesForDifferentTimes;
-  }
+    // now to get each interval percentage
+    for (let focusedTime = this.graphTimeMin; focusedTime <= this.graphTimeMax; focusedTime += this.graphTimeInterval) {
 
-  private async getRainPercentageOfRoute(routePoints: google.maps.Polyline, whenToStartFrom: number = 0): Promise<number> {
-    const routePath: google.maps.LatLng[] = routePoints.getPath().getArray();
-    const routePathLength: number = routePath.length;
+      console.log("AT " + focusedTime + "!!!");
 
+      const routePath: google.maps.LatLng[] = routePoints.getPath().getArray(); // duplicated
+      const routePathLength: number = routePath.length;
+      let weatherPoints: google.maps.LatLng[] = [];
+      let percentageAccumulator = 0;
 
-    let weatherPoints: google.maps.LatLng[] = [];
-    let prbabilityCollection = 0;
+      for (let i = 0; i < this.howManyWeatherMarkerChecks; i++) {
+        let weatherPointLocationInRoute =
+        this.addWeatherMarkerLocationInRoute(routePathLength, i, weatherPoints, routePath);
+  
+        let minuteneedToSearchFor = this.WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath, weatherPointLocationInRoute);
+  
+        let timeWithStartTimeTakenIntoAccount = minuteneedToSearchFor + focusedTime;
 
-    let weatherPointLocationInRoute: number;
-    let minuteneedToSearchFor: number;
-    let timeWithStartTimeTakenIntoAccount: number;
-
-
-    for (let i = 0; i < this.howManyWeatherMarkerChecks; i++) {
-      weatherPointLocationInRoute = this.addWeatherMarkerLocationInRoute(routePathLength, i, weatherPoints, routePath);
-      minuteneedToSearchFor = this.WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath, weatherPointLocationInRoute);
-
-      timeWithStartTimeTakenIntoAccount = minuteneedToSearchFor + whenToStartFrom;
-
-      if (minuteneedToSearchFor < 60) {
-        await this.weatherService.GetRainProbForPointReachableInAnHour(routePath[i].lat(),
-        routePath[i].lng(), timeWithStartTimeTakenIntoAccount).toPromise().then(prob => {
-          console.log('prob to rain at ' + i + ' space at ' + timeWithStartTimeTakenIntoAccount + ' minutes is: ' + prob);
-          prbabilityCollection += prob;
-        });
-      } else {
-        console.log('time to get to ' + i + ' space is over an hour');
+        console.log("prob of rain at weather marker " + i + " at " + timeWithStartTimeTakenIntoAccount + " is: " +  MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipProbability * 100);
+        percentageAccumulator += MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipProbability * 100;
       }
-
-
-      this.placeWeatherMarkers(i, routePath, routePathLength);
+      rainPercentagesForDifferentTimes.push(percentageAccumulator / this.howManyWeatherMarkerChecks);
     }
-
-    this.probToRain = prbabilityCollection / this.howManyWeatherMarkerChecks;
-    return prbabilityCollection / this.howManyWeatherMarkerChecks;
+    return rainPercentagesForDifferentTimes;
   }
 
   private addWeatherMarkerLocationInRoute(routePathLength: number, i: number,
                                           weatherPoints: google.maps.LatLng[],
                                           routePath: google.maps.LatLng[]) {
-    let weatherPointLocationInRoute = Math.round(routePathLength * (i / this.howManyWeatherMarkerChecks));
+    let weatherPointLocationInRoute = Math.round(routePathLength * (i / this.howManyWeatherMarkerChecks)); // THIS DOESNT WORK OUT CORRECTLY. WITH 3 -> 0/3 1/3 2/3 NO 3/3
     if (weatherPointLocationInRoute !== 0) {
       weatherPointLocationInRoute--;
     }
