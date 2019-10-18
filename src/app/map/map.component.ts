@@ -136,15 +136,25 @@ export class MapComponent implements OnInit {
     return rainPercentagesForDifferentTimes;
   }
 
-  private addWeatherMarkerLocationInRoute(routePathLength: number, i: number,
-                                          weatherPoints: google.maps.LatLng[],
-                                          routePath: google.maps.LatLng[]) {
-    let weatherPointLocationInRoute = Math.round(routePathLength * (i / this.howManyWeatherMarkerChecks)); // THIS DOESNT WORK OUT CORRECTLY. WITH 3 -> 0/3 1/3 2/3 NO 3/3
+  private addWeatherMarkerLocationInRoute(routePathLength: number, i: number, weatherPoints: google.maps.LatLng[], routePath: google.maps.LatLng[]) {
+    let weatherPointLocationInRoute = this.calculateWeatherPointLocationInRoute(routePathLength, i);
     if (weatherPointLocationInRoute !== 0) {
       weatherPointLocationInRoute--;
     }
     weatherPoints.push(new google.maps.LatLng(routePath[weatherPointLocationInRoute].lat(), routePath[weatherPointLocationInRoute].lng()));
     return weatherPointLocationInRoute;
+  }
+
+
+  private calculateWeatherPointLocationInRoute(routePathLength: number, i: number): number {
+    console.log(i);
+    if (i === 0) {
+      return 0;
+    } else if (i === this.howManyWeatherMarkerChecks) {
+      return routePathLength;
+    } else { // if four for example -> 0 33 66 100 the middle two are 1/3 and 2/3. top begins at one and below is one less that howmanyweathermarkers
+      return Math.round(routePathLength * (i / (this.howManyWeatherMarkerChecks - 1)));
+    }
   }
 
   private placeWeatherMarkers(i: number, routePath: google.maps.LatLng[], routePathLength: number) {
