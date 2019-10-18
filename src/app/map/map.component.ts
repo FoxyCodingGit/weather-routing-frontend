@@ -3,8 +3,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MapRoutingService } from '../shared/map-routing.service';
 import { WeatherService } from '../shared/weather.service';
-import { PolytimeandTime } from './Model/PolytimeAndTime';
 import { GraphComponent } from '../graph/graph.component';
+import { RouteInteractive } from './Model/routeInteractive';
 
 @Component({
   selector: 'app-map',
@@ -26,7 +26,7 @@ export class MapComponent implements OnInit {
   private graphTimeMax = 20;
   private graphTimeInterval = 20;
 
-  private routes: PolytimeandTime[] = []; // still not used
+  private routes: RouteInteractive[] = []; // still not used
 
   private averageWalkingDistanceMetersPerSecond = 1.4;
 
@@ -47,32 +47,36 @@ export class MapComponent implements OnInit {
 
   public onRoutingSubmit(data: any): void {
     this.mapRoutingService.GetRoute(data.travelMode, data.startLat, data.startLng, data.endLat, data.endLng).subscribe(
-      (pointsTimeDistance) => {
+      (routeInformation) => {
         let mapRoute = new google.maps.Polyline({ // DO NOT MAKE CONST!!!
-          path: pointsTimeDistance.points,
+          path: routeInformation.points,
           geodesic: true,
-          strokeColor: '#F00',
+          strokeColor: routeInformation.colour,
           strokeOpacity: 1.0,
           strokeWeight: 2
         });
 
+
+
+        this.placeStartEndMarkers(routeInformation.points);
+
+        var thisRoute = new RouteInteractive(mapRoute, routeInformation.travelTimeInSeconds, data.name, routeInformation.colour);
+
+        this.routes.push(thisRoute);
+
+        mapRoute.setMap(this.map);
+
         // do it when submit pressed. Do it again if route is created.
-        this.getRainPercentagesOverInterval(mapRoute).then(percentages => {
-          this.child.graphRainPercentageForRoute(percentages);
-        });
+        // this.getRainPercentagesOverInterval(mapRoute).then(percentages => {
+        //   this.child.graphRainPercentageForRoute(percentages);
+        // });
 
         mapRoute.addListener('click', () => {
           this.getRainPercentagesOverInterval(mapRoute).then(percentages => {
-            this.child.graphRainPercentageForRoute(percentages);
+            this.child.graphRainPercentageForRoute(percentages, thisRoute);
           });
         });
-
-        this.placeStartEndMarkers(pointsTimeDistance.points);
-
-        this.routes.push(new PolytimeandTime(mapRoute, pointsTimeDistance.travelTimeInSeconds));
-
-        mapRoute.setMap(this.map);
-      }
+}
     );
   }
 
