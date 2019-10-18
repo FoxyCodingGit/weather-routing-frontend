@@ -97,16 +97,14 @@ export class MapComponent implements OnInit {
     let rainPercentagesForDifferentTimes: number[] = [];
     let MinutelyDatForThisWeatherMarkers: MinutelyRainData[][] = [];
 
+    const routePath: google.maps.LatLng[] = routePoints.getPath().getArray();
+    const routePathLength: number = routePath.length;
+    let weatherPoints: google.maps.LatLng[] = []; // this varaible is not used
+
     for (let i = 0; i < this.howManyWeatherMarkerChecks; i++) {
-
-      const routePath: google.maps.LatLng[] = routePoints.getPath().getArray();
-      const routePathLength: number = routePath.length;
-
       console.log(routePathLength);
 
       this.placeWeatherMarkers(i, routePath, routePathLength);
-
-      let weatherPoints: google.maps.LatLng[] = []; // this varaible is not used
 
       let weatherPointLocationInRoute = this.addWeatherMarkerLocationInRoute(routePathLength, i, weatherPoints, routePath);
 
@@ -119,20 +117,15 @@ export class MapComponent implements OnInit {
 
     // now to get each interval percentage
     for (let focusedTime = this.graphTimeMin; focusedTime <= this.graphTimeMax; focusedTime += this.graphTimeInterval) {
-
       console.log("AT " + focusedTime + "!!!");
 
-      const routePath: google.maps.LatLng[] = routePoints.getPath().getArray(); // duplicated
-      const routePathLength: number = routePath.length;
-      let weatherPoints: google.maps.LatLng[] = [];
       let percentageAccumulator = 0;
 
       for (let i = 0; i < this.howManyWeatherMarkerChecks; i++) {
-        let weatherPointLocationInRoute =
+        let weatherPointLocationInRoute = // duplicated but prob needs to be???
         this.addWeatherMarkerLocationInRoute(routePathLength, i, weatherPoints, routePath);
   
         let minuteneedToSearchFor = this.WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath, weatherPointLocationInRoute);
-  
         let timeWithStartTimeTakenIntoAccount = minuteneedToSearchFor + focusedTime;
 
         console.log("prob of rain at weather marker " + i + " at " + timeWithStartTimeTakenIntoAccount + " is: " +  MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipProbability * 100);
