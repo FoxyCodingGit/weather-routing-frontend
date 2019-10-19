@@ -23,20 +23,8 @@ export class WeatherService {
       );
   }
 
-    // can be deleted as replaced
-  public GetRainProbForPointReachableInAnHour(lat: number, lng: number, minuteWillReach: number): Observable<number> {
-    const url = `${this.baseURL}/rainProb/minutely/${lat}/${lng}/${minuteWillReach}`; // do backend for this.
-
-    return this.http.get<number>(url)
-      .pipe(
-        map(percentage => percentage * 100),
-        catchError(this.handleError<number>(0))
-      );
-  }
-
-
   public GetRainMinutelyDataForWeatherPoint(lat: number, lng: number): Observable<MinutelyRainData[]> { // move * 100 to percentage back to map.
-    const url = `${this.baseURL}/rain/minutely/${lat}/${lng}`; // do backend for this.
+    const url = `${this.baseURL}/rain/minutely/${lat}/${lng}`;
 
     return this.http.get<MinutelyRainData[]>(url)
       .pipe(
