@@ -29,9 +29,9 @@ export class GraphComponent implements OnInit {
 
   public lineChartLegend = true;
 
-  public chartData = [{ data: [100, 100, 80, 100, 80], label: 'Example' }];
+  public chartData: { data: number[]; label: string; }[] = [];
 
-  public chartLabels = ['0', '5', '10', '15', '20'];
+  public chartLabels: string[] = [];
 
   public bestRoute: {
     name: string,
@@ -54,6 +54,11 @@ export class GraphComponent implements OnInit {
       data: percentages,
       label: route.name
     });
+
+    for (let i = 1; i <= 5; i++) {
+      this.chartLabels.push((i * 5).toString());
+    }
+
     this.chartColours.push({backgroundColor: route.color + ', 0.6)'});
 
     this.updateBestRoute();

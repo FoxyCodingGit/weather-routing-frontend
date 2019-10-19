@@ -14,24 +14,14 @@ export class BarGraphComponent implements OnInit {
   ];
 
   public chartOptions = {
-    responsive: true,
-    scales: {
-      yAxes: [{
-        ticks: {
-        beginAtZero: true,
-            stepValue: 5,
-            steps: 20,
-          max : 100,
-        }
-    }]
-    }
+    responsive: true
   };
 
   public lineChartLegend = true;
 
-  public chartData = [{ data: [100, 100, 80, 100, 80], label: 'Example' }];
+  public chartData: { data: number[]; label: string; }[] = [];
 
-  public chartLabels = ['0', '5', '10', '15', '20'];
+  public chartLabels: string[] = [];
 
   public bestRoute: {
     name: string,
@@ -45,8 +35,23 @@ export class BarGraphComponent implements OnInit {
   }
 
   public graphIntensity(rainIntensities: number[][], route: RouteInteractive) {
-    console.log(rainIntensities);
-    console.log("potato");
-  }
+    // just manually do 5 mins apart and 0 - 20
+    let weatherStationArray: number[];
 
+    for (let i = 1; i <= rainIntensities.length; i++) {
+      this.chartLabels.push((i * 5).toString());
+    }
+
+    for (let focusedWeatherStation = 0; focusedWeatherStation < rainIntensities[0].length; focusedWeatherStation++) {
+      weatherStationArray = [];
+      rainIntensities.forEach(intensitiesForIntervals => {
+        weatherStationArray.push(intensitiesForIntervals[focusedWeatherStation]);
+      });
+
+      this.chartData.push({
+        data: weatherStationArray,
+        label: "AdAM"
+      });
+    }
+  }
 }

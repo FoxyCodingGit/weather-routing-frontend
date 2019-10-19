@@ -1,12 +1,11 @@
-<div style="width: 40%;">
-    <canvas
+<div style="width: 40%;" *ngIf="chartData.length > 0">
+    <canvas 
         baseChart
         [chartType]="'bar'"
         [datasets]="chartData"
         [labels]="chartLabels"
         [options]="chartOptions"
         [colors]="chartColours"
-        [legend]="lineChartLegend"
-        (chartClick)="onChartClick($event)">
+        [legend]="lineChartLegend">
     </canvas>
 </div>
