@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Color } from 'ng2-charts';
+import { RouteInteractive } from '../map/Model/routeInteractive';
 
 @Component({
   selector: 'app-bar-graph',
@@ -43,7 +44,8 @@ export class BarGraphComponent implements OnInit {
   ngOnInit() {
   }
 
-  public graphIntensity() {
+  public graphIntensity(rainIntensities: number[][], route: RouteInteractive) {
+    console.log(rainIntensities);
     console.log("potato");
   }
 
