@@ -131,6 +131,8 @@ export class MapComponent implements OnInit {
     let rainIntensityForFocusedWeatherPoint: number[] = [];
 
     for (let focusedTime = this.graphTimeMin; focusedTime <= this.graphTimeMax; focusedTime += this.graphTimeInterval) {
+      
+      rainIntensityForFocusedWeatherPoint = [];
       console.log("AT " + focusedTime + "!!!");
 
       for (let i = 0; i < this.howManyWeatherMarkerChecks; i++) {
@@ -139,6 +141,8 @@ export class MapComponent implements OnInit {
 
           let minuteneedToSearchFor = this.WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath, weatherPointLocationInRoute); // working out same value multiple times.
           let timeWithStartTimeTakenIntoAccount = minuteneedToSearchFor + focusedTime;
+
+          console.log("intensity of rain at weather marker " + i + " at " + timeWithStartTimeTakenIntoAccount + " is: " + MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipIntensity);
 
           rainIntensityForFocusedWeatherPoint.push(MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipIntensity);
       }
