@@ -37,10 +37,10 @@ export class MapComponent implements OnInit {
 
   private StartOrEndIsFocused = 0;
 
-  public startLat = 50.965446;
-  public startLng = 0.096790;
-  public endLat = 50.976310;
-  public endLng = 0.098611;
+  public startLat = 55.583156106988;
+  public startLng = -1.9225142006598617;
+  public endLat = 55.575684498080676;
+  public endLng = -1.920110941382518;
 
   private userMarker: google.maps.Marker;
 
