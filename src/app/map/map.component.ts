@@ -198,16 +198,10 @@ export class MapComponent implements OnInit {
 
   private WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath: google.maps.LatLng[], weatherPointLocationInArray: number): number {
     let distance = 0;
-
     for (let i = 0; i < weatherPointLocationInArray; i++) { // do if at start or finish give back quick value. currently going to one less than the full distance.
       distance += this.distanceToNextLatLngValue(routePath, i);
     }
-    console.log("distance" + weatherPointLocationInArray + " : " + distance);
-
-    const howLongItWillTakeInSecondsToGetThere = distance / this.averageWalkingDistanceMetersPerSecond;
-    console.log("howLongItWillTakeInSecondsToGetThere" + howLongItWillTakeInSecondsToGetThere);
-
-    return Math.round(howLongItWillTakeInSecondsToGetThere / 60);
+    return Math.round((distance / this.averageWalkingDistanceMetersPerSecond) / 60);
   }
 
   private distanceToNextLatLngValue(routePath: google.maps.LatLng[], i: number) {
