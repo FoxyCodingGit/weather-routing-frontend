@@ -9,17 +9,18 @@ import { RouteInteractive } from '../map/Model/routeInteractive';
 })
 export class BarGraphComponent implements OnInit {
 
-  public chartColours: Color[] = [
-    {backgroundColor: 'rgba(0, 255, 0, 0.1)'}
-  ];
+  public chartColours: Color[] = [];
 
   public chartOptions = {
-    responsive: true
-  };
+    responsive: true,
+    legend: {
+      display: false
+    }
+  }
 
   public lineChartLegend = true;
 
-  public chartData: { data: number[]; label: string; }[] = [];
+  public chartData: { data: number[] }[] = [];
 
   public chartLabels: string[] = [];
 
@@ -38,7 +39,7 @@ export class BarGraphComponent implements OnInit {
     // just manually do 5 mins apart and 0 - 20
     let weatherStationArray: number[];
 
-    for (let i = 1; i <= rainIntensities.length; i++) {
+    for (let i = 0; i < rainIntensities.length; i++) {
       this.chartLabels.push((i * 5).toString());
     }
 
@@ -49,9 +50,10 @@ export class BarGraphComponent implements OnInit {
       });
 
       this.chartData.push({
-        data: weatherStationArray,
-        label: "AdAM"
+        data: weatherStationArray
       });
+
+      this.chartColours.push({backgroundColor: '#ADD8E6'});
     }
   }
 }
