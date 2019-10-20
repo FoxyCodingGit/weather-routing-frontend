@@ -18,8 +18,6 @@ export class BarGraphComponent implements OnInit {
     }
   }
 
-  public lineChartLegend = true;
-
   public chartData: { data: number[] }[] = [];
 
   public chartLabels: string[] = [];
