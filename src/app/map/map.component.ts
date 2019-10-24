@@ -96,7 +96,7 @@ export class MapComponent implements OnInit {
       var rainIntensity = this.getRainIntensityPerWeatherPointPerPerInterval(weatherPoints, mapRoute.getPath().getArray(), minutelyRainData);
       this.rainIntensityGraph.graphIntensity(rainIntensity, thisRoute);
 
-      let overallScore = this.generateOverallRouteScore(rainPercentages, rainIntensity, 0); // TODO: remove 0 with thing.
+      let overallScore = this.generateOverallRouteScore(rainPercentages, rainIntensity, this.whenLeavingForTable);
 
       this.routeTable.addRouteToTable(thisRoute, overallScore);
 

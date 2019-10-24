@@ -23,7 +23,7 @@
 <h3>Prob to rain</h3>
 <p>{{probToRain}}</p>
 
-<select name="WhenAreYouLeaving" (change)="WhenAreYouLeavingHasChanged($event.target.value);"> <!-- do ngmodel so can check on value when route submitted.-->
+<select name="WhenAreYouLeaving" [(ngModel)]="whenLeavingForTable" (change)="WhenAreYouLeavingHasChanged($event.target.value);" [value]='0'> <!-- this value doesnt work!!! do ngmodel so can check on value when route submitted.-->
     <option value="0" selected>Now</option>
     <option value="5">5 mins</option>
     <option value="10">10 mins</option>
