@@ -55,9 +55,12 @@ export class GraphComponent implements OnInit {
       label: route.name
     });
 
-    for (let i = 0; i < 5; i++) {
-      this.chartLabels.push((i * 5).toString());
+    if (this.chartLabels.length === 0) {
+      for (let i = 0; i < 5; i++) {
+        this.chartLabels.push((i * 5).toString());
+      }
     }
+
 
     this.chartColours.push({backgroundColor: route.color + ', 0.6)'});
 

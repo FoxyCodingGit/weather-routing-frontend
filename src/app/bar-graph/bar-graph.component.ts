@@ -37,8 +37,10 @@ export class BarGraphComponent implements OnInit {
     // just manually do 5 mins apart and 0 - 20
     let weatherStationArray: number[];
 
-    for (let i = 0; i < rainIntensities.length; i++) {
-      this.chartLabels.push((i * 5).toString());
+    if (this.chartLabels.length === 0) {
+      for (let i = 0; i < rainIntensities.length; i++) {
+        this.chartLabels.push((i * 5).toString());
+      }
     }
 
     for (let focusedWeatherStation = 0; focusedWeatherStation < rainIntensities[0].length; focusedWeatherStation++) {

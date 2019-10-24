@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as $ from 'jquery';
 import 'datatables.net';
+import { RouteInteractive } from '../map/Model/routeInteractive';
 
 @Component({
   selector: 'app-route-data-table',
@@ -12,16 +13,25 @@ export class RouteDataTableComponent implements OnInit {
 
   ngOnInit() {
 
-    $('#table_id').DataTable(  );
-
-    var t =  $('#table_id').DataTable(  );
-    t.row.add([
-      "adam",
-      "adam",
-      "adam",
-      "adam",
-      "adam",
-      "adam"
-    ]);
+    $('#table_id').DataTable( { // move to options!!
+      columns: [
+        { title: "Name" },
+        { title: "Duration (Minutes)" },
+        { title: "Distance (Meters)" },
+        { title: "Overall Score" }
+      ]
+    });
   }
+
+
+  public addRouteToTable(routeInformation: RouteInteractive, overallScore: number) {
+    let t =  $('#table_id').DataTable(  );
+    t.row.add([
+      routeInformation.name,
+      Math.round(routeInformation.travelTimeInSeconds / 60),
+      routeInformation.distance,
+      overallScore
+    ]).draw();
+  }
+
 }

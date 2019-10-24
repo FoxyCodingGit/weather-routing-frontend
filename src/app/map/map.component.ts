@@ -7,6 +7,7 @@ import { GraphComponent } from '../graph/graph.component';
 import { RouteInteractive } from './Model/routeInteractive';
 import { BarGraphComponent } from '../bar-graph/bar-graph.component';
 import { MinutelyRainData } from './Model/MinutelyRainData';
+import { RouteDataTableComponent } from '../route-data-table/route-data-table.component';
 
 @Component({
   selector: 'app-map',
@@ -14,10 +15,10 @@ import { MinutelyRainData } from './Model/MinutelyRainData';
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit {
-  @ViewChild(GraphComponent, {static: false}) rainPercentageGraph: GraphComponent;
+  @ViewChild(GraphComponent, {static: false}) rainPercentageGraph: GraphComponent; // For future self, Viewchild only work if component in THIS components HTML file.
   @ViewChild(BarGraphComponent, {static: false}) rainIntensityGraph: BarGraphComponent;
+  @ViewChild(RouteDataTableComponent, {static: false}) routeTable: RouteDataTableComponent;
 
-  @ViewChild('hello', {static: false}) mapElement: any;
   map: google.maps.Map;
 
   public lattitude: number;
@@ -41,6 +42,8 @@ export class MapComponent implements OnInit {
   public startLng = -1.9225142006598617;
   public endLat = 55.575684498080676;
   public endLng = -1.920110941382518;
+
+  public whenLeavingForTable; // TODO: this
 
   private userMarker: google.maps.Marker;
 
@@ -66,7 +69,7 @@ export class MapComponent implements OnInit {
 
         this.placeStartEndMarkers(routeInformation.points);
 
-        var thisRoute = new RouteInteractive(mapRoute, routeInformation.travelTimeInSeconds, data.name, routeInformation.colour);
+        var thisRoute = new RouteInteractive(mapRoute, routeInformation.travelTimeInSeconds, data.name, routeInformation.colour, routeInformation.distance);
 
         this.routes.push(thisRoute);
 
@@ -92,6 +95,12 @@ export class MapComponent implements OnInit {
       this.rainPercentageGraph.graphRainPercentageForRoute(rainPercentages, thisRoute);
       var rainIntensity = this.getRainIntensityPerWeatherPointPerPerInterval(weatherPoints, mapRoute.getPath().getArray(), minutelyRainData);
       this.rainIntensityGraph.graphIntensity(rainIntensity, thisRoute);
+
+      let overallScore = this.generateOverallRouteScore(rainPercentages, rainIntensity, 0); // TODO: remove 0 with thing.
+
+      this.routeTable.addRouteToTable(thisRoute, overallScore);
+
+
     });
   }
 
@@ -278,5 +287,22 @@ export class MapComponent implements OnInit {
     } else {
       alert('The user has not allowed to know its locaiton.');
     }
+  }
+
+  private generateOverallRouteScore(rainProbability: number[], rainIntensity: number[][], whenRouteisStartedFromNow: number = 0): number { //should I move all route stuff out into its own component or is model and then treaking enough in here fine?
+    
+    let rainProbabilityWeighting = 0.2; // THESE ARE NOWHERE NEAR CORRECT. PERCENTAGE WILL ALWAYS BE MUCH GREATER THAN RAINFALL
+    let rainIntensityWeighting = 0.3;
+
+    let totalRainIntensity = 0; // mot good, just for dev. come back to this calculation later
+    rainIntensity.forEach(weatherspot => {
+      totalRainIntensity += weatherspot[whenRouteisStartedFromNow];
+    });
+
+    return 100 - (rainProbabilityWeighting * rainProbability[whenRouteisStartedFromNow]) - (totalRainIntensity * rainIntensityWeighting);
+  }
+
+  private WhenAreYouLeavingHasChanged(value: number) {
+    console.log("WhenAreYouLeavingHasChanged" + value);
   }
 }
