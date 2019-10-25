@@ -24,7 +24,7 @@ export class MapComponent implements OnInit {
   public lattitude: number;
   public longitude: number;
 
-  private howManyWeatherMarkerChecks = 3;
+  private howManyWeatherMarkerChecks = 10;
 
   private graphTimeMin = 0;
   private graphTimeMax = 20;
@@ -151,7 +151,7 @@ export class MapComponent implements OnInit {
           let minuteneedToSearchFor = this.WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath, weatherPointLocationInRoute); // working out same value multiple times.
           let timeWithStartTimeTakenIntoAccount = minuteneedToSearchFor + focusedTime;
 
-          console.log("intensity of rain at weather marker " + i + " at " + timeWithStartTimeTakenIntoAccount + " is: " + MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipIntensity);
+          console.log("intensity of rain at weather marker " + i + " at " + timeWithStartTimeTakenIntoAccount + " mins is: " + MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipIntensity);
 
           rainIntensityForFocusedWeatherPoint.push(MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipIntensity);
       }

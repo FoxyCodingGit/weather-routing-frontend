@@ -13,10 +13,17 @@ export class BarGraphComponent implements OnInit {
 
   public chartOptions = {
     responsive: true,
+    scales: {
+      yAxes: [{
+        ticks: {
+        beginAtZero: true
+        }
+      }]
+    },
     legend: {
       display: false
     }
-  }
+  };
 
   public chartData: { data: number[] }[] = [];
 

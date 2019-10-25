@@ -18,12 +18,12 @@ export class GraphComponent implements OnInit {
     scales: {
       yAxes: [{
         ticks: {
-        beginAtZero: true,
-            stepValue: 5,
-            steps: 20,
+          beginAtZero: true,
+          stepValue: 5,
+          steps: 20,
           max : 100,
         }
-    }]
+      }]
     }
   };
 
