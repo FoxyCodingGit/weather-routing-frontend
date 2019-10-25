@@ -25,7 +25,7 @@ export class BarGraphComponent implements OnInit {
     }
   };
 
-  public chartData: { data: number[] }[] = [];
+  public chartData: { data: number[], type?: string }[] = [];
 
   public chartLabels: string[] = [];
 
@@ -52,6 +52,9 @@ export class BarGraphComponent implements OnInit {
 
     for (let focusedWeatherStation = 0; focusedWeatherStation < rainIntensities[0].length; focusedWeatherStation++) {
       weatherStationArray = [];
+
+      
+
       rainIntensities.forEach(intensitiesForIntervals => {
         weatherStationArray.push(intensitiesForIntervals[focusedWeatherStation]);
       });
@@ -61,6 +64,14 @@ export class BarGraphComponent implements OnInit {
       });
 
       this.chartColours.push({backgroundColor: '#ADD8E6'});
-    }
+
+      let REEE = [0.01, 0.02, 0.03, 0.04, 0.05];
+      this.chartData.push({
+        data: REEE,
+        type: 'line'
+      });
+
+      this.chartColours.push( {backgroundColor: 'rgba(255, 99, 132, 0)'}); // hack
+      }
   }
 }
