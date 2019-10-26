@@ -7,9 +7,8 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { MapComponent } from './map/map.component';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { GraphComponent } from './graph/graph.component';
 import { ChartsModule } from 'ng2-charts';
-import { BarGraphComponent } from './bar-graph/bar-graph.component';
+import { GraphComponent } from './graph/graph.component';
 import { RouteDataTableComponent } from './route-data-table/route-data-table.component';
 
 @NgModule({
@@ -18,7 +17,6 @@ import { RouteDataTableComponent } from './route-data-table/route-data-table.com
     NavbarComponent,
     MapComponent,
     GraphComponent,
-    BarGraphComponent,
     RouteDataTableComponent
   ],
   imports: [

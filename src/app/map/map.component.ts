@@ -3,9 +3,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MapRoutingService } from '../shared/map-routing.service';
 import { WeatherService } from '../shared/weather.service';
-import { GraphComponent } from '../graph/graph.component';
 import { RouteInteractive } from './Model/routeInteractive';
-import { BarGraphComponent } from '../bar-graph/bar-graph.component';
+import { GraphComponent } from '../graph/graph.component';
 import { MinutelyRainData } from './Model/MinutelyRainData';
 import { RouteDataTableComponent } from '../route-data-table/route-data-table.component';
 
@@ -15,8 +14,7 @@ import { RouteDataTableComponent } from '../route-data-table/route-data-table.co
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit {
-  @ViewChild(GraphComponent, {static: false}) rainPercentageGraph: GraphComponent; // For future self, Viewchild only work if component in THIS components HTML file.
-  @ViewChild(BarGraphComponent, {static: false}) rainIntensityGraph: BarGraphComponent;
+  @ViewChild(GraphComponent, {static: false}) graph: GraphComponent;
   @ViewChild(RouteDataTableComponent, {static: false}) routeTable: RouteDataTableComponent;
 
   map: google.maps.Map;
@@ -24,7 +22,7 @@ export class MapComponent implements OnInit {
   public lattitude: number;
   public longitude: number;
 
-  private howManyWeatherMarkerChecks = 10;
+  private howManyWeatherMarkerChecks = 3;
 
   private graphTimeMin = 0;
   private graphTimeMax = 20;
@@ -92,16 +90,31 @@ export class MapComponent implements OnInit {
       let weatherPoints: google.maps.LatLng[] = []; // not used and everywhere.
       this.placeWeatherMarkers(mapRoute.getPath().getArray());
       var rainPercentages = this.getAverageRainPercentagesOverIntervals(weatherPoints, mapRoute.getPath().getArray(), minutelyRainData);
-      this.rainPercentageGraph.graphRainPercentageForRoute(rainPercentages, thisRoute);
+      this.temp1 = rainPercentages;
+      this.temp3 = thisRoute;
       var rainIntensity = this.getRainIntensityPerWeatherPointPerPerInterval(weatherPoints, mapRoute.getPath().getArray(), minutelyRainData);
-      this.rainIntensityGraph.graphIntensity(rainIntensity, thisRoute);
-
+      this.temp2 = rainIntensity;
+      this.graph.graphIntensityandProb(rainIntensity, rainPercentages);
       let overallScore = this.generateOverallRouteScore(rainPercentages, rainIntensity, this.whenLeavingForTable);
-
       this.routeTable.addRouteToTable(thisRoute, overallScore);
-
-
     });
+  }
+
+  private temp1; 
+  private temp2; 
+  private temp3;
+  
+
+  public onClickMe() {
+    this.graph.graphIntensityandProb(this.temp2, this.temp1);
+  }
+
+  public onClickMe2() {
+    this.graph.graphRainPercentageForRoute(this.temp1, this.temp3);
+  }
+
+  public onClickMe3() {
+    this.graph.JustIntensity(this.temp2);
   }
 
   public startRoute(): void {
