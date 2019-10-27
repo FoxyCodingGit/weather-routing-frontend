@@ -117,7 +117,7 @@ export class MapComponent implements OnInit {
             return i;
           }
         }
-      }
+      } // TODO: Some markers are placed on the same leg (unlikely but possible.)
     }
   }
 
