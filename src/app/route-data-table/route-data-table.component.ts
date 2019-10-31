@@ -21,6 +21,20 @@ export class RouteDataTableComponent implements OnInit {
         { title: "Overall Score" }
       ]
     });
+
+    let table = $('#table_id').DataTable(); // assigning again
+
+    let selectRowFunc = function() {
+      if ($(this).hasClass('selected')) { // tried moving into own function but it cried.
+        $(this).removeClass('selected');
+      } else {
+        table.$('tr.selected').removeClass('selected');
+        $(this).addClass('selected');
+      }
+      alert( 'this is the row: ' + table.row(this).data()[0] );
+    };
+
+    $('#table_id').on('click', 'tr', selectRowFunc);
   }
 
 

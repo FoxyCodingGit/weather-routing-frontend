@@ -29,6 +29,7 @@ export class MapComponent implements OnInit {
   private graphTimeInterval = 5;
 
   private routes: RouteInteractive[] = []; // still not used
+  private minutelyRainData: MinutelyRainData[][][] = [];
 
   private averageWalkingDistanceMetersPerSecond = 1.4;
 
@@ -126,6 +127,8 @@ export class MapComponent implements OnInit {
 
     this.getMinutelyData(thisRoute.route.getPath().getArray(), weatherLegs).then(minutelyRainData => {
       this.placeWeatherMarkers(thisRoute, weatherLegs);
+
+      this.minutelyRainData.push(minutelyRainData);
 
       var rainPercentages = this.getAverageRainPercentagesOverIntervals(thisRoute.route.getPath().getArray(), minutelyRainData, weatherLegs);
       var rainIntensity = this.getRainIntensityPerWeatherPointPerPerInterval(thisRoute.route.getPath().getArray(), minutelyRainData, weatherLegs);
