@@ -72,7 +72,7 @@ export class myChartOptions {
                 display: true,
                 scaleLabel: {
                     display: true,
-                    labelString: 'When to Leave'
+                    labelString: 'When to Leave (minutes)'
                 }
             }]
         },
