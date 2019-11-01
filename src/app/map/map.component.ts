@@ -137,7 +137,7 @@ export class MapComponent implements OnInit {
 
       this.graph.graphIntensityandProb(rainIntensity, rainPercentages);
 
-      this.routeTable.addRouteToTable(thisRoute, overallScore);
+      this.routeTable.addRouteToTable(thisRoute, overallScore, this.routes.length - 1);
 
       this.focusedRainPercentages = rainPercentages;
       this.focusedRainIntensity = rainIntensity;
