@@ -40,25 +40,40 @@ export class myChartOptions {
         responsive: true,
         scales: {
             yAxes: [{
-            id: 'rainIntensity',
-            display: true,
-            type: 'linear',
-            position: 'left',
-            gridLines: {
-                display: false
-            },
-            ticks: {
-            beginAtZero: true
-            }
-            }, {
-            id: 'rainProbability',
-            display: true,
-            type: 'linear',
-            position: 'right',
-            ticks: {
-                beginAtZero: true,
-                max : 100
-            }
+                id: 'rainIntensity',
+                display: true,
+                type: 'linear',
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Rain Intensity (mm per hour)'
+                },
+                position: 'left',
+                gridLines: {
+                    display: false
+                },
+                ticks: {
+                beginAtZero: true
+                }
+                }, {
+                id: 'rainProbability',
+                display: true,
+                type: 'linear',
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Rain Probability (%)'
+                },
+                position: 'right',
+                ticks: {
+                    beginAtZero: true,
+                    max : 100
+                }
+            }],
+            xAxes: [{
+                display: true,
+                scaleLabel: {
+                    display: true,
+                    labelString: 'When to Leave'
+                }
             }]
         },
         legend: {

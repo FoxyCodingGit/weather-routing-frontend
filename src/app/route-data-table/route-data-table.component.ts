@@ -31,7 +31,7 @@ export class RouteDataTableComponent implements OnInit {
         table.$('tr.selected').removeClass('selected');
         $(this).addClass('selected');
       }
-      alert( 'this is the row: ' + table.row(this).data()[0] );
+      alert('this is the row: ' + table.row(this).data()[0]);
     };
 
     $('#table_id').on('click', 'tr', selectRowFunc);
