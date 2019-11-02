@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import * as $ from 'jquery';
 import 'datatables.net';
 import { RouteInteractive } from '../map/Model/routeInteractive';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-route-data-table',
@@ -10,6 +9,8 @@ import { Observable } from 'rxjs';
   styleUrls: ['./route-data-table.component.scss']
 })
 export class RouteDataTableComponent implements OnInit {
+  @Output() RouteIdfocused: EventEmitter<number> = new EventEmitter();
+
   constructor() { }
 
   ngOnInit() {
@@ -21,14 +22,17 @@ export class RouteDataTableComponent implements OnInit {
         { title: "Distance (Metres)" },
         { title: "Overall Score" }
       ],
-      "columnDefs": [
-        {
-        targets: [ 0 ],
-        visible: false,
-        searchable: false
-        }
-      ]
+      // "columnDefs": [
+      //   {
+      //   targets: [ 4 ],
+      //   visible: false,
+      //   searchable: false
+      //   }
+      // ]
     });
+
+
+    let componentScope = this;
 
     let table = $('#table_id').DataTable(); // assigning again
 
@@ -39,7 +43,7 @@ export class RouteDataTableComponent implements OnInit {
         table.$('tr.selected').removeClass('selected');
         $(this).addClass('selected');
       }
-      alert('this is the row: ' + table.row(this).data()[0]);
+      componentScope.RouteIdfocused.emit(table.row(this).data()[4]); // TODO: 4 is hacky. Tried placing id at start and hiding but would hide name columb
     };
 
     $('#table_id').on('click', 'tr', selectRowFunc);
@@ -49,11 +53,11 @@ export class RouteDataTableComponent implements OnInit {
   public addRouteToTable(routeInformation: RouteInteractive, overallScore: number, routePlacementInArray: number) {
     let t =  $('#table_id').DataTable(  );
     t.row.add([
-      routePlacementInArray,
       routeInformation.name,
       Math.round(routeInformation.travelTimeInSeconds / 60),
       routeInformation.distance,
-      overallScore
+      overallScore,
+      routePlacementInArray
     ]).draw();
   }
 

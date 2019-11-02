@@ -7,6 +7,7 @@ import { RouteInteractive } from './Model/routeInteractive';
 import { GraphComponent } from '../graph/graph.component';
 import { MinutelyRainData } from './Model/MinutelyRainData';
 import { RouteDataTableComponent } from '../route-data-table/route-data-table.component';
+import { RouteInformation } from './Model/RouteInformation';
 
 @Component({
   selector: 'app-map',
@@ -28,7 +29,7 @@ export class MapComponent implements OnInit {
   private graphTimeMax = 20;
   private graphTimeInterval = 5;
 
-  private routes: RouteInteractive[] = []; // still not used
+  private routeInformationArray: RouteInformation[] = []; // still not used
   private minutelyRainData: MinutelyRainData[][][] = [];
 
   private averageWalkingDistanceMetersPerSecond = 1.4;
@@ -53,6 +54,11 @@ export class MapComponent implements OnInit {
     this.displayUserLocation();
   }
 
+  public focusOnRoute(routeId): void {
+    alert(routeId);
+    this.graph.graphIntensityandProb(this.routeInformationArray[routeId].rainIntensityInfo, this.routeInformationArray[routeId].rainProb);
+  }
+
   public onRoutingSubmit(data: any): void {
     this.mapRoutingService.GetRoute(data.travelMode, data.startLat, data.startLng, data.endLat, data.endLng).subscribe(
       (routeInformation) => {
@@ -69,8 +75,6 @@ export class MapComponent implements OnInit {
         this.placeStartEndMarkers(routeInformation.points);
 
         var thisRoute = new RouteInteractive(mapRoute, routeInformation.travelTimeInSeconds, data.name, routeInformation.colour, routeInformation.distance);
-
-        this.routes.push(thisRoute);
 
         mapRoute.setMap(this.map);
 
@@ -133,11 +137,14 @@ export class MapComponent implements OnInit {
       var rainPercentages = this.getAverageRainPercentagesOverIntervals(thisRoute.route.getPath().getArray(), minutelyRainData, weatherLegs);
       var rainIntensity = this.getRainIntensityPerWeatherPointPerPerInterval(thisRoute.route.getPath().getArray(), minutelyRainData, weatherLegs);
 
+      
+      this.routeInformationArray.push(new RouteInformation(thisRoute, rainIntensity, rainPercentages));
+
       let overallScore = this.generateOverallRouteScore(rainPercentages, rainIntensity, this.whenLeavingForTable);
 
       this.graph.graphIntensityandProb(rainIntensity, rainPercentages);
 
-      this.routeTable.addRouteToTable(thisRoute, overallScore, this.routes.length - 1);
+      this.routeTable.addRouteToTable(thisRoute, overallScore, this.routeInformationArray.length - 1);
 
       this.focusedRainPercentages = rainPercentages;
       this.focusedRainIntensity = rainIntensity;

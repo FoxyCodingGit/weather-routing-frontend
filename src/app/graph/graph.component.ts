@@ -30,7 +30,6 @@ export class GraphComponent {
     this.setupCanvas('bar', myChartOptions.rainIntensityAndProb);  
     this.addRainIntensities(rainIntensities, 'rainIntensity');
     this.addRainPercentages(rainProbs, undefined, 'rgba(255, 99, 132, 0.2)', 'rainProbability');
-
   }
 
   public JustIntensity(rainIntensities: number[][]) {
