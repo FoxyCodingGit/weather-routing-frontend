@@ -14,45 +14,36 @@ export class RouteDataTableComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-
-    $('#table_id').DataTable( { // move to options!!
+    const tableSettings: DataTables.Settings = {
       columns: [
         { title: "Name" },
         { title: "Duration (Minutes)" },
         { title: "Distance (Metres)" },
         { title: "Expected Rain (less is better)" }
-      ],
-      // "columnDefs": [
-      //   {
-      //   targets: [ 4 ],
-      //   visible: false,
-      //   searchable: false
-      //   }
-      // ]
-    });
+      ]
+    };
 
+    $('#table_id').DataTable(tableSettings);
 
-    let componentScope = this;
-
-    let table = $('#table_id').DataTable(); // assigning again
+    const componentScope = this;
+    let table = $('#table_id').DataTable();
 
     let selectRowFunc = function() {
-      if ($(this).hasClass('selected')) { // tried moving into own function but it cried.
+      if ($(this).hasClass('selected')) {
         $(this).removeClass('selected');
       } else {
         table.$('tr.selected').removeClass('selected');
         $(this).addClass('selected');
       }
-      componentScope.RouteIdfocused.emit(table.row(this).data()[4]); // TODO: 4 is hacky. Tried placing id at start and hiding but would hide name columb
+      componentScope.RouteIdfocused.emit(table.row(this).data()[4]);
+      // TODO: 4 is hacky. Tried placing id at start and hiding but would hide name columb
     };
 
     $('#table_id').on('click', 'tr', selectRowFunc);
   }
 
-
   public addRouteToTable(routeInformation: RouteInteractive, overallScore: number, routePlacementInArray: number) {
-    let t =  $('#table_id').DataTable(  );
-    t.row.add([
+    $('#table_id').DataTable().row.add([
       routeInformation.name,
       Math.round(routeInformation.travelTimeInSeconds / 60),
       routeInformation.distance,
@@ -60,5 +51,4 @@ export class RouteDataTableComponent implements OnInit {
       routePlacementInArray
     ]).draw();
   }
-
 }
