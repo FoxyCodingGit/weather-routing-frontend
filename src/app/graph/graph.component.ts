@@ -27,7 +27,7 @@ export class GraphComponent {
   }
 
   public graphIntensityandProb(rainIntensities: number[][], rainProbs: number[]) {
-    this.setupCanvas('bar', myChartOptions.rainIntensityAndProb);  
+    this.setupCanvas('bar', myChartOptions.rainIntensityAndProb);
     this.addRainIntensities(rainIntensities, 'rainIntensity');
     this.addRainPercentages(rainProbs, undefined, 'rgba(255, 99, 132, 0.2)', 'rainProbability');
   }
@@ -91,7 +91,7 @@ export class GraphComponent {
         yAxisID: yAxisID
       });
 
-      let lightBlue = '#ADD8E6';
+      let lightBlue = 'rgba(173, 216, 230, 0.8)';
       this.chartColours.push({backgroundColor: lightBlue});
     }
   }
