@@ -32,6 +32,9 @@ export class MapComponent implements OnInit {
   private routeInformationArray: RouteInformation[] = []; // still not used
   private minutelyRainData: MinutelyRainData[][][] = [];
 
+  private rainPercentagesForEachStationPerInterval: number[][][] = []; // an extra [] as holding more than one route
+  private rainIntensitiesForEachStationPerInterval: number[][][] = [];
+
   private averageWalkingDistanceMetersPerSecond = 1.4;
 
   public probToRain = -1;
@@ -137,9 +140,11 @@ export class MapComponent implements OnInit {
       var rainPercentages = this.getAverageRainPercentagesOverIntervals(thisRoute.route.getPath().getArray(), minutelyRainData, weatherLegs);
       var rainIntensity = this.getRainIntensityPerWeatherPointPerPerInterval(thisRoute.route.getPath().getArray(), minutelyRainData, weatherLegs);
 
-
       var nonAvgRainPercentages = this.getRainProbPerWeatherPointPerPerInterval(thisRoute.route.getPath().getArray(), minutelyRainData, weatherLegs);
-      
+
+      this.rainPercentagesForEachStationPerInterval.push(rainIntensity);
+      this.rainIntensitiesForEachStationPerInterval.push(nonAvgRainPercentages);
+
       this.routeInformationArray.push(new RouteInformation(thisRoute, rainIntensity, rainPercentages));
 
       let overallScore = this.generateOverallRouteScore(nonAvgRainPercentages, rainIntensity, this.whenLeavingForTable);
@@ -191,7 +196,7 @@ export class MapComponent implements OnInit {
   }
 
   public WhenAreYouLeavingHasChanged(value: number) {
-    console.log("WhenAreYouLeavingHasChanged" + value);
+    this.routeTable.changeEachRowScore(value, this.rainIntensitiesForEachStationPerInterval, this.rainPercentagesForEachStationPerInterval);
   }
 
   private getAverageRainPercentagesOverIntervals(routePath: google.maps.LatLng[], MinutelyDatForThisWeatherMarkers: MinutelyRainData[][], weatherLegs: number[]): number[] {
@@ -212,43 +217,43 @@ export class MapComponent implements OnInit {
   }
 
   private getRainIntensityPerWeatherPointPerPerInterval(routePath: google.maps.LatLng[], MinutelyDatForThisWeatherMarkers: MinutelyRainData[][], weatherLegs: number[]): number[][] {
-    var RainDataForEachPoint: MinutelyRainData[][] = this.getRainDataPerWeatherPointPerPerInterval(routePath, MinutelyDatForThisWeatherMarkers, weatherLegs);
+    var RainDataForEachPoint: MinutelyRainData[][] = this.getRainDataAtEachWeatherPointPerInterval(routePath, MinutelyDatForThisWeatherMarkers, weatherLegs);
     return this.justGetIntensities(RainDataForEachPoint);
   }
 
   private getRainProbPerWeatherPointPerPerInterval(routePath: google.maps.LatLng[], MinutelyDatForThisWeatherMarkers: MinutelyRainData[][], weatherLegs: number[]): number[][] {
-    var RainDataForEachPoint: MinutelyRainData[][] = this.getRainDataPerWeatherPointPerPerInterval(routePath, MinutelyDatForThisWeatherMarkers, weatherLegs);
+    var RainDataForEachPoint: MinutelyRainData[][] = this.getRainDataAtEachWeatherPointPerInterval(routePath, MinutelyDatForThisWeatherMarkers, weatherLegs);
     return this.justGetProb(RainDataForEachPoint);
   }
 
-  private justGetIntensities(RainDataForEachPoint: MinutelyRainData[][]) {
-    var weatherpointandTimeIntensities: number[][] = [];
-    for (let i = 0; i < RainDataForEachPoint.length; i++) {
-      let focusedRainStation = RainDataForEachPoint[i];
+  private justGetIntensities(RainDataForEachPointPerInterval: MinutelyRainData[][]): number[][] {
+    var weatherPointsPerIntervalIntents: number[][] = [];
+    for (let i = 0; i < RainDataForEachPointPerInterval.length; i++) {
+      let focusedRainStation = RainDataForEachPointPerInterval[i];
       let focusedRainIntensity: number[] = [];
       focusedRainStation.forEach(focusedTime => {
         focusedRainIntensity.push(focusedTime.precipIntensity);
       });
-      weatherpointandTimeIntensities.push(focusedRainIntensity);
+      weatherPointsPerIntervalIntents.push(focusedRainIntensity);
     }
-    return weatherpointandTimeIntensities;
+    return weatherPointsPerIntervalIntents;
   }
 
-  private justGetProb(RainDataForEachPoint: MinutelyRainData[][]) {
-    var weatherpointandTimeProbs: number[][] = [];
-    for (let i = 0; i < RainDataForEachPoint.length; i++) {
-      let focusedRainStation = RainDataForEachPoint[i];
+  private justGetProb(RainDataForEachPointPerInterval: MinutelyRainData[][]): number[][] {
+    let weatherPointsPerIntervalProbs: number[][] = [];
+    for (let i = 0; i < RainDataForEachPointPerInterval.length; i++) {
+      let focusedRainStation = RainDataForEachPointPerInterval[i];
       let focusedRainProbs: number[] = [];
       focusedRainStation.forEach(focusedTime => {
         focusedRainProbs.push(focusedTime.precipProbability);
       });
-      weatherpointandTimeProbs.push(focusedRainProbs);
+      weatherPointsPerIntervalProbs.push(focusedRainProbs);
     }
-    return weatherpointandTimeProbs;
+    return weatherPointsPerIntervalProbs;
   }
 
-  private getRainDataPerWeatherPointPerPerInterval(routePath: google.maps.LatLng[], MinutelyDatForThisWeatherMarkers: MinutelyRainData[][], weatherLegs: number[]): MinutelyRainData[][] {
-    let rainIntensitysPerInterval: MinutelyRainData[][] = [];
+  private getRainDataAtEachWeatherPointPerInterval(routePath: google.maps.LatLng[], MinutelyDatForThisWeatherMarkers: MinutelyRainData[][], weatherLegs: number[]): MinutelyRainData[][] {
+    let rainDataForEachInterval: MinutelyRainData[][] = [];
     let rainDataForFocusedWeatherPoint: MinutelyRainData[] = [];
 
     for (let focusedTime = this.graphTimeMin; focusedTime <= this.graphTimeMax; focusedTime += this.graphTimeInterval) {
@@ -263,18 +268,18 @@ export class MapComponent implements OnInit {
           console.log("intensity of rain at weather marker " + i + " at " + timeWithStartTimeTakenIntoAccount + " mins is: " + MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipIntensity);
           console.log("prob of rain at weather marker " + i + " at " + timeWithStartTimeTakenIntoAccount + " mins is: " + MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipProbability*100);
 
-        var rainData: MinutelyRainData = {
-          time: MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].time,
-          precipIntensity: MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipIntensity,
-          precipProbability: MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipProbability
-        };
+          let rainData: MinutelyRainData = {
+            time: MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].time,
+            precipIntensity: MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipIntensity,
+            precipProbability: MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipProbability
+          };
 
           rainDataForFocusedWeatherPoint.push(rainData);
       }
-      rainIntensitysPerInterval.push(rainDataForFocusedWeatherPoint);
+      rainDataForEachInterval.push(rainDataForFocusedWeatherPoint);
     }
 
-    return rainIntensitysPerInterval;
+    return rainDataForEachInterval;
   }
 
 
@@ -381,18 +386,17 @@ export class MapComponent implements OnInit {
     }
   }
 
-  private generateOverallRouteScore(rainProbability: number[][], rainIntensity: number[][], whenRouteisStartedFromNow: number = 0): number { //should I move all route stuff out into its own component or is model and then treaking enough in here fine?
-
-    // a score will be based on an individual time. e.g. leaving now, 20 mins e.g.
-
+  private generateOverallRouteScore(rainProbability: number[][], rainIntensity: number[][], whenRouteisStartedFromNow: number = 0): number {
     let expectedValue = 0;
+    const whichDepartureTimeAreWeGettingScoreOf = whenRouteisStartedFromNow / 5;
 
-    for (let whichStationIsFocused = 0; whichStationIsFocused < rainProbability.length; whichStationIsFocused++) {
-      for (let whichTimeIsFocused = 0; whichTimeIsFocused < rainProbability[0].length; whichTimeIsFocused++) {
-        expectedValue += rainProbability[whichStationIsFocused][whichTimeIsFocused] * rainIntensity[whichStationIsFocused][whichTimeIsFocused];
-      }
+    for (let focusedStationData = 0; focusedStationData < rainProbability[0].length; focusedStationData++) {
+      expectedValue += rainProbability[whichDepartureTimeAreWeGettingScoreOf][focusedStationData] *
+        rainIntensity[whichDepartureTimeAreWeGettingScoreOf][focusedStationData];
     }
 
     return expectedValue; // might want to take away from 100 so bigger number is better.
   }
+
+
 }

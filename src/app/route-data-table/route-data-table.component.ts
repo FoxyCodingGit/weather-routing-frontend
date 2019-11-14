@@ -51,4 +51,30 @@ export class RouteDataTableComponent implements OnInit {
       routePlacementInArray
     ]).draw();
   }
+
+  public changeEachRowScore(whichDepartureTimeIsChosen: number, rainIntensitiesForEachStationPerInterval: number[][][], rainPercentagesForEachStationPerInterval: number[][][]) {
+    var table = $('#table_id').DataTable();
+
+    debugger;
+
+    for (let i = 0; i < 1; i++) { // check count
+      var routeId = table.row(i).data()[4];
+      table.row(i).data()[3] = this.generateOverallRouteScoreByRouteId(routeId, rainIntensitiesForEachStationPerInterval, rainPercentagesForEachStationPerInterval, whichDepartureTimeIsChosen);
+    }
+
+    $('#table_id').DataTable().draw(); // not drwaing.
+  }
+
+
+  private generateOverallRouteScoreByRouteId(routeId: number, rainIntensitiesForEachStationPerInterval: number[][][], rainPercentagesForEachStationPerInterval: number[][][], whenRouteisStartedFromNow: number = 0): number { // if routes are not added in order as id then this will stop working
+    let expectedValue = 0;
+    const whichDepartureTimeAreWeGettingScoreOf = whenRouteisStartedFromNow / 5;
+
+    for (let focusedStationData = 0; focusedStationData < rainIntensitiesForEachStationPerInterval[routeId][0].length; focusedStationData++) {
+      expectedValue += rainIntensitiesForEachStationPerInterval[routeId][whichDepartureTimeAreWeGettingScoreOf][focusedStationData] *
+      rainPercentagesForEachStationPerInterval[routeId][whichDepartureTimeAreWeGettingScoreOf][focusedStationData];
+    }
+
+    return expectedValue; // might want to take away from 100 so bigger number is better.
+  }
 }
