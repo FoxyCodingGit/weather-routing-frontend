@@ -20,7 +20,7 @@ export class RouteDataTableComponent implements OnInit {
         { title: "Name" },
         { title: "Duration (Minutes)" },
         { title: "Distance (Metres)" },
-        { title: "Overall Score" }
+        { title: "Expected Rain (less is better)" }
       ],
       // "columnDefs": [
       //   {
