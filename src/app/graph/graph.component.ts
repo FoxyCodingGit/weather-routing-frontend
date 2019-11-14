@@ -35,39 +35,12 @@ export class GraphComponent {
   public JustIntensity(rainIntensities: number[][]) {
     this.setupCanvas('bar', myChartOptions.noLabelBeginAtZero);
     this.addRainIntensities(rainIntensities);
-
   }
 
   public graphRainPercentageForRoute(percentages: number[], route: RouteInteractive) {
     this.setupCanvas('line', myChartOptions.upToHundred);
-    this.addRainPercentages(percentages, route.name, route.color + ', 0.6)')
-    //this.updateBestRoute();
+    this.addRainPercentages(percentages, route.name, route.color + ', 0.6)');
   }
-
-  // public updateBestRoute(): void {
-  //   let lowestPercentage = 100;
-  //   let routeName: string;
-  //   let whenShoudlLeave: string;
-  //   let rainProbabilty: number;
-
-  //   this.chartData.forEach(hello => {
-
-  //     for (let i = 0; i < hello.data.length; i++) {
-  //       rainProbabilty = hello.data[i];
-  //       if (rainProbabilty < lowestPercentage) {
-  //         lowestPercentage = rainProbabilty;
-  //         routeName = hello.label;
-  //         whenShoudlLeave = this.chartLabels[i];
-  //       }
-  //     }
-  //   });
-
-  //   this.bestRoute = {
-  //     name: routeName,
-  //     whenShouldleave: whenShoudlLeave,
-  //     lowestPercentage
-  //   };
-  // }
 
   private generateLabels() { // make dynamic
     this.chartLabels = [];
@@ -88,10 +61,10 @@ export class GraphComponent {
       this.chartData.push({
         data: routeIntensities,
         type: 'bar',
-        yAxisID: yAxisID
+        yAxisID
       });
 
-      let lightBlue = 'rgba(173, 216, 230, 0.8)';
+      const lightBlue = 'rgba(173, 216, 230, 0.8)';
       this.chartColours.push({backgroundColor: lightBlue});
     }
   }
@@ -99,9 +72,9 @@ export class GraphComponent {
   private addRainPercentages(percentages: number[], label?: string, colour?: string, yAxisID?: string) { // is it okay to have udnefined??
     this.chartData.push({
       data: percentages,
-      label: label,
+      label,
       type: 'line',
-      yAxisID: yAxisID
+      yAxisID
     });
     this.chartColours.push({backgroundColor: colour});
   }
