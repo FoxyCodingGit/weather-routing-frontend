@@ -29,8 +29,7 @@ export class MapComponent implements OnInit {
   private graphTimeMax = 20;
   private graphTimeInterval = 5;
 
-  private routeAndWeatherInformation: RouteAndWeatherInformation[] = []; // still not used
-  private minutelyRainData: MinutelyRainData[][][] = [];
+  private routeAndWeatherInformation: RouteAndWeatherInformation[] = [];
 
   private averageWalkingDistanceMetersPerSecond = 1.4;
 
@@ -73,21 +72,16 @@ export class MapComponent implements OnInit {
           strokeWeight: 2
         });
 
-
-
         this.placeStartEndMarkers(routeInformation.points);
 
         var thisRoute = new RouteInformation(mapRoute, routeInformation.travelTimeInSeconds, data.name, routeInformation.colour, routeInformation.distance);
 
         mapRoute.setMap(this.map);
 
-        this.doRouteStuff(thisRoute);
+        this.addWeatherInformationToRoute(thisRoute);
 
         mapRoute.addListener('click', () => {
-
-          console.log(this.HaversineFormula(55.5722854559232, -1.9164830070088, 55.5920668008258, -1.9323019216335));
-
-          //this.doRouteStuff(mapRoute, thisRoute);
+          console.log('A route is clicked on');
         });
       }
     );
@@ -129,14 +123,12 @@ export class MapComponent implements OnInit {
     }
   }
 
-  private doRouteStuff(thisRoute: RouteInformation) {
+  private addWeatherInformationToRoute(thisRoute: RouteInformation) {
     let weatherLegPositionsInRoute = this.getWeatherLegPointInRouteToBeEquiDistanceApart(thisRoute);
 
     this.getMinutelyData(thisRoute.route.getPath().getArray(), weatherLegPositionsInRoute).then(minutelyRainData => {
 
       this.placeWeatherMarkers(thisRoute, weatherLegPositionsInRoute);
-
-      this.minutelyRainData.push(minutelyRainData);
 
       let rainIntensity = this.getRainIntensityPerWeatherPointPerPerInterval
         (thisRoute.route.getPath().getArray(), minutelyRainData, weatherLegPositionsInRoute);
