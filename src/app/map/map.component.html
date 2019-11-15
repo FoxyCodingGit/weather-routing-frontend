@@ -29,7 +29,7 @@
     <option value="20">20 mins</option>
 </select>
 <hr/>
-<app-route-data-table (RouteIdfocused)="focusOnRoute($event)"></app-route-data-table>
+<app-route-data-table (SelectRowAction)="selectActionPerformed($event)"></app-route-data-table>
 <app-graph></app-graph>
 
 <button type="button" (click)="startRoute()">StartRoute</button>

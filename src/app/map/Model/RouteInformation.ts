@@ -1,6 +1,7 @@
 export class RouteInformation {
 
-    public constructor(route: google.maps.Polyline, travelTimeInSeconds: number, name: string, color: string, distance: number) {
+    public constructor(id: number, route: google.maps.Polyline, travelTimeInSeconds: number, name: string, color: string, distance: number) {
+        this.id = id;
         this.route = route;
         this.travelTimeInSeconds = travelTimeInSeconds;
         this.color = color;
@@ -8,6 +9,7 @@ export class RouteInformation {
         this.distance = distance;
     }
 
+    public id: number;
     public route: google.maps.Polyline;
     public travelTimeInSeconds: number;
     public color: string;

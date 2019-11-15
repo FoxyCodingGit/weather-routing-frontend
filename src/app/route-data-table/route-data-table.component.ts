@@ -11,7 +11,7 @@ import { WeatherService } from '../shared/weather.service';
   styleUrls: ['./route-data-table.component.scss']
 })
 export class RouteDataTableComponent implements OnInit {
-  @Output() RouteIdfocused: EventEmitter<number> = new EventEmitter();
+  @Output() SelectRowAction: EventEmitter<any> = new EventEmitter(); // turn to model
 
   constructor(private weatherService: WeatherService) { }
 
@@ -30,14 +30,22 @@ export class RouteDataTableComponent implements OnInit {
     const componentScope = this;
     let table = $('#table_id').DataTable();
 
+    
+
     let selectRowFunc = function() {
+      let selectRowOutcome: boolean = true;
+
       if ($(this).hasClass('selected')) {
         $(this).removeClass('selected');
+        selectRowOutcome = false;
       } else {
         table.$('tr.selected').removeClass('selected');
         $(this).addClass('selected');
       }
-      componentScope.RouteIdfocused.emit(table.row(this).data()[4]);
+
+      let emitData = {routeIdfocused: table.row(this).data()[4], selectAction: selectRowOutcome};
+
+      componentScope.SelectRowAction.emit(emitData);
       // TODO: 4 is hacky. Tried placing id at start and hiding but would hide name columb
     };
 
@@ -65,5 +73,28 @@ export class RouteDataTableComponent implements OnInit {
     }
 
     $('#table_id').DataTable().draw();
+
   }
+
+  // public selectRowByRouteId(wantedRouteId: number) {
+  //   let table = $('#table_id').DataTable();
+
+  //   for (let i = 0; i < table.rows().count(); i++) { // check count
+  //     let routeId = table.row(i).data()[4];
+
+
+  //     if (wantedRouteId == routeId) {
+  //       table.row(i).select()
+  //     }
+
+  //     if ($(this).hasClass('selected')) {
+  //       $(this).removeClass('selected');
+  //     } else {
+  //       table.$('tr.selected').removeClass('selected');
+  //       $(this).addClass('selected');
+  //     }
+  //   }
+  // };
+  // }
+
 }

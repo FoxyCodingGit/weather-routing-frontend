@@ -45,10 +45,26 @@ export class MapComponent implements OnInit {
     this.displayUserLocation();
   }
 
-  public focusOnRoute(routeId): void {
-    this.focusedRouteId = routeId;
-    this.graph.graphIntensityandProb(this.routeAndWeatherInformation[routeId].rainIntensities,
-      this.routeAndWeatherInformation[routeId].rainProbabilitiesAverage);
+  public selectActionPerformed(routeIdandSelectAction: any): void {
+    if (!routeIdandSelectAction.selectAction) {
+      this.routeAndWeatherInformation[routeIdandSelectAction.routeIdfocused].routeInformation.route.setOptions({ strokeWeight: 2 });
+    } else {
+      this.routeAndWeatherInformation.forEach(thing => {
+        this.highlightSelectedRoute(routeIdandSelectAction.routeIdfocused, thing);
+      });
+    }
+
+    this.focusedRouteId = routeIdandSelectAction.routeIdfocused;
+    this.graph.graphIntensityandProb(this.routeAndWeatherInformation[routeIdandSelectAction.routeIdfocused].rainIntensities,
+      this.routeAndWeatherInformation[routeIdandSelectAction.routeIdfocused].rainProbabilitiesAverage);
+  }
+
+  private highlightSelectedRoute(routeId: any, thing: RouteAndWeatherInformation) {
+    if (routeId === thing.routeInformation.id) {
+      this.routeAndWeatherInformation[thing.routeInformation.id].routeInformation.route.setOptions({ strokeWeight: 8 });
+    } else {
+      this.routeAndWeatherInformation[thing.routeInformation.id].routeInformation.route.setOptions({ strokeWeight: 2 });
+    }
   }
 
   public onRoutingSubmit(data: any) {
@@ -64,7 +80,7 @@ export class MapComponent implements OnInit {
 
         this.placeStartEndMarkers(routeInformation.points);
 
-        let thisRoute = new RouteInformation(mapRoute, routeInformation.travelTimeInSeconds, data.name, routeInformation.colour,
+        let thisRoute = new RouteInformation(this.routeAndWeatherInformation.length, mapRoute, routeInformation.travelTimeInSeconds, data.name, routeInformation.colour,
           routeInformation.distance);
 
         mapRoute.setMap(this.map);
@@ -80,7 +96,8 @@ export class MapComponent implements OnInit {
         });
 
         mapRoute.addListener('click', () => {
-          console.log('A route is clicked on');
+          thisRoute.route.setOptions({strokeWeight: 8});
+
         });
       }
     );
