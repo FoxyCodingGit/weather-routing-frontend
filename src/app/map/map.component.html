@@ -1,5 +1,7 @@
 <div id="map" style="width:100%;height:400px"></div>  
 
+<app-route-data-table (SelectRowAction)="selectActionPerformed($event)"></app-route-data-table>
+
 <h1>Routing</h1>
 <form #RouteForm = "ngForm" (ngSubmit)="onRoutingSubmit(RouteForm.value)">
     <h2>Start:</h2><br>
@@ -29,7 +31,6 @@
     <option value="20">20 mins</option>
 </select>
 <hr/>
-<app-route-data-table (SelectRowAction)="selectActionPerformed($event)"></app-route-data-table>
 <app-graph></app-graph>
 
 <button type="button" (click)="startRoute()">StartRoute</button>

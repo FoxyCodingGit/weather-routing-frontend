@@ -76,25 +76,20 @@ export class RouteDataTableComponent implements OnInit {
 
   }
 
-  // public selectRowByRouteId(wantedRouteId: number) {
-  //   let table = $('#table_id').DataTable();
+  public selectRowByRouteId(routeId: number) {
+    let table = $('#table_id').DataTable();
+    table.$('tr.selected').removeClass('selected');
 
-  //   for (let i = 0; i < table.rows().count(); i++) { // check count
-  //     let routeId = table.row(i).data()[4];
+    for (let i = 0; i < table.rows().count(); i++) { // check count
+      let focusedRouteId = table.row(i).data()[4];
+      if (routeId === focusedRouteId) {
+        table.
+        $(table.row(i).node()).addClass('selected');
+        break;
+      }
+    }
 
-
-  //     if (wantedRouteId == routeId) {
-  //       table.row(i).select()
-  //     }
-
-  //     if ($(this).hasClass('selected')) {
-  //       $(this).removeClass('selected');
-  //     } else {
-  //       table.$('tr.selected').removeClass('selected');
-  //       $(this).addClass('selected');
-  //     }
-  //   }
-  // };
-  // }
-
+    let emitData = {routeId, selectAction: true}; // clicking on map route will always select the row. // kinda hack. using for trigger but no dynamic info sent over.
+    this.SelectRowAction.emit(emitData);
+  }
 }

@@ -46,6 +46,7 @@ export class MapComponent implements OnInit {
   }
 
   public selectActionPerformed(routeIdandSelectAction: any): void {
+    // KEEP DEBUGGING FROM HERE. RAN OUT OF API CALLS
     if (!routeIdandSelectAction.selectAction) {
       this.routeAndWeatherInformation[routeIdandSelectAction.routeIdfocused].routeInformation.route.setOptions({ strokeWeight: 2 });
     } else {
@@ -96,8 +97,8 @@ export class MapComponent implements OnInit {
         });
 
         mapRoute.addListener('click', () => {
-          thisRoute.route.setOptions({strokeWeight: 8});
-
+          this.routeTable.selectRowByRouteId(thisRoute.id);
+          //thisRoute.route.setOptions({strokeWeight: 8});
         });
       }
     );
