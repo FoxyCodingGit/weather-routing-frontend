@@ -1,7 +1,8 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import * as $ from 'jquery';
 import 'datatables.net';
-import { RouteInteractive } from '../map/Model/routeInteractive';
+import { RouteInformation } from '../map/Model/RouteInformation';
+import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformation';
 
 @Component({
   selector: 'app-route-data-table',
@@ -42,7 +43,7 @@ export class RouteDataTableComponent implements OnInit {
     $('#table_id').on('click', 'tr', selectRowFunc);
   }
 
-  public addRouteToTable(routeInformation: RouteInteractive, overallScore: number, routePlacementInArray: number) {
+  public addRouteToTable(routeInformation: RouteInformation, overallScore: number, routePlacementInArray: number) {
     $('#table_id').DataTable().row.add([
       routeInformation.name,
       Math.round(routeInformation.travelTimeInSeconds / 60),
@@ -52,13 +53,13 @@ export class RouteDataTableComponent implements OnInit {
     ]).draw();
   }
 
-  public changeEachRowScore(whichDepartureTimeIsChosen: number, rainIntensitiesForEachStationPerInterval: number[][][], rainPercentagesForEachStationPerInterval: number[][][]) {
+  public changeEachRowScore(whichDepartureTimeIsChosen: number, routeAndWeatherInformation: RouteAndWeatherInformation[]) {
     let table = $('#table_id').DataTable();
 
     for (let i = 0; i < table.rows().count(); i++) { // check count
       let routeId = table.row(i).data()[4];
-      const newScore: any = this.generateOverallRouteScoreByRouteId(routeId, rainIntensitiesForEachStationPerInterval,
-        rainPercentagesForEachStationPerInterval, whichDepartureTimeIsChosen);
+      
+      const newScore: any = this.generateOverallRouteScoreByRouteId(routeAndWeatherInformation[routeId], whichDepartureTimeIsChosen);
 
       table.cell({row: i, column: 3}).data(newScore);
     }
@@ -67,13 +68,13 @@ export class RouteDataTableComponent implements OnInit {
   }
 
 
-  private generateOverallRouteScoreByRouteId(routeId: number, rainIntensitiesForEachStationPerInterval: number[][][], rainPercentagesForEachStationPerInterval: number[][][], whenRouteisStartedFromNow: number = 0): number { // if routes are not added in order as id then this will stop working
+  private generateOverallRouteScoreByRouteId(routeAndWeatherInformation: RouteAndWeatherInformation, whenRouteisStartedFromNow: number = 0): number { // if routes are not added in order as id then this will stop working
     let expectedValue = 0;
     const whichDepartureTimeAreWeGettingScoreOf = whenRouteisStartedFromNow / 5;
 
-    for (let focusedStationData = 0; focusedStationData < rainIntensitiesForEachStationPerInterval[routeId][0].length; focusedStationData++) {
-      expectedValue += rainIntensitiesForEachStationPerInterval[routeId][whichDepartureTimeAreWeGettingScoreOf][focusedStationData] *
-      rainPercentagesForEachStationPerInterval[routeId][whichDepartureTimeAreWeGettingScoreOf][focusedStationData];
+    for (let focusedStationData = 0; focusedStationData < routeAndWeatherInformation.rainIntensities[0].length; focusedStationData++) {
+      expectedValue += routeAndWeatherInformation.rainIntensities[whichDepartureTimeAreWeGettingScoreOf][focusedStationData] *
+        routeAndWeatherInformation.rainProbabilities[whichDepartureTimeAreWeGettingScoreOf][focusedStationData];
     }
 
     return expectedValue; // might want to take away from 100 so bigger number is better.

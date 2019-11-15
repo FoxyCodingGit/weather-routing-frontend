@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Color } from 'ng2-charts';
-import { RouteInteractive } from '../map/Model/routeInteractive';
+import { RouteInformation } from '../map/Model/RouteInformation';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { myChartOptions } from './model/myChartOptions';
 
@@ -37,7 +37,7 @@ export class GraphComponent {
     this.addRainIntensities(rainIntensities);
   }
 
-  public graphRainPercentageForRoute(percentages: number[], route: RouteInteractive) {
+  public graphRainPercentageForRoute(percentages: number[], route: RouteInformation) {
     this.setupCanvas('line', myChartOptions.upToHundred);
     this.addRainPercentages(percentages, route.name, route.color + ', 0.6)');
   }

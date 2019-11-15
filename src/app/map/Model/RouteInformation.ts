@@ -1,14 +1,16 @@
-import { RouteInteractive } from './routeInteractive';
-
 export class RouteInformation {
 
-    public constructor(routeInteractive: RouteInteractive, rainIntensityInfo: number[][], rainProb: number[]) {
-        this.routeInteractive = routeInteractive;
-        this.rainIntensityInfo = rainIntensityInfo;
-        this.rainProb = rainProb;
+    public constructor(route: google.maps.Polyline, travelTimeInSeconds: number, name: string, color: string, distance: number) {
+        this.route = route;
+        this.travelTimeInSeconds = travelTimeInSeconds;
+        this.color = color;
+        this.name = name;
+        this.distance = distance;
     }
 
-    public routeInteractive: RouteInteractive;
-    public rainIntensityInfo: number[][];
-    public rainProb: number[];
+    public route: google.maps.Polyline;
+    public travelTimeInSeconds: number;
+    public color: string;
+    public name: string;
+    public distance: number;
 }

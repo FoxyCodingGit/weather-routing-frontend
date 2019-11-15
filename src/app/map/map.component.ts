@@ -3,11 +3,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MapRoutingService } from '../shared/map-routing.service';
 import { WeatherService } from '../shared/weather.service';
-import { RouteInteractive } from './Model/routeInteractive';
+import { RouteInformation } from './Model/RouteInformation';
 import { GraphComponent } from '../graph/graph.component';
 import { MinutelyRainData } from './Model/MinutelyRainData';
 import { RouteDataTableComponent } from '../route-data-table/route-data-table.component';
-import { RouteInformation } from './Model/RouteInformation';
+import { RouteAndWeatherInformation } from './Model/RouteAndWeatherInformation';
 
 @Component({
   selector: 'app-map',
@@ -29,15 +29,14 @@ export class MapComponent implements OnInit {
   private graphTimeMax = 20;
   private graphTimeInterval = 5;
 
-  private routeInformationArray: RouteInformation[] = []; // still not used
+  private routeAndWeatherInformation: RouteAndWeatherInformation[] = []; // still not used
   private minutelyRainData: MinutelyRainData[][][] = [];
-
-  private rainPercentagesForEachStationPerInterval: number[][][] = []; // an extra [] as holding more than one route
-  private rainIntensitiesForEachStationPerInterval: number[][][] = [];
 
   private averageWalkingDistanceMetersPerSecond = 1.4;
 
   public probToRain = -1;
+
+  private focusedRouteId;
 
   private StartOrEndIsFocused = 0;
 
@@ -58,8 +57,9 @@ export class MapComponent implements OnInit {
   }
 
   public focusOnRoute(routeId): void {
-    alert(routeId);
-    this.graph.graphIntensityandProb(this.routeInformationArray[routeId].rainIntensityInfo, this.routeInformationArray[routeId].rainProb);
+    this.focusedRouteId = routeId;
+    this.graph.graphIntensityandProb(this.routeAndWeatherInformation[routeId].rainIntensities,
+      this.routeAndWeatherInformation[routeId].rainProbabilitiesAverage);
   }
 
   public onRoutingSubmit(data: any): void {
@@ -77,7 +77,7 @@ export class MapComponent implements OnInit {
 
         this.placeStartEndMarkers(routeInformation.points);
 
-        var thisRoute = new RouteInteractive(mapRoute, routeInformation.travelTimeInSeconds, data.name, routeInformation.colour, routeInformation.distance);
+        var thisRoute = new RouteInformation(mapRoute, routeInformation.travelTimeInSeconds, data.name, routeInformation.colour, routeInformation.distance);
 
         mapRoute.setMap(this.map);
 
@@ -94,7 +94,7 @@ export class MapComponent implements OnInit {
   }
 
 
-  private getWeatherPointsToBeEquiDistanceApart(thisRoute: RouteInteractive): number[] {
+  private getWeatherLegPointInRouteToBeEquiDistanceApart(thisRoute: RouteInformation): number[] {
     let equallySpacedLocaitonForWeatherPointsInRoute: number[] = []
     
     for (let i = 0; i < this.howManyWeatherMarkerChecks; i++) {
@@ -129,50 +129,45 @@ export class MapComponent implements OnInit {
     }
   }
 
-  private doRouteStuff(thisRoute: RouteInteractive) {
-    let weatherLegs = this.getWeatherPointsToBeEquiDistanceApart(thisRoute);
+  private doRouteStuff(thisRoute: RouteInformation) {
+    let weatherLegPositionsInRoute = this.getWeatherLegPointInRouteToBeEquiDistanceApart(thisRoute);
 
-    this.getMinutelyData(thisRoute.route.getPath().getArray(), weatherLegs).then(minutelyRainData => {
-      this.placeWeatherMarkers(thisRoute, weatherLegs);
+    this.getMinutelyData(thisRoute.route.getPath().getArray(), weatherLegPositionsInRoute).then(minutelyRainData => {
+
+      this.placeWeatherMarkers(thisRoute, weatherLegPositionsInRoute);
 
       this.minutelyRainData.push(minutelyRainData);
 
-      var rainPercentages = this.getAverageRainPercentagesOverIntervals(thisRoute.route.getPath().getArray(), minutelyRainData, weatherLegs);
-      var rainIntensity = this.getRainIntensityPerWeatherPointPerPerInterval(thisRoute.route.getPath().getArray(), minutelyRainData, weatherLegs);
+      let rainIntensity = this.getRainIntensityPerWeatherPointPerPerInterval
+        (thisRoute.route.getPath().getArray(), minutelyRainData, weatherLegPositionsInRoute);
+      let rainProabilities = this.getRainProbPerWeatherPointPerPerInterval
+        (thisRoute.route.getPath().getArray(), minutelyRainData, weatherLegPositionsInRoute);
 
-      var nonAvgRainPercentages = this.getRainProbPerWeatherPointPerPerInterval(thisRoute.route.getPath().getArray(), minutelyRainData, weatherLegs);
+      let focusedRouteAndWeather: RouteAndWeatherInformation = new RouteAndWeatherInformation(thisRoute, rainIntensity, rainProabilities);
 
-      this.rainPercentagesForEachStationPerInterval.push(rainIntensity);
-      this.rainIntensitiesForEachStationPerInterval.push(nonAvgRainPercentages);
+      this.routeAndWeatherInformation.push(focusedRouteAndWeather);
 
-      this.routeInformationArray.push(new RouteInformation(thisRoute, rainIntensity, rainPercentages));
+      let overallScore = this.generateOverallRouteScore(focusedRouteAndWeather.rainProbabilities,
+        focusedRouteAndWeather.rainIntensities, this.whenLeavingForTable);
 
-      let overallScore = this.generateOverallRouteScore(nonAvgRainPercentages, rainIntensity, this.whenLeavingForTable);
+      this.graph.graphIntensityandProb(focusedRouteAndWeather.rainIntensities, focusedRouteAndWeather.rainProbabilitiesAverage);
 
-      this.graph.graphIntensityandProb(rainIntensity, rainPercentages);
-
-      this.routeTable.addRouteToTable(thisRoute, overallScore, this.routeInformationArray.length - 1);
-
-      this.focusedRainPercentages = rainPercentages;
-      this.focusedRainIntensity = rainIntensity;
-      this.focusedRoute = thisRoute;
+      this.routeTable.addRouteToTable(thisRoute, overallScore, this.routeAndWeatherInformation.length - 1);
     });
   }
 
-  private focusedRainPercentages; 
-  private focusedRainIntensity; 
-  private focusedRoute;
-
   public onClickMe() {
-    this.graph.graphIntensityandProb(this.focusedRainIntensity, this.focusedRainPercentages);
+    this.graph.graphIntensityandProb(this.routeAndWeatherInformation[this.focusedRouteId].rainIntensities,
+      this.routeAndWeatherInformation[this.focusedRouteId].rainProbabilitiesAverage);
   }
 
   public onClickMe2() {
-    this.graph.graphRainPercentageForRoute(this.focusedRainPercentages, this.focusedRoute);
+    this.graph.graphRainPercentageForRoute(this.routeAndWeatherInformation[this.focusedRouteId].rainProbabilitiesAverage,
+      this.routeAndWeatherInformation[this.focusedRouteId].routeInformation);
   }
 
   public onClickMe3() {
-    this.graph.JustIntensity(this.focusedRainIntensity);
+    this.graph.JustIntensity(this.routeAndWeatherInformation[this.focusedRouteId].rainIntensities);
   }
 
   public startRoute(): void {
@@ -196,24 +191,7 @@ export class MapComponent implements OnInit {
   }
 
   public WhenAreYouLeavingHasChanged(value: number) {
-    this.routeTable.changeEachRowScore(value, this.rainIntensitiesForEachStationPerInterval, this.rainPercentagesForEachStationPerInterval);
-  }
-
-  private getAverageRainPercentagesOverIntervals(routePath: google.maps.LatLng[], MinutelyDatForThisWeatherMarkers: MinutelyRainData[][], weatherLegs: number[]): number[] {
-    let rainPercentagesForDifferentTimes: number[] = [];
-    
-    for (let focusedTime = this.graphTimeMin; focusedTime <= this.graphTimeMax; focusedTime += this.graphTimeInterval) {
-      console.log("AT " + focusedTime + "!!!");
-      let percentageAccumulator = 0;
-      for (let i = 0; i < this.howManyWeatherMarkerChecks; i++) {
-        let minuteneedToSearchFor = this.WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath, weatherLegs[i]);
-        let timeWithStartTimeTakenIntoAccount = minuteneedToSearchFor + focusedTime;
-        console.log("prob of rain at weather marker " + i + " at " + timeWithStartTimeTakenIntoAccount + " is: " + MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipProbability * 100);
-        percentageAccumulator += MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipProbability * 100;
-      }
-      rainPercentagesForDifferentTimes.push(percentageAccumulator / this.howManyWeatherMarkerChecks);
-    }
-    return rainPercentagesForDifferentTimes;
+    this.routeTable.changeEachRowScore(value, this.routeAndWeatherInformation);
   }
 
   private getRainIntensityPerWeatherPointPerPerInterval(routePath: google.maps.LatLng[], MinutelyDatForThisWeatherMarkers: MinutelyRainData[][], weatherLegs: number[]): number[][] {
@@ -294,7 +272,7 @@ export class MapComponent implements OnInit {
 
 
 
-  private placeWeatherMarkers(route: RouteInteractive, weatherLegs: number[]) {
+  private placeWeatherMarkers(route: RouteInformation, weatherLegs: number[]) {
     for (let i = 1; i < this.howManyWeatherMarkerChecks - 1; i++) {
       let weatherMarker = new google.maps.Marker({ // add marker to array that is currntly not being used.
         map: this.map,
