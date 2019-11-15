@@ -56,10 +56,13 @@ export class RouteDataTableComponent implements OnInit {
     var table = $('#table_id').DataTable();
 
     debugger;
-
-    for (let i = 0; i < 1; i++) { // check count
+    
+    for (let i = 0; i < table.rows().count(); i++) { // check count
       var routeId = table.row(i).data()[4];
-      table.row(i).data()[3] = this.generateOverallRouteScoreByRouteId(routeId, rainIntensitiesForEachStationPerInterval, rainPercentagesForEachStationPerInterval, whichDepartureTimeIsChosen);
+
+      let newScore: any = this.generateOverallRouteScoreByRouteId(routeId, rainIntensitiesForEachStationPerInterval, rainPercentagesForEachStationPerInterval, whichDepartureTimeIsChosen);
+
+      table.cell({row: i, column: 3}).data(newScore);
     }
 
     $('#table_id').DataTable().draw(); // not drwaing.

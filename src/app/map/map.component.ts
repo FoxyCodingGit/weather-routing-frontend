@@ -46,7 +46,7 @@ export class MapComponent implements OnInit {
   public endLat = 55.575684498080676;
   public endLng = -1.920110941382518;
 
-  public whenLeavingForTable; // TODO: this
+  public whenLeavingForTable;
 
   private userMarker: google.maps.Marker;
 
