@@ -20,9 +20,7 @@
     <input type="submit" value="SUBMIT">
 </form>
 
-<h3>Prob to rain</h3>
-<p>{{probToRain}}</p>
-
+<h3>When are you leaving?</h3>
 <select name="WhenAreYouLeaving" [(ngModel)]="whenLeavingForTable" (change)="WhenAreYouLeavingHasChanged($event.target.value);" [value]='0'> <!-- this value doesnt work!!! do ngmodel so can check on value when route submitted.-->
     <option value="0" selected>Now</option>
     <option value="5">5 mins</option>
@@ -30,6 +28,7 @@
     <option value="15">15 mins</option>
     <option value="20">20 mins</option>
 </select>
+<hr/>
 <app-route-data-table (RouteIdfocused)="focusOnRoute($event)"></app-route-data-table>
 <app-graph></app-graph>
 
