@@ -1,5 +1,4 @@
 export class RouteInformation {
-
     public constructor(id: number, route: google.maps.Polyline, travelTimeInSeconds: number, name: string, color: string, distance: number) {
         this.id = id;
         this.route = route;
@@ -7,6 +6,7 @@ export class RouteInformation {
         this.color = color;
         this.name = name;
         this.distance = distance;
+        this.bounds = this.createBoundForPolygon(route.getPath().getArray());
     }
 
     public id: number;
@@ -15,4 +15,13 @@ export class RouteInformation {
     public color: string;
     public name: string;
     public distance: number;
+    public bounds: google.maps.LatLngBounds;
+
+    private createBoundForPolygon(latLngs: google.maps.LatLng[]): google.maps.LatLngBounds {
+        var bounds = new google.maps.LatLngBounds();
+        for (var i = 0; i < latLngs.length; i++) {
+        bounds.extend(latLngs[i]);
+        }
+        return bounds;
+    }
 }

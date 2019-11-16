@@ -89,7 +89,8 @@ export class RouteDataTableComponent implements OnInit {
       }
     }
 
-    let emitData = {routeId, selectAction: true}; // clicking on map route will always select the row. // kinda hack. using for trigger but no dynamic info sent over.
+    // capitalisaiton
+    let emitData = {routeIdfocused: routeId, selectAction: true}; // clicking on map route will always select the row. // kinda hack. using for trigger but no dynamic info sent over.
     this.SelectRowAction.emit(emitData);
   }
 }

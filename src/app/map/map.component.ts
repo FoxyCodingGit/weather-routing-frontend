@@ -45,13 +45,12 @@ export class MapComponent implements OnInit {
     this.displayUserLocation();
   }
 
-  public selectActionPerformed(routeIdandSelectAction: any): void {
-    // KEEP DEBUGGING FROM HERE. RAN OUT OF API CALLS
+  public selectActionPerformed(routeIdandSelectAction: any): void { // bad name and needs model
     if (!routeIdandSelectAction.selectAction) {
       this.routeAndWeatherInformation[routeIdandSelectAction.routeIdfocused].routeInformation.route.setOptions({ strokeWeight: 2 });
     } else {
-      this.routeAndWeatherInformation.forEach(thing => {
-        this.highlightSelectedRoute(routeIdandSelectAction.routeIdfocused, thing);
+      this.routeAndWeatherInformation.forEach(routeAndWeatherInfo => {
+        this.highlightSelectedRoute(routeIdandSelectAction.routeIdfocused, routeAndWeatherInfo);
       });
     }
 
@@ -60,11 +59,12 @@ export class MapComponent implements OnInit {
       this.routeAndWeatherInformation[routeIdandSelectAction.routeIdfocused].rainProbabilitiesAverage);
   }
 
-  private highlightSelectedRoute(routeId: any, thing: RouteAndWeatherInformation) {
-    if (routeId === thing.routeInformation.id) {
-      this.routeAndWeatherInformation[thing.routeInformation.id].routeInformation.route.setOptions({ strokeWeight: 8 });
+  private highlightSelectedRoute(routeId: any, routeAndWeatherInfo: RouteAndWeatherInformation) {
+    if (routeId === routeAndWeatherInfo.routeInformation.id) {
+      this.routeAndWeatherInformation[routeAndWeatherInfo.routeInformation.id].routeInformation.route.setOptions({ strokeWeight: 8 });
+      this.map.fitBounds(this.routeAndWeatherInformation[routeAndWeatherInfo.routeInformation.id].routeInformation.bounds);
     } else {
-      this.routeAndWeatherInformation[thing.routeInformation.id].routeInformation.route.setOptions({ strokeWeight: 2 });
+      this.routeAndWeatherInformation[routeAndWeatherInfo.routeInformation.id].routeInformation.route.setOptions({ strokeWeight: 2 });
     }
   }
 
@@ -85,6 +85,7 @@ export class MapComponent implements OnInit {
           routeInformation.distance);
 
         mapRoute.setMap(this.map);
+        this.map.fitBounds(thisRoute.bounds);
 
         await this.weatherService.addWeatherInformationToRoute(thisRoute, this.map).then(focusedRouteAndWeatherInfo => {
           this.routeAndWeatherInformation.push(focusedRouteAndWeatherInfo);
@@ -134,7 +135,7 @@ export class MapComponent implements OnInit {
   private generateMap() {
     const mapProperties = {
       center: new google.maps.LatLng(55.586698, -1.909815),
-      zoom: 14
+      zoom: 15
     };
     this.map = new google.maps.Map(document.getElementById('map'), mapProperties);
 
@@ -179,4 +180,42 @@ export class MapComponent implements OnInit {
       alert('The user has not allowed to know its locaiton.');
     }
   }
+
+  // private findCentreLatLngValueOfRoute(polylineRoute: google.maps.Polyline): any {
+  //   debugger;
+  //   let arrayOfLatLng: google.maps.LatLng[] = polylineRoute.getPath().getArray();
+
+  //   let minLat: number = 90;
+  //   let maxLat: number = -90;
+  //   let minLng: number = 180;
+  //   let maxLng: number = -180;
+
+  //   arrayOfLatLng.forEach(latLngValues => {
+  //     if (latLngValues.lat() < minLat) { // prob can do if else on max and min comparisons
+  //       minLat = latLngValues.lat();
+  //     }
+  //     if (latLngValues.lat() > maxLat) {
+  //       maxLat = latLngValues.lat();
+  //     }
+  //     if (latLngValues.lng() < minLng) { // prob can do if else on max and min comparisons
+  //       minLng = latLngValues.lng();
+  //     }
+  //     if (latLngValues.lng() > maxLng) {
+  //       maxLng = latLngValues.lng();
+  //     }
+  //   });
+
+  //   let latDifference = Math.abs(maxLat - minLat);
+  //   let lngDifference = Math.abs(maxLng - minLng);
+
+  //   let latCentre = minLat + latDifference;
+  //   let lngCentre = minLng + lngDifference;
+
+  //   //let latLngCentre: google.maps.LatLng = {lat: () => { return latCentre }, lng: () => { return lngCentre }};  can t do it this way as not providing all methods
+
+  //   let latLngCentre = {lat: latCentre, lng: lngCentre};
+  //   return latLngCentre;
+  // }
+
+
 }

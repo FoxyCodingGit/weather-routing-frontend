@@ -12,7 +12,7 @@ import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformat
 export class WeatherService {
 
   private baseURL = 'https://localhost:44338/weather';
-  private howManyWeatherMarkerChecks = 10;
+  private howManyWeatherMarkerChecks = 5;
 
   private graphTimeMin = 0; // need to decide if these be these or can be dynamic
   private graphTimeMax = 20;
