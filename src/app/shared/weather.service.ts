@@ -5,6 +5,7 @@ import { catchError, map } from 'rxjs/operators';
 import { MinutelyRainData } from '../map/Model/MinutelyRainData';
 import { RouteInformation } from '../map/Model/RouteInformation';
 import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformation';
+import { WeatherPoint } from '../map/Model/weatherPoint';
 
 @Injectable({
   providedIn: 'root'
@@ -34,27 +35,25 @@ export class WeatherService {
     return expectedValue; // might want to take away from 100 so bigger number is better.
   }
 
-  public async addWeatherInformationToRoute(thisRoute: RouteInformation, mapRee: google.maps.Map): Promise<RouteAndWeatherInformation> {
-    let weatherLegPositionsInRoute = this.getWeatherLegPointInRouteToBeEquiDistanceApart(thisRoute);
+  public async addWeatherInformationToRoute(thisRoute: RouteInformation, map: google.maps.Map): Promise<RouteAndWeatherInformation> {
+    this.setWeatherLegsEqualDistanceApart(thisRoute);
 
-    return await this.getMinutelyData(thisRoute.route.getPath().getArray(), weatherLegPositionsInRoute).then(minutelyRainData => {
-      this.placeWeatherMarkers(thisRoute, weatherLegPositionsInRoute, mapRee);
+    return await this.getMinutelyData(thisRoute).then(minutelyRainData => {
+      this.placeWeatherMarkers(thisRoute, map);
 
-      let rainIntensity = this.getRainIntensityPerWeatherPointPerPerInterval
-        (thisRoute.route.getPath().getArray(), minutelyRainData, weatherLegPositionsInRoute);
-      let rainProabilities = this.getRainProbPerWeatherPointPerPerInterval
-        (thisRoute.route.getPath().getArray(), minutelyRainData, weatherLegPositionsInRoute);
+      let rainIntensity = this.getRainIntensityPerWeatherPointPerPerInterval(thisRoute, minutelyRainData);
+      let rainProabilities = this.getRainProbPerWeatherPointPerPerInterval(thisRoute, minutelyRainData);
 
       return new RouteAndWeatherInformation(thisRoute, rainIntensity, rainProabilities);
     });
   }
 
-
-  private placeWeatherMarkers(route: RouteInformation, weatherLegs: number[], mapRee: google.maps.Map) {
-    for (let i = 1; i < this.howManyWeatherMarkerChecks - 1; i++) {
+  private placeWeatherMarkers(thisRoute: RouteInformation, map: google.maps.Map) {
+    for (let i = 1; i < thisRoute.weatherPoints.length - 1; i++) {
       let weatherMarker = new google.maps.Marker({ // add marker to array that is currntly not being used.
-        map: mapRee,
-        position: { lat: route.route.getPath().getArray()[weatherLegs[i]].lat(), lng: route.route.getPath().getArray()[weatherLegs[i]].lng() },
+        map: map,
+        position: { lat: thisRoute.route.getPath().getArray()[thisRoute.weatherPoints[i].legNumberInRoute].lat(),
+          lng: thisRoute.route.getPath().getArray()[thisRoute.weatherPoints[i].legNumberInRoute].lng() },
         icon: {
           url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
         }
@@ -62,55 +61,77 @@ export class WeatherService {
     }
   }
 
-  private async getMinutelyData(mapRoute: google.maps.LatLng[], weatherLegs: number[]): Promise<MinutelyRainData[][]> {
+  private async getMinutelyData(thisRoute: RouteInformation): Promise<MinutelyRainData[][]> {
     let MinutelyDatForThisWeatherMarkers: MinutelyRainData[][] = [];
+    let mapRoute = thisRoute.route.getPath().getArray();
 
     console.log(mapRoute.toString());
 
-    for (let i = 0; i < this.howManyWeatherMarkerChecks; i++) {
-      await this.GetRainMinutelyDataForWeatherPoint(mapRoute[weatherLegs[i]].lat(),
-        mapRoute[weatherLegs[i]].lng()).toPromise().then(minutelyRainData => {
+    for (let i = 0; i < thisRoute.weatherPoints.length; i++) {
+      await this.GetRainMinutelyDataForWeatherPoint(mapRoute[thisRoute.weatherPoints[i].legNumberInRoute].lat(),
+        mapRoute[thisRoute.weatherPoints[i].legNumberInRoute].lng()).toPromise().then(minutelyRainData => {
           MinutelyDatForThisWeatherMarkers.push(minutelyRainData);
-          console.log('got minute data for weather marker: ' + i + 'at leg number: ' + weatherLegs[i]);
+          console.log('got minute data for weather marker: ' + i + 'at leg number: ' + thisRoute.weatherPoints[i].legNumberInRoute);
       });
     }
 
     return MinutelyDatForThisWeatherMarkers;
   }
 
-  private getWeatherLegPointInRouteToBeEquiDistanceApart(thisRoute: RouteInformation): number[] {
-    let equallySpacedLocaitonForWeatherPointsInRoute: number[] = []
-
+  private setWeatherLegsEqualDistanceApart(thisRoute: RouteInformation): void {
     for (let i = 0; i < this.howManyWeatherMarkerChecks; i++) {
       let distancePercentageAlongRoute = i * (1 / (this.howManyWeatherMarkerChecks - 1));  // if four for example -> 0 33 66 100 the middle two are 1/3 and 2/3. top begins at one and below is one less that howmanyweathermarkers
-      let legNumber = this.calculateWithLegIsClosestForDistance(thisRoute.route, thisRoute.distance, thisRoute.distance * distancePercentageAlongRoute);
-      equallySpacedLocaitonForWeatherPointsInRoute.push(legNumber);
+      this.calculateWithLegIsClosestForDistance(thisRoute, thisRoute.distance * distancePercentageAlongRoute);
     }
-    return equallySpacedLocaitonForWeatherPointsInRoute;
+    console.log(thisRoute.weatherPoints);
   }
 
-  private calculateWithLegIsClosestForDistance(route: google.maps.Polyline, totalDistance: number, weatherPointDistance: number): number { // make sure value not off by one!!
-    if (weatherPointDistance === 0) {
-      return 0;
-    } else if (totalDistance === weatherPointDistance) { // both -1 at end of lines are so it can match the array number that starts from zero.
-      return route.getPath().getArray().length - 1;
+  private calculateWithLegIsClosestForDistance(thisRoute: RouteInformation, idealWeatherPointDistance: number): void { // make sure value not off by one!!
+    let route = thisRoute.route;
+    let totalDistance = thisRoute.distance;
+    
+    if (idealWeatherPointDistance === 0) {
+      this.addToWeatherPointSetAndBeUniqueByLegNum(thisRoute, 0, 0);
+    } else if (totalDistance === idealWeatherPointDistance) { // both -1 at end of lines are so it can match the array number that starts from zero.
+      this.addToWeatherPointSetAndBeUniqueByLegNum(thisRoute, route.getPath().getArray().length - 1, totalDistance);
     } else {
-      let distanceToNextPoint = 0;
-      let distanceToFocusedPoint: number;
+      let toNextWeatherPointDistance = 0;
+      let accumulatedDistance: number;
 
       for (let i = 0; i < route.getPath().getArray().length - 1; i++) { // do if at start or finish give back quick value. currently going to one less than the full distanceToNextPoint.
-        distanceToFocusedPoint = distanceToNextPoint;
-        distanceToNextPoint += this.distanceToNextLatLngValue(route.getPath().getArray(), i);
+        accumulatedDistance = toNextWeatherPointDistance;
+        toNextWeatherPointDistance += this.distanceToNextLatLngValue(route.getPath().getArray(), i);
         
-        if (distanceToNextPoint >= weatherPointDistance) {
-          if (distanceToNextPoint - weatherPointDistance < weatherPointDistance - distanceToFocusedPoint) { // prob dont need abs
-            return i + 1;
+        if (toNextWeatherPointDistance >= idealWeatherPointDistance) { // its gone over
+
+          let distanceOverIdealDistance = toNextWeatherPointDistance - idealWeatherPointDistance;
+          let distanceUnderIdealDistance = idealWeatherPointDistance - accumulatedDistance
+
+          if (distanceOverIdealDistance < distanceUnderIdealDistance) { // if gap of station over  
+            this.addToWeatherPointSetAndBeUniqueByLegNum(thisRoute, i + 1, distanceOverIdealDistance);
           } else {
-            return i;
+            this.addToWeatherPointSetAndBeUniqueByLegNum(thisRoute, i, distanceUnderIdealDistance);
           }
         }
-      } // TODO: Some markers are placed on the same leg (unlikely but possible.)
+      }
     }
+  }
+
+  private addToWeatherPointSetAndBeUniqueByLegNum(thisRoute: RouteInformation, legNumberInRoute: number, distance: number): void {
+    let newWeatherPoint: WeatherPoint = {
+      legNumberInRoute: legNumberInRoute,
+      distance: Math.abs(distance)
+    } 
+
+    let LegNums = [];
+
+    thisRoute.weatherPoints.forEach(weatherPoint => {
+      if (!LegNums.includes(weatherPoint.legNumberInRoute)) {
+        LegNums.push(weatherPoint.legNumberInRoute);
+      }
+    });
+
+    if (!LegNums.includes(legNumberInRoute)) thisRoute.weatherPoints.push(newWeatherPoint);
   }
 
   private distanceToNextLatLngValue(routePath: google.maps.LatLng[], i: number) {
@@ -137,13 +158,13 @@ export class WeatherService {
   }
 
 
-  private getRainIntensityPerWeatherPointPerPerInterval(routePath: google.maps.LatLng[], MinutelyDatForThisWeatherMarkers: MinutelyRainData[][], weatherLegs: number[]): number[][] {
-    var RainDataForEachPoint: MinutelyRainData[][] = this.getRainDataAtEachWeatherPointPerInterval(routePath, MinutelyDatForThisWeatherMarkers, weatherLegs);
+  private getRainIntensityPerWeatherPointPerPerInterval(thisRoute: RouteInformation, MinutelyDatForThisRoute: MinutelyRainData[][]): number[][] {
+    var RainDataForEachPoint: MinutelyRainData[][] = this.getRainDataAtEachWeatherPointPerInterval(thisRoute, MinutelyDatForThisRoute);
     return this.justGetIntensities(RainDataForEachPoint);
   }
 
-  private getRainProbPerWeatherPointPerPerInterval(routePath: google.maps.LatLng[], MinutelyDatForThisWeatherMarkers: MinutelyRainData[][], weatherLegs: number[]): number[][] {
-    var RainDataForEachPoint: MinutelyRainData[][] = this.getRainDataAtEachWeatherPointPerInterval(routePath, MinutelyDatForThisWeatherMarkers, weatherLegs);
+  private getRainProbPerWeatherPointPerPerInterval(thisRoute: RouteInformation, MinutelyDatForThisWeatherMarkers: MinutelyRainData[][]): number[][] {
+    var RainDataForEachPoint: MinutelyRainData[][] = this.getRainDataAtEachWeatherPointPerInterval(thisRoute, MinutelyDatForThisWeatherMarkers);
     return this.justGetProb(RainDataForEachPoint);
   }
 
@@ -173,7 +194,7 @@ export class WeatherService {
     return weatherPointsPerIntervalProbs;
   }
 
-  private getRainDataAtEachWeatherPointPerInterval(routePath: google.maps.LatLng[], MinutelyDatForThisWeatherMarkers: MinutelyRainData[][], weatherLegs: number[]): MinutelyRainData[][] {
+  private getRainDataAtEachWeatherPointPerInterval(thisRoute: RouteInformation, MinutelyDatForThisWeatherMarkers: MinutelyRainData[][]): MinutelyRainData[][] {
     let rainDataForEachInterval: MinutelyRainData[][] = [];
     let rainDataForFocusedWeatherPoint: MinutelyRainData[] = [];
 
@@ -181,9 +202,10 @@ export class WeatherService {
 
       rainDataForFocusedWeatherPoint = [];
       console.log("AT " + focusedTime + "!!!");
+      let routePath = thisRoute.route.getPath().getArray();
 
-      for (let i = 0; i < this.howManyWeatherMarkerChecks; i++) {
-          let minuteneedToSearchFor = this.WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath, weatherLegs[i]); // working out same value multiple times.
+      for (let i = 0; i < thisRoute.weatherPoints.length; i++) {
+          let minuteneedToSearchFor = this.WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath, thisRoute.weatherPoints[i].legNumberInRoute); // working out same value multiple times.
           let timeWithStartTimeTakenIntoAccount = minuteneedToSearchFor + focusedTime;
 
           console.log("intensity of rain at weather marker " + i + " at " + timeWithStartTimeTakenIntoAccount + " mins is: " + MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipIntensity);

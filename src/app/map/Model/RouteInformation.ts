@@ -1,3 +1,5 @@
+import { WeatherPoint } from './weatherPoint';
+
 export class RouteInformation {
     public constructor(id: number, route: google.maps.Polyline, travelTimeInSeconds: number, name: string, color: string, distance: number) {
         this.id = id;
@@ -16,6 +18,7 @@ export class RouteInformation {
     public name: string;
     public distance: number;
     public bounds: google.maps.LatLngBounds;
+    public weatherPoints: WeatherPoint[] = [];
 
     private createBoundForPolygon(latLngs: google.maps.LatLng[]): google.maps.LatLngBounds {
         var bounds = new google.maps.LatLngBounds();
