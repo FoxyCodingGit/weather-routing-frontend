@@ -123,6 +123,10 @@ export class MapComponent implements OnInit {
     this.graph.JustIntensity(this.routeAndWeatherInformation[this.focusedRouteId].rainIntensities);
   }
 
+  public onClickMe4() {
+    this.graph.graphExpectedTotalRainOnRoute(this.routeAndWeatherInformation, 0); // TODO: GIVE DEPARTURE TIME.
+  }
+
   public startRoute(): void {
     this.map.setCenter({lat: this.userMarker.getPosition().lat(), lng: this.userMarker.getPosition().lng()});
     //navigator.geolocation.watchPosition(() => console.log('success'), () => console.log('error'));

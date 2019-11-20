@@ -3,6 +3,8 @@ import { Color } from 'ng2-charts';
 import { RouteInformation } from '../map/Model/RouteInformation';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { myChartOptions } from './model/myChartOptions';
+import { WeatherService } from '../shared/weather.service';
+import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformation';
 
 @Component({
   selector: 'app-graph',
@@ -23,7 +25,7 @@ export class GraphComponent {
     this.chartColours = [];
     this.mainChartType = mainChartType;
     this.chartOptions = chartOptions;
-    this.generateLabels();
+    this.generateLabelsForDepartureTimes();
   }
 
   public graphIntensityandProb(rainIntensities: number[][], rainProbs: number[]) {
@@ -42,11 +44,31 @@ export class GraphComponent {
     this.addRainPercentages(percentages, route.name, route.color + ', 0.6)');
   }
 
-  private generateLabels() { // make dynamic
+  public graphExpectedTotalRainOnRoute(routeWeatherInfo: RouteAndWeatherInformation[], departureTime: number) {
+    //this.setupCanvas('bar', myChartOptions.upToHundred);
+
+    this.chartData = [];
+    this.chartColours = [];
+    this.mainChartType = 'bar';
+    this.chartOptions = myChartOptions.noLabelBeginAtZero;
+    this.generateLabelsForRoutes(routeWeatherInfo);
+
+
+    this.displayTotalRainPerRoute(routeWeatherInfo, departureTime);
+  }
+
+  private generateLabelsForDepartureTimes() { // make dynamic
     this.chartLabels = [];
     for (let i = 0; i < 5; i++) {
       this.chartLabels.push((i * 5).toString());
     }
+  }
+
+  private generateLabelsForRoutes(routeWeatherInfo: RouteAndWeatherInformation[]) {
+    this.chartLabels = [];
+    routeWeatherInfo.forEach(info => {
+      this.chartLabels.push(info.routeInformation.name);
+    });
   }
 
   private addRainIntensities(rainIntensities: number[][], yAxisID?: string) {
@@ -77,5 +99,43 @@ export class GraphComponent {
       yAxisID
     });
     this.chartColours.push({backgroundColor: colour});
+  }
+
+  private displayTotalRainPerRoute(routeWeatherInfo: RouteAndWeatherInformation[], departureTime: number): void {
+    let totalRainForAllRoutes: number[] = [];
+
+    routeWeatherInfo.forEach(routeAndWeather => {
+      totalRainForAllRoutes.push(this.workOutTotalRainForRoute(routeAndWeather, departureTime));
+    });
+
+    this.chartData.push({
+      data: totalRainForAllRoutes
+    });
+    this.chartColours.push({backgroundColor: 'rgba(135, 230, 140, 1)'});
+
+
+  }
+
+  private workOutTotalRainForRoute(route: RouteAndWeatherInformation, departureTime: number): number { // TODO: covnersion aint right!
+    let totalRainForThisPartOfRoute = 0;
+
+    let focusedWeatherStation = 0;
+    let previousDistance = 0;
+
+    route.routeInformation.weatherPoints.forEach(weatherPoint => {
+
+      let distanceToNext =  weatherPoint.distance - previousDistance;
+      previousDistance = weatherPoint.distance;
+
+      let timeOfLeginSeconds = distanceToNext / WeatherService.averageWalkingDistanceMetersPerSecond;
+      totalRainForThisPartOfRoute += timeOfLeginSeconds * this.mmPerHourTommPerSecond(route.rainIntensities[departureTime / 15][focusedWeatherStation]); // NOT TAKING INTO ACCOUNT PERCENTAGES YET.
+      focusedWeatherStation++;
+    });
+
+    return totalRainForThisPartOfRoute;
+  }
+
+  private mmPerHourTommPerSecond(rainIntensity: number) {
+    return rainIntensity / 60 / 60;
   }
 }

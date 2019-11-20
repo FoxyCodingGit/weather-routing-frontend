@@ -2,7 +2,7 @@ import { ChartOptions } from 'chart.js';
 
 export class myChartOptions {
 
-    public static noLabelBeginAtZero: ChartOptions = { 
+    public static noLabelBeginAtZero: ChartOptions = {
         responsive: true,
         scales: {
             yAxes: [{

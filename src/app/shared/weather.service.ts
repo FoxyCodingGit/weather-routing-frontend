@@ -11,6 +11,7 @@ import { WeatherPoint } from '../map/Model/weatherPoint';
   providedIn: 'root'
 })
 export class WeatherService {
+  public static averageWalkingDistanceMetersPerSecond = 1.4;
 
   private baseURL = 'https://localhost:44338/weather';
   private howManyWeatherMarkerChecks = 5;
@@ -18,8 +19,6 @@ export class WeatherService {
   private graphTimeMin = 0; // need to decide if these be these or can be dynamic
   private graphTimeMax = 20;
   private graphTimeInterval = 5;
-
-  private averageWalkingDistanceMetersPerSecond = 1.4;
 
   constructor(private http: HttpClient) { }
 
@@ -107,10 +106,12 @@ export class WeatherService {
           let distanceOverIdealDistance = toNextWeatherPointDistance - idealWeatherPointDistance;
           let distanceUnderIdealDistance = idealWeatherPointDistance - accumulatedDistance
 
-          if (distanceOverIdealDistance < distanceUnderIdealDistance) { // if gap of station over  
-            this.addToWeatherPointSetAndBeUniqueByLegNum(thisRoute, i + 1, distanceOverIdealDistance);
+          if (distanceOverIdealDistance < distanceUnderIdealDistance) { // if gap of station over
+            this.addToWeatherPointSetAndBeUniqueByLegNum(thisRoute, i + 1, toNextWeatherPointDistance);
+            break;
           } else {
-            this.addToWeatherPointSetAndBeUniqueByLegNum(thisRoute, i, distanceUnderIdealDistance);
+            this.addToWeatherPointSetAndBeUniqueByLegNum(thisRoute, i, toNextWeatherPointDistance);
+            break;
           }
         }
       }
@@ -230,7 +231,7 @@ export class WeatherService {
     for (let i = 0; i < weatherPointLocationInArray; i++) { // do if at start or finish give back quick value. currently going to one less than the full distanceToNextPoint.
       distanceToNextPoint += this.distanceToNextLatLngValue(routePath, i);
     }
-    return Math.round((distanceToNextPoint / this.averageWalkingDistanceMetersPerSecond) / 60);
+    return Math.round((distanceToNextPoint / WeatherService.averageWalkingDistanceMetersPerSecond) / 60);
   }
 
 
