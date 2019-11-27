@@ -15,19 +15,23 @@ export class MapRoutingService {
 
   constructor(private http: HttpClient) { }
 
-  public GetRoute(travelMode: string, startLat: number, startLng: number, endLat: number, endLng: number): Observable<RouteIWant> {
-    const url = `${this.baseURL}/${travelMode}/${startLat}/${startLng}/${endLat}/${endLng}`;
+  public GetRoutes(travelMode: string, startLat: number, startLng: number, endLat: number, endLng: number, numberofAlternates: number = 0): Observable<RouteFromAPI[]> {
+    const url = `${this.baseURL}/${travelMode}/${numberofAlternates}/${startLat}/${startLng}/${endLat}/${endLng}`;
 
-    return this.http.get<RouteFromAPI>(url)
-      .pipe(
-        map(whatsReturnedFromApi => {
-            return new RouteIWant(whatsReturnedFromApi.points.map(
-              point => {
-                return new google.maps.LatLng(point.latitude, point.longitude);
-              }), whatsReturnedFromApi.travelTimeInSeconds, whatsReturnedFromApi.distance);
-          }),
-          catchError(this.handleError<RouteIWant>(new RouteIWant([], 0, 0)))
-        );
+    return this.http.get<RouteFromAPI[]>(url);
+      // .pipe(
+      //   map(whatsReturnedFromApi => {
+      //     whatsReturnedFromApi.forEach(route => { // IF SOMETHING BREAKS ITS PROB THIS.
+      //       return new RouteIWant(route.points.map(
+      //         point => {
+      //           return new google.maps.LatLng(point.latitude, point.longitude);
+      //         }), route.travelTimeInSeconds, route.distance);
+      //     });
+      //   }),
+      //     catchError(this.handleError<RouteIWant>(new RouteIWant([], 0, 0)))
+      // );
+
+    // https://stackoverflow.com/questions/46197223/transforming-observable-with-map
   }
 
   private handleError<T>(result?: T): any {

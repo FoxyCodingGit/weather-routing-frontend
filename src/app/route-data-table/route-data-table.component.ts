@@ -46,7 +46,7 @@ export class RouteDataTableComponent implements OnInit {
       let emitData = {routeIdfocused: table.row(this).data()[4], selectAction: selectRowOutcome};
 
       componentScope.SelectRowAction.emit(emitData);
-      // TODO: 4 is hacky. Tried placing id at start and hiding but would hide name columb
+      // TODO: 4 is hacky. Tried placing id at start and hiding but would hide name column
     };
 
     $('#table_id').on('click', 'tr', selectRowFunc);

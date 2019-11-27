@@ -8,6 +8,8 @@ import { GraphComponent } from '../graph/graph.component';
 import { MinutelyRainData } from './Model/MinutelyRainData';
 import { RouteDataTableComponent } from '../route-data-table/route-data-table.component';
 import { RouteAndWeatherInformation } from './Model/RouteAndWeatherInformation';
+import { RouteIWant } from './Model/RouteIWant';
+import { RouteFromAPI } from './Model/RouteFromAPI';
 
 @Component({
   selector: 'app-map',
@@ -28,6 +30,8 @@ export class MapComponent implements OnInit {
   private focusedRouteId;
 
   private StartOrEndIsFocused = 0;
+
+  private numberOfAltRoutes = 2;
 
   public startLat = 55.583156106988;
   public startLng = -1.9225142006598617;
@@ -69,40 +73,58 @@ export class MapComponent implements OnInit {
   }
 
   public onRoutingSubmit(data: any) {
-    this.mapRoutingService.GetRoute(data.travelMode, data.startLat, data.startLng, data.endLat, data.endLng).subscribe(
-      async (routeInformation) => {
-        let mapRoute = new google.maps.Polyline({ // DO NOT MAKE CONST!!!
-          path: routeInformation.points,
-          geodesic: true,
-          strokeColor: routeInformation.colour + ', 1)',
-          strokeOpacity: 1.0,
-          strokeWeight: 2
-        });
+    this.mapRoutingService.GetRoutes(data.travelMode, data.startLat, data.startLng, data.endLat, data.endLng, this.numberOfAltRoutes).subscribe(
+      (routes) => {
+        let newRoutesFormat: RouteIWant[] = this.RouteFromAPIToRouteIWant(routes);
 
-        this.placeStartEndMarkers(routeInformation.points);
-
-        let thisRoute = new RouteInformation(this.routeAndWeatherInformation.length, mapRoute, routeInformation.travelTimeInSeconds, data.name, routeInformation.colour,
-          routeInformation.distance);
-
-        mapRoute.setMap(this.map);
-        this.map.fitBounds(thisRoute.bounds);
-
-        await this.weatherService.addWeatherInformationToRoute(thisRoute, this.map).then(focusedRouteAndWeatherInfo => {
-          this.routeAndWeatherInformation.push(focusedRouteAndWeatherInfo);
-          this.focusedRouteId = this.routeAndWeatherInformation.length - 1;
-
-          this.graph.graphIntensityandProb(focusedRouteAndWeatherInfo.rainIntensities, focusedRouteAndWeatherInfo.rainProbabilitiesAverage);
-
-          let overallScore = this.weatherService.generateOverallRouteScore(focusedRouteAndWeatherInfo, this.whenLeavingForTable);
-          this.routeTable.addRouteToTable(thisRoute, overallScore, this.routeAndWeatherInformation.length - 1);
-        });
-
-        mapRoute.addListener('click', () => {
-          this.routeTable.selectRowByRouteId(thisRoute.id);
-          //thisRoute.route.setOptions({strokeWeight: 8});
+        let RouteAltNum = 0;        
+        newRoutesFormat.forEach(routeInformation => {
+          this.createrouteandaddtomap(routeInformation, data, RouteAltNum); // TODO: remove routealtnum as bad soluton.
+          RouteAltNum++;
         });
       }
     );
+  }
+
+  private RouteFromAPIToRouteIWant(routes: RouteFromAPI[]): RouteIWant[] { // move to service or someytinh
+
+    let newRouteIWantFormat: RouteIWant[] = [];
+
+    routes.forEach(route => {
+      let latLngs: google.maps.LatLng[] = [];
+      route.points.forEach(point => {
+        latLngs.push(new google.maps.LatLng(point.latitude, point.longitude));
+      });
+
+      newRouteIWantFormat.push(new RouteIWant(latLngs, route.travelTimeInSeconds, route.distance));
+    });
+    
+    return newRouteIWantFormat;
+  }
+
+
+  private async createrouteandaddtomap(routeInformation: RouteIWant, data: any, RouteAltNum: number) {
+    let mapRoute = new google.maps.Polyline({
+      path: routeInformation.points,
+      geodesic: true,
+      strokeColor: routeInformation.colour + ', 1)',
+      strokeOpacity: 1.0,
+      strokeWeight: 2
+    });
+    this.placeStartEndMarkers(routeInformation.points);
+    let thisRoute = new RouteInformation(this.routeAndWeatherInformation.length + RouteAltNum, mapRoute, routeInformation.travelTimeInSeconds, data.name, routeInformation.colour, routeInformation.distance);
+    mapRoute.setMap(this.map);
+    this.map.fitBounds(thisRoute.bounds); // THIS WILL MAKE IT JUMP LIKE CRAZY TODO: Only do this on last route of thing.
+    await this.weatherService.addWeatherInformationToRoute(thisRoute, this.map).then(focusedRouteAndWeatherInfo => {
+      this.routeAndWeatherInformation.push(focusedRouteAndWeatherInfo);
+      this.focusedRouteId = this.routeAndWeatherInformation.length - 1;
+      this.graph.graphIntensityandProb(focusedRouteAndWeatherInfo.rainIntensities, focusedRouteAndWeatherInfo.rainProbabilitiesAverage);
+      let overallScore = this.weatherService.generateOverallRouteScore(focusedRouteAndWeatherInfo, this.whenLeavingForTable);
+      this.routeTable.addRouteToTable(thisRoute, overallScore, this.routeAndWeatherInformation.length - 1);
+    });
+    mapRoute.addListener('click', () => {
+      this.routeTable.selectRowByRouteId(thisRoute.id);
+    });
   }
 
   public onClickMe() {
