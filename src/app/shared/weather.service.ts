@@ -14,7 +14,7 @@ export class WeatherService {
   public static averageWalkingDistanceMetersPerSecond = 1.4;
 
   private baseURL = 'https://localhost:44338/weather';
-  private howManyWeatherMarkerChecks = 5;
+  private howManyWeatherMarkerChecks = 3;
 
   private graphTimeMin = 0; // need to decide if these be these or can be dynamic
   private graphTimeMax = 20;
@@ -232,6 +232,37 @@ export class WeatherService {
       distanceToNextPoint += this.distanceToNextLatLngValue(routePath, i);
     }
     return Math.round((distanceToNextPoint / WeatherService.averageWalkingDistanceMetersPerSecond) / 60);
+  }
+
+  public calculateTotalExpectedRainYouAreGoingToHitBasedOnTimeTOTakeRoute(route: RouteAndWeatherInformation, departureTime: number = 0): number { // TODO: covnersion aint right!
+    let totalExpectedRain = 0;
+    let focusedWeatherStation = 0;
+    let previousDistance = 0;
+
+    route.routeInformation.weatherPoints.forEach(weatherPoint => {
+      let distanceToNext =  weatherPoint.distance - previousDistance;
+      previousDistance = weatherPoint.distance;
+
+      console.log("distanceToNext" + distanceToNext);
+
+      let secondToHourConverstionRatio = 1 / 3600;
+      let timeOfLeginhours = (distanceToNext / WeatherService.averageWalkingDistanceMetersPerSecond) * secondToHourConverstionRatio;
+      
+      // TODO: / 15 must be wrong. Surely it should be / 5?
+      let expectedRainForleginMM = route.rainIntensities[departureTime / 15][focusedWeatherStation] * route.rainProbabilities[departureTime / 15][focusedWeatherStation];
+
+      totalExpectedRain += timeOfLeginhours * expectedRainForleginMM;
+      focusedWeatherStation++;
+    });
+
+    let to3SigFig = totalExpectedRain.toFixed(3);
+    return +to3SigFig; // shorthand to parse to int.
+  }
+
+  public workOutmmPerHourFromRouteDurationAndmmThatHitsPersonInThatTime(mmThatHitsPerson: number, durationinSeconds: number ): number {
+    let toAnHourFromSeconds = 3600 / durationinSeconds;
+
+    return mmThatHitsPerson * toAnHourFromSeconds;
   }
 
 

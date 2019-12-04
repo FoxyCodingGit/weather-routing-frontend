@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
-import { Color } from 'ng2-charts';
 import { RouteInformation } from '../map/Model/RouteInformation';
-import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
+import { ChartDataSets, ChartOptions, ChartType, ChartColor } from 'chart.js';
 import { myChartOptions } from './model/myChartOptions';
 import { WeatherService } from '../shared/weather.service';
 import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformation';
+import { Color } from 'ng2-charts'; // whats the point of @types/chart.js??? Or this???
+import { count } from 'rxjs/operators';
 
 @Component({
   selector: 'app-graph',
@@ -18,7 +19,7 @@ export class GraphComponent {
   public mainChartType: ChartType;
   public chartOptions: ChartOptions;
 
-  constructor() { }
+  constructor(private weatherService: WeatherService) { }
 
   private setupCanvas(mainChartType: ChartType, chartOptions: ChartOptions) {
     this.chartData = [];
@@ -103,39 +104,51 @@ export class GraphComponent {
 
   private displayTotalRainPerRoute(routeWeatherInfo: RouteAndWeatherInformation[], departureTime: number): void {
     let totalRainForAllRoutes: number[] = [];
+    let colours: Array<ChartColor> = [];
 
     routeWeatherInfo.forEach(routeAndWeather => {
-      totalRainForAllRoutes.push(this.workOutTotalRainForRoute(routeAndWeather, departureTime));
+      let rainThatWillHitPersonInmm = this.weatherService.calculateTotalExpectedRainYouAreGoingToHitBasedOnTimeTOTakeRoute(routeAndWeather, departureTime);
+
+      let avdmmPerHourOfRoute = this.weatherService.workOutmmPerHourFromRouteDurationAndmmThatHitsPersonInThatTime(rainThatWillHitPersonInmm, routeAndWeather.routeInformation.travelTimeInSeconds)
+      console.log("average mm per hour for route is :" + avdmmPerHourOfRoute);
+
+      colours.push(this.getColourForRouteRainIntensity(avdmmPerHourOfRoute));
+
+      totalRainForAllRoutes.push(rainThatWillHitPersonInmm);
     });
 
     this.chartData.push({
-      data: totalRainForAllRoutes
+      data: totalRainForAllRoutes,
+      backgroundColor: colours
     });
-    this.chartColours.push({backgroundColor: 'rgba(135, 230, 140, 1)'});
-
-
   }
 
-  private workOutTotalRainForRoute(route: RouteAndWeatherInformation, departureTime: number): number { // TODO: covnersion aint right!
-    let totalRainForThisPartOfRoute = 0;
+  private getColourForRouteRainIntensity(rainIntensitymmPerHour: number): string {
+    const VERY_LIGHT_BLUE = 'rgb(190, 230, 255)';
+    const LIGHT_BLUE = 'rgb(170, 210, 240)';
+    const BLUE = 'rgb(125, 165, 230)';
+    const DARK_BLUE = 'rgb(75, 115, 225)';
+    const OLIVE = 'rgb(125, 125, 0)';
+    const YELLOW = 'rgb(255, 200, 0)';
+    const ORANGE = 'rgb(255, 150, 0)';
+    const RED = 'rgb(255, 0, 0)';
 
-    let focusedWeatherStation = 0;
-    let previousDistance = 0;
-
-    route.routeInformation.weatherPoints.forEach(weatherPoint => {
-
-      let distanceToNext =  weatherPoint.distance - previousDistance;
-      previousDistance = weatherPoint.distance;
-
-      let timeOfLeginSeconds = distanceToNext / WeatherService.averageWalkingDistanceMetersPerSecond;
-      totalRainForThisPartOfRoute += timeOfLeginSeconds * this.mmPerHourTommPerSecond(route.rainIntensities[departureTime / 15][focusedWeatherStation]); // NOT TAKING INTO ACCOUNT PERCENTAGES YET.
-      focusedWeatherStation++;
-    });
-
-    return totalRainForThisPartOfRoute;
-  }
-
-  private mmPerHourTommPerSecond(rainIntensity: number) {
-    return rainIntensity / 60 / 60;
+    if (rainIntensitymmPerHour < 0.01) {
+      return VERY_LIGHT_BLUE;
+    } else if (rainIntensitymmPerHour >= 0.01 && rainIntensitymmPerHour < 0.25) {
+      return LIGHT_BLUE;
+    } else if (rainIntensitymmPerHour >= 0.25 && rainIntensitymmPerHour < 0.5) {
+      return BLUE;
+    } else if (rainIntensitymmPerHour >= 0.5 && rainIntensitymmPerHour < 1) {
+      return DARK_BLUE;
+    } else if (rainIntensitymmPerHour >= 1 && rainIntensitymmPerHour < 2) {
+      return OLIVE;
+    } else if (rainIntensitymmPerHour >= 2 && rainIntensitymmPerHour < 4) {
+      return YELLOW;
+    } else if (rainIntensitymmPerHour >= 4 && rainIntensitymmPerHour < 8) {
+      return ORANGE;
+    } else {
+      return RED;
+    }
   }
 }

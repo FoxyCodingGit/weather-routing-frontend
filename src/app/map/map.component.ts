@@ -31,7 +31,7 @@ export class MapComponent implements OnInit {
 
   private StartOrEndIsFocused = 0;
 
-  private numberOfAltRoutes = 2;
+  private numberOfAltRoutes = 0; // FOR NOW
 
   public startLat = 55.583156106988;
   public startLng = -1.9225142006598617;
