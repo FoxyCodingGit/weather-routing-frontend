@@ -4,8 +4,8 @@ import { ChartDataSets, ChartOptions, ChartType, ChartColor } from 'chart.js';
 import { myChartOptions } from './model/myChartOptions';
 import { WeatherService } from '../shared/weather.service';
 import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformation';
-import { Color } from 'ng2-charts'; // whats the point of @types/chart.js??? Or this???
-import { count } from 'rxjs/operators';
+import { Color } from 'ng2-charts';
+// ng2-charts is needed to allow canvas to be used to show the graph. Removed @types/chart.js as i dont think this added anything.
 
 @Component({
   selector: 'app-graph',
