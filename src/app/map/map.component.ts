@@ -119,8 +119,13 @@ export class MapComponent implements OnInit {
       this.routeAndWeatherInformation.push(focusedRouteAndWeatherInfo);
       this.focusedRouteId = this.routeAndWeatherInformation.length - 1;
       this.graph.graphIntensityandProb(focusedRouteAndWeatherInfo.rainIntensities, focusedRouteAndWeatherInfo.rainProbabilitiesAverage);
-      let overallScore = this.weatherService.generateOverallRouteScore(focusedRouteAndWeatherInfo, this.whenLeavingForTable);
-      this.routeTable.addRouteToTable(thisRoute, overallScore, this.routeAndWeatherInformation.length - 1);
+
+      let overallScores: string[] = [];
+      for (let departureTime = 0; departureTime <= 20; departureTime += 5) {
+        overallScores.push(this.weatherService.generateOverallRouteScore(focusedRouteAndWeatherInfo, departureTime)); // can delete this.whenleavingfortable
+      }
+      this.routeTable.addRouteToTable(thisRoute, overallScores, this.routeAndWeatherInformation.length - 1);
+
     });
     mapRoute.addListener('click', () => {
       this.routeTable.selectRowByRouteId(thisRoute.id);

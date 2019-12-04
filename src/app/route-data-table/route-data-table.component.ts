@@ -13,6 +13,8 @@ import { WeatherService } from '../shared/weather.service';
 export class RouteDataTableComponent implements OnInit {
   @Output() SelectRowAction: EventEmitter<any> = new EventEmitter(); // turn to model
 
+  private hiddencolumnForIdPosition = 8; // doesnt work in function.
+
   constructor(private weatherService: WeatherService) { }
 
   ngOnInit() {
@@ -21,7 +23,11 @@ export class RouteDataTableComponent implements OnInit {
         { title: "Name" },
         { title: "Duration (Minutes)" },
         { title: "Distance (Metres)" },
-        { title: "Expected Rain (less is better)" }
+        { title: "Expected Rain 0" },
+        { title: "5" },
+        { title: "10" },
+        { title: "15" },
+        { title: "20" }
       ]
     };
 
@@ -43,30 +49,34 @@ export class RouteDataTableComponent implements OnInit {
         $(this).addClass('selected');
       }
 
-      let emitData = {routeIdfocused: table.row(this).data()[4], selectAction: selectRowOutcome};
+      let emitData = {routeIdfocused: table.row(this).data()[8], selectAction: selectRowOutcome};
 
       componentScope.SelectRowAction.emit(emitData);
-      // TODO: 4 is hacky. Tried placing id at start and hiding but would hide name column
+      // TODO: hiddencolumForIdPosition is hacky. Tried placing id at start and hiding but would hide name column
     };
 
     $('#table_id').on('click', 'tr', selectRowFunc);
   }
 
-  public addRouteToTable(routeInformation: RouteInformation, overallScore: number, routePlacementInArray: number) {
+  public addRouteToTable(routeInformation: RouteInformation, overallScores: string[], routePlacementInArray: number) {
     $('#table_id').DataTable().row.add([
       routeInformation.name,
       Math.round(routeInformation.travelTimeInSeconds / 60),
       routeInformation.distance,
-      overallScore,
+      overallScores[0],
+      overallScores[1],
+      overallScores[2],
+      overallScores[3],
+      overallScores[4],
       routePlacementInArray
     ]).draw();
   }
 
-  public changeEachRowScore(whichDepartureTimeIsChosen: number, routeAndWeatherInformation: RouteAndWeatherInformation[]) {
+  public changeEachRowScore(whichDepartureTimeIsChosen: number, routeAndWeatherInformation: RouteAndWeatherInformation[]) { // not going to work, can get rid of
     let table = $('#table_id').DataTable();
 
     for (let i = 0; i < table.rows().count(); i++) { // check count
-      let routeId = table.row(i).data()[4];
+      let routeId = table.row(i).data()[this.hiddencolumnForIdPosition];
       const newScore: any = this.weatherService.generateOverallRouteScore(routeAndWeatherInformation[routeId], whichDepartureTimeIsChosen);
 
       table.cell({row: i, column: 3}).data(newScore);
@@ -81,7 +91,7 @@ export class RouteDataTableComponent implements OnInit {
     table.$('tr.selected').removeClass('selected');
 
     for (let i = 0; i < table.rows().count(); i++) { // check count
-      let focusedRouteId = table.row(i).data()[4];
+      let focusedRouteId = table.row(i).data()[8]; // need to manually put 8 here
       if (routeId === focusedRouteId) {
         table.
         $(table.row(i).node()).addClass('selected');

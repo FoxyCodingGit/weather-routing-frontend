@@ -22,16 +22,18 @@ export class WeatherService {
 
   constructor(private http: HttpClient) { }
 
-  public generateOverallRouteScore(routeAndWeatherInformation: RouteAndWeatherInformation, whenRouteisStartedFromNow: number = 0): number {
-    let expectedValue = 0;
-    const whichDepartureTimeAreWeGettingScoreOf = whenRouteisStartedFromNow / 5;
+  public generateOverallRouteScore(routeAndWeatherInformation: RouteAndWeatherInformation, whenRouteisStartedFromNow: number = 0): string {
+    let thing: string = "";
+    let ree = this.calculateTotalExpectedRainYouAreGoingToHitBasedOnTimeTOTakeRoute(routeAndWeatherInformation, whenRouteisStartedFromNow);
 
-    for (let focusedStationData = 0; focusedStationData < routeAndWeatherInformation.rainIntensities[0].length; focusedStationData++) {
-      expectedValue += routeAndWeatherInformation.rainIntensities[whichDepartureTimeAreWeGettingScoreOf][focusedStationData] *
-        routeAndWeatherInformation.rainProbabilities[whichDepartureTimeAreWeGettingScoreOf][focusedStationData];
+    if (ree === 0) {
+      thing = '-';
+    } else {
+      thing += ree;
+      thing += " (" + this.workOutmmPerHourFromRouteDurationAndmmThatHitsPersonInThatTime(ree, routeAndWeatherInformation.routeInformation.travelTimeInSeconds) + ")";
     }
 
-    return expectedValue; // might want to take away from 100 so bigger number is better.
+    return thing; // might want to take away from 100 so bigger number is better.
   }
 
   public async addWeatherInformationToRoute(thisRoute: RouteInformation, map: google.maps.Map): Promise<RouteAndWeatherInformation> {
@@ -247,9 +249,8 @@ export class WeatherService {
 
       let secondToHourConverstionRatio = 1 / 3600;
       let timeOfLeginhours = (distanceToNext / WeatherService.averageWalkingDistanceMetersPerSecond) * secondToHourConverstionRatio;
-      
-      // TODO: / 15 must be wrong. Surely it should be / 5?
-      let expectedRainForleginMM = route.rainIntensities[departureTime / 15][focusedWeatherStation] * route.rainProbabilities[departureTime / 15][focusedWeatherStation];
+
+      let expectedRainForleginMM = route.rainIntensities[departureTime / 5][focusedWeatherStation] * route.rainProbabilities[departureTime / 5][focusedWeatherStation];
 
       totalExpectedRain += timeOfLeginhours * expectedRainForleginMM;
       focusedWeatherStation++;
