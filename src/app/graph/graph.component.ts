@@ -46,14 +46,11 @@ export class GraphComponent {
   }
 
   public graphExpectedTotalRainOnRoute(routeWeatherInfo: RouteAndWeatherInformation[], departureTime: number) {
-    //this.setupCanvas('bar', myChartOptions.upToHundred);
-
     this.chartData = [];
     this.chartColours = [];
     this.mainChartType = 'bar';
     this.chartOptions = myChartOptions.noLabelBeginAtZero;
     this.generateLabelsForRoutes(routeWeatherInfo);
-
 
     this.displayTotalRainPerRoute(routeWeatherInfo, departureTime);
   }

@@ -22,16 +22,18 @@
     <input type="submit" value="SUBMIT">
 </form>
 
-<h3>When are you leaving?</h3>
-<select name="WhenAreYouLeaving" [(ngModel)]="whenLeavingForTable" (change)="WhenAreYouLeavingHasChanged($event.target.value);" [value]='0'> <!-- this value doesnt work!!! do ngmodel so can check on value when route submitted.-->
+<!-- <h3>When are you leaving?</h3>
+<select name="WhenAreYouLeaving" [(ngModel)]="whenLeavingForTable" (change)="WhenAreYouLeavingHasChanged($event.target.value);" [value]='0'> this value doesnt work!!! do ngmodel so can check on value when route submitted.
     <option value="0" selected>Now</option>
     <option value="5">5 mins</option>
     <option value="10">10 mins</option>
     <option value="15">15 mins</option>
     <option value="20">20 mins</option>
 </select>
+-->
+
 <hr/>
-<app-graph></app-graph>
+<app-graph></app-graph> 
 
 <button type="button" (click)="startRoute()">StartRoute</button>
 

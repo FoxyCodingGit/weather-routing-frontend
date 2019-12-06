@@ -6,6 +6,7 @@ import { MinutelyRainData } from '../map/Model/MinutelyRainData';
 import { RouteInformation } from '../map/Model/RouteInformation';
 import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformation';
 import { WeatherPoint } from '../map/Model/weatherPoint';
+import { ProbsAndIntensitiesPerWeatherPointPerDepartureTime } from './Models/ProbsAndIntensitiesPerWeatherPointPerDepartureTime';
 
 @Injectable({
   providedIn: 'root'
@@ -42,10 +43,8 @@ export class WeatherService {
     return await this.getMinutelyData(thisRoute).then(minutelyRainData => {
       this.placeWeatherMarkers(thisRoute, map);
 
-      let rainIntensity = this.getRainIntensityPerWeatherPointPerPerInterval(thisRoute, minutelyRainData);
-      let rainProabilities = this.getRainProbPerWeatherPointPerPerInterval(thisRoute, minutelyRainData);
-
-      return new RouteAndWeatherInformation(thisRoute, rainIntensity, rainProabilities);
+      let refactorMe: ProbsAndIntensitiesPerWeatherPointPerDepartureTime = this.getWeatherInformationPerWeatherPointPerPerInterval(thisRoute, minutelyRainData);
+      return new RouteAndWeatherInformation(thisRoute, refactorMe.rainIntensities, refactorMe.rainProbabilites);
     });
   }
 
@@ -160,41 +159,27 @@ export class WeatherService {
     return deg * (Math.PI / 180);
   }
 
-
-  private getRainIntensityPerWeatherPointPerPerInterval(thisRoute: RouteInformation, MinutelyDatForThisRoute: MinutelyRainData[][]): number[][] {
-    var RainDataForEachPoint: MinutelyRainData[][] = this.getRainDataAtEachWeatherPointPerInterval(thisRoute, MinutelyDatForThisRoute);
-    return this.justGetIntensities(RainDataForEachPoint);
+  private getWeatherInformationPerWeatherPointPerPerInterval(thisRoute: RouteInformation, MinutelyDatForThisRoute: MinutelyRainData[][]): ProbsAndIntensitiesPerWeatherPointPerDepartureTime { // cpould use model instead of array and then having intensities on index 0 and probs on 1?!
+    const rainDataForEachPoint: MinutelyRainData[][] = this.getRainDataAtEachWeatherPointPerInterval(thisRoute, MinutelyDatForThisRoute);
+    return this.getProbAndIntensities(rainDataForEachPoint);
   }
 
-  private getRainProbPerWeatherPointPerPerInterval(thisRoute: RouteInformation, MinutelyDatForThisWeatherMarkers: MinutelyRainData[][]): number[][] {
-    var RainDataForEachPoint: MinutelyRainData[][] = this.getRainDataAtEachWeatherPointPerInterval(thisRoute, MinutelyDatForThisWeatherMarkers);
-    return this.justGetProb(RainDataForEachPoint);
-  }
+  private getProbAndIntensities(RainDataForEachPointPerInterval: MinutelyRainData[][]): ProbsAndIntensitiesPerWeatherPointPerDepartureTime {
+    let intentsAndProbs: ProbsAndIntensitiesPerWeatherPointPerDepartureTime = new ProbsAndIntensitiesPerWeatherPointPerDepartureTime();
 
-  private justGetIntensities(RainDataForEachPointPerInterval: MinutelyRainData[][]): number[][] {
-    var weatherPointsPerIntervalIntents: number[][] = [];
-    for (let i = 0; i < RainDataForEachPointPerInterval.length; i++) {
-      let focusedRainStation = RainDataForEachPointPerInterval[i];
-      let focusedRainIntensity: number[] = [];
-      focusedRainStation.forEach(focusedTime => {
-        focusedRainIntensity.push(focusedTime.precipIntensity);
-      });
-      weatherPointsPerIntervalIntents.push(focusedRainIntensity);
-    }
-    return weatherPointsPerIntervalIntents;
-  }
-
-  private justGetProb(RainDataForEachPointPerInterval: MinutelyRainData[][]): number[][] {
-    let weatherPointsPerIntervalProbs: number[][] = [];
-    for (let i = 0; i < RainDataForEachPointPerInterval.length; i++) {
-      let focusedRainStation = RainDataForEachPointPerInterval[i];
+    for (const weatherStationLevel of RainDataForEachPointPerInterval) {
+      let focusedRainStation = weatherStationLevel;
+      let focusedRainIntensities: number[] = [];
       let focusedRainProbs: number[] = [];
       focusedRainStation.forEach(focusedTime => {
+        focusedRainIntensities.push(focusedTime.precipIntensity);
         focusedRainProbs.push(focusedTime.precipProbability);
       });
-      weatherPointsPerIntervalProbs.push(focusedRainProbs);
+      intentsAndProbs.rainIntensities.push(focusedRainIntensities);
+      intentsAndProbs.rainProbabilites.push(focusedRainProbs);
     }
-    return weatherPointsPerIntervalProbs;
+
+    return intentsAndProbs;
   }
 
   private getRainDataAtEachWeatherPointPerInterval(thisRoute: RouteInformation, MinutelyDatForThisWeatherMarkers: MinutelyRainData[][]): MinutelyRainData[][] {

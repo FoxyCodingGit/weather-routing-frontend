@@ -27,7 +27,7 @@ export class MapComponent implements OnInit {
 
   private routeAndWeatherInformation: RouteAndWeatherInformation[] = [];
 
-  private focusedRouteId;
+  private focusedRouteId: number;
 
   private StartOrEndIsFocused = 0;
 
@@ -38,7 +38,7 @@ export class MapComponent implements OnInit {
   public endLat = 55.575684498080676;
   public endLng = -1.920110941382518;
 
-  public whenLeavingForTable;
+  //public whenLeavingForTable: any;
 
   private userMarker: google.maps.Marker;
 
@@ -77,7 +77,7 @@ export class MapComponent implements OnInit {
       (routes) => {
         let newRoutesFormat: RouteIWant[] = this.RouteFromAPIToRouteIWant(routes);
 
-        let RouteAltNum = 0;        
+        let RouteAltNum = 0;
         newRoutesFormat.forEach(routeInformation => {
           this.createrouteandaddtomap(routeInformation, data, RouteAltNum); // TODO: remove routealtnum as bad soluton.
           RouteAltNum++;
