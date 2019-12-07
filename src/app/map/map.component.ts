@@ -74,20 +74,79 @@ export class MapComponent implements OnInit {
 
   public onRoutingSubmit(data: any) {
     this.mapRoutingService.GetRoutes(data.travelMode, data.startLat, data.startLng, data.endLat, data.endLng, this.numberOfAltRoutes).subscribe(
-      (routes) => {
+      async (routes: RouteFromAPI[]) => {
         let newRoutesFormat: RouteIWant[] = this.RouteFromAPIToRouteIWant(routes);
 
         let RouteAltNum = 0;
+
+
+
+        let lestLatLngIndex = routes[0].points.length - 1;
+        let startLocationName: string;
+        let endLocationName: string;
+
+        await this.getLocationName(new google.maps.LatLng(routes[0].points[0].latitude, routes[0].points[0].longitude)).then(result => {
+          debugger;
+          startLocationName = result;
+        });
+
+        await this.getLocationName(new google.maps.LatLng(routes[0].points[lestLatLngIndex].latitude, routes[0].points[lestLatLngIndex].longitude)).then(result => {
+          endLocationName = result;
+        });
+
+
         newRoutesFormat.forEach(routeInformation => {
-          this.createrouteandaddtomap(routeInformation, data, RouteAltNum); // TODO: remove routealtnum as bad soluton.
+          this.createrouteandaddtomap(startLocationName, endLocationName, routeInformation, data, RouteAltNum); // TODO: remove routealtnum as bad soluton.
           RouteAltNum++;
         });
       }
     );
   }
 
-  private RouteFromAPIToRouteIWant(routes: RouteFromAPI[]): RouteIWant[] { // move to service or someytinh
+  private async getLocationName(latLng: google.maps.LatLng): Promise<string> {
+    let geocoder = new google.maps.Geocoder;
 
+    return new Promise(function(resolve, reject) {
+      geocoder.geocode({ 'location': latLng }, function (results) {
+        if (results[0]) {
+          //that.zoom = 11;
+          //that.currentLocation = results[0].formatted_address;
+
+          let addressOutput: string = "";
+
+          console.log(results[0]);
+
+          results[0].address_components.forEach(addressPart => {
+            if (addressPart.types[0] == "street_number"
+            || addressPart.types[0] == "route"
+            || addressPart.types[0] == "postal_code") {
+              addressOutput += addressPart.long_name + " ";
+            }
+          });
+
+          addressOutput = addressOutput.substring(0, addressOutput.length - 1);
+
+          resolve(addressOutput);
+        }
+        else {
+          console.log('No results found');
+          reject("Error!")
+        }
+      });
+    });
+
+  }
+
+  // private formatNameToNumberAndRoad(addressComponents: google.maps.GeocoderResult[]) {
+
+  //   string numberAndRoad = 
+
+  //   array.forEach(element => {
+      
+  //   });
+  // }
+
+  private RouteFromAPIToRouteIWant(routes: RouteFromAPI[]): RouteIWant[] { // move to service or someytinh
     let newRouteIWantFormat: RouteIWant[] = [];
 
     routes.forEach(route => {
@@ -103,7 +162,7 @@ export class MapComponent implements OnInit {
   }
 
 
-  private async createrouteandaddtomap(routeInformation: RouteIWant, data: any, RouteAltNum: number) {
+  private async createrouteandaddtomap(startLocation: string, endLocation: string, routeInformation: RouteIWant, data: any, RouteAltNum: number) {
     let mapRoute = new google.maps.Polyline({
       path: routeInformation.points,
       geodesic: true,
@@ -112,7 +171,7 @@ export class MapComponent implements OnInit {
       strokeWeight: 2
     });
     this.placeStartEndMarkers(routeInformation.points);
-    let thisRoute = new RouteInformation(this.routeAndWeatherInformation.length + RouteAltNum, mapRoute, routeInformation.travelTimeInSeconds, data.name, routeInformation.colour, routeInformation.distance);
+    let thisRoute = new RouteInformation(this.routeAndWeatherInformation.length + RouteAltNum, mapRoute, routeInformation.travelTimeInSeconds, data.name, routeInformation.colour, routeInformation.distance, startLocation, endLocation);
     mapRoute.setMap(this.map);
     this.map.fitBounds(thisRoute.bounds); // THIS WILL MAKE IT JUMP LIKE CRAZY TODO: Only do this on last route of thing.
     await this.weatherService.addWeatherInformationToRoute(thisRoute, this.map).then(focusedRouteAndWeatherInfo => {

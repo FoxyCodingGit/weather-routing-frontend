@@ -8,6 +8,8 @@ export class RouteIWant {
         + ', ' + this.randomIntFromInterval(0, 200);
     }
 
+    public startLocation: string;
+    public endLocation: string;
     public points: google.maps.LatLng[];
     public travelTimeInSeconds: number;
     public distance: number;
