@@ -59,9 +59,9 @@ export class RouteDataTableComponent implements OnInit {
     $('#table_id').on('click', 'tr', selectRowFunc);
   }
 
-  public addRouteToTable(routeInformation: RouteInformation, overallScores: string[], routePlacementInArray: number) {
+  public addRouteToTable(routeInformation: RouteInformation, overallScores: string[]) {
     $('#table_id').DataTable().row.add([
-      routePlacementInArray,
+      routeInformation.id,
       routeInformation.name,
       routeInformation.startLocation,
       routeInformation.endLocation,

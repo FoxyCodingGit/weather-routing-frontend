@@ -1,15 +1,12 @@
 /// <reference types="@types/googlemaps" />
 
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MapRoutingService } from '../shared/map-routing.service';
 import { WeatherService } from '../shared/weather.service';
 import { RouteInformation } from './Model/RouteInformation';
 import { GraphComponent } from '../graph/graph.component';
-import { MinutelyRainData } from './Model/MinutelyRainData';
 import { RouteDataTableComponent } from '../route-data-table/route-data-table.component';
 import { RouteAndWeatherInformation } from './Model/RouteAndWeatherInformation';
-import { RouteIWant } from './Model/RouteIWant';
-import { RouteFromAPI } from './Model/RouteFromAPI';
+import { RouteCreationComponent } from '../route-creation/route-creation.component';
 
 @Component({
   selector: 'app-map',
@@ -19,34 +16,44 @@ import { RouteFromAPI } from './Model/RouteFromAPI';
 export class MapComponent implements OnInit {
   @ViewChild(GraphComponent, {static: false}) graph: GraphComponent;
   @ViewChild(RouteDataTableComponent, {static: false}) routeTable: RouteDataTableComponent;
+  @ViewChild(RouteCreationComponent, {static: false}) routeCreation: RouteCreationComponent;
 
-  map: google.maps.Map;
-
-  public lattitude: number;
-  public longitude: number;
-
+  private map: google.maps.Map;
   private routeAndWeatherInformation: RouteAndWeatherInformation[] = [];
-
   private focusedRouteId: number;
-
-  private StartOrEndIsFocused = 0;
-
-  private numberOfAltRoutes = 0; // FOR NOW
-
-  public startLat = 55.583156106988;
-  public startLng = -1.9225142006598617;
-  public endLat = 55.575684498080676;
-  public endLng = -1.920110941382518;
-
-  //public whenLeavingForTable: any;
-
   private userMarker: google.maps.Marker;
 
-  constructor(private mapRoutingService: MapRoutingService, private weatherService: WeatherService) { }
+  constructor(private weatherService: WeatherService) { }
 
   ngOnInit(): void {
     this.generateMap();
     this.displayUserLocation();
+  }
+
+  public processNewRoutes(newRoutes: RouteAndWeatherInformation[]): void {
+    newRoutes.forEach(route => {
+      this.placeStartEndMarkers(route.routeInformation.route.getPath().getArray());
+      route.routeInformation.route.setMap(this.map);
+
+      route.routeInformation.route.addListener('click', () => {
+        this.routeTable.selectRowByRouteId(route.routeInformation.id);
+      });    
+
+      this.routeAndWeatherInformation.push(route);
+      this.placeWeatherMarkers(route.routeInformation, this.map);
+    });
+
+    let newestRoute = this.routeAndWeatherInformation[this.routeAndWeatherInformation.length - 1];
+    this.map.fitBounds(newestRoute.routeInformation.bounds);
+    this.focusedRouteId = newestRoute.routeInformation.id;
+
+    this.graph.graphIntensityandProb(newestRoute.rainIntensities, newestRoute.rainProbabilitiesAverage);
+  
+    let overallScores: string[] = [];
+    for (let departureTime = 0; departureTime <= 20; departureTime += 5) {
+      overallScores.push(this.weatherService.generateOverallRouteScore(newestRoute, departureTime)); // can delete this.whenleavingfortable
+    }
+    this.routeTable.addRouteToTable(newestRoute.routeInformation, overallScores);
   }
 
   public selectActionPerformed(routeIdandSelectAction: any): void { // bad name and needs model
@@ -72,145 +79,26 @@ export class MapComponent implements OnInit {
     }
   }
 
-  public onRoutingSubmit(data: any) {
-    this.mapRoutingService.GetRoutes(data.travelMode, data.startLat, data.startLng, data.endLat, data.endLng, this.numberOfAltRoutes).subscribe(
-      async (routes: RouteFromAPI[]) => {
-        let newRoutesFormat: RouteIWant[] = this.RouteFromAPIToRouteIWant(routes);
-
-        let RouteAltNum = 0;
-
-
-
-        let lestLatLngIndex = routes[0].points.length - 1;
-        let startLocationName: string;
-        let endLocationName: string;
-
-        await this.getLocationName(new google.maps.LatLng(routes[0].points[0].latitude, routes[0].points[0].longitude)).then(result => {
-          debugger;
-          startLocationName = result;
-        });
-
-        await this.getLocationName(new google.maps.LatLng(routes[0].points[lestLatLngIndex].latitude, routes[0].points[lestLatLngIndex].longitude)).then(result => {
-          endLocationName = result;
-        });
-
-
-        newRoutesFormat.forEach(routeInformation => {
-          this.createrouteandaddtomap(startLocationName, endLocationName, routeInformation, data, RouteAltNum); // TODO: remove routealtnum as bad soluton.
-          RouteAltNum++;
-        });
-      }
-    );
-  }
-
-  private async getLocationName(latLng: google.maps.LatLng): Promise<string> {
-    let geocoder = new google.maps.Geocoder;
-
-    return new Promise(function(resolve, reject) {
-      geocoder.geocode({ 'location': latLng }, function (results) {
-        if (results[0]) {
-          //that.zoom = 11;
-          //that.currentLocation = results[0].formatted_address;
-
-          let addressOutput: string = "";
-
-          console.log(results[0]);
-
-          results[0].address_components.forEach(addressPart => {
-            if (addressPart.types[0] == "street_number"
-            || addressPart.types[0] == "route"
-            || addressPart.types[0] == "postal_code") {
-              addressOutput += addressPart.long_name + " ";
-            }
-          });
-
-          addressOutput = addressOutput.substring(0, addressOutput.length - 1);
-
-          resolve(addressOutput);
-        }
-        else {
-          console.log('No results found');
-          reject("Error!")
+  private placeWeatherMarkers(thisRoute: RouteInformation, map: google.maps.Map) {
+    for (let i = 1; i < thisRoute.weatherPoints.length - 1; i++) {
+      let weatherMarker = new google.maps.Marker({ // add marker to array that is currntly not being used.
+        map: map,
+        position: { lat: thisRoute.route.getPath().getArray()[thisRoute.weatherPoints[i].legNumberInRoute].lat(),
+          lng: thisRoute.route.getPath().getArray()[thisRoute.weatherPoints[i].legNumberInRoute].lng() },
+        icon: {
+          url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
         }
       });
-    });
-
+    }
   }
 
-  // private formatNameToNumberAndRoad(addressComponents: google.maps.GeocoderResult[]) {
-
-  //   string numberAndRoad = 
-
-  //   array.forEach(element => {
-      
-  //   });
-  // }
-
-  private RouteFromAPIToRouteIWant(routes: RouteFromAPI[]): RouteIWant[] { // move to service or someytinh
-    let newRouteIWantFormat: RouteIWant[] = [];
-
-    routes.forEach(route => {
-      let latLngs: google.maps.LatLng[] = [];
-      route.points.forEach(point => {
-        latLngs.push(new google.maps.LatLng(point.latitude, point.longitude));
-      });
-
-      newRouteIWantFormat.push(new RouteIWant(latLngs, route.travelTimeInSeconds, route.distance));
-    });
-    
-    return newRouteIWantFormat;
-  }
-
-
-  private async createrouteandaddtomap(startLocation: string, endLocation: string, routeInformation: RouteIWant, data: any, RouteAltNum: number) {
-    let mapRoute = new google.maps.Polyline({
-      path: routeInformation.points,
-      geodesic: true,
-      strokeColor: routeInformation.colour + ', 1)',
-      strokeOpacity: 1.0,
-      strokeWeight: 2
-    });
-    this.placeStartEndMarkers(routeInformation.points);
-    let thisRoute = new RouteInformation(this.routeAndWeatherInformation.length + RouteAltNum, mapRoute, routeInformation.travelTimeInSeconds, data.name, routeInformation.colour, routeInformation.distance, startLocation, endLocation);
-    mapRoute.setMap(this.map);
-    this.map.fitBounds(thisRoute.bounds); // THIS WILL MAKE IT JUMP LIKE CRAZY TODO: Only do this on last route of thing.
-    await this.weatherService.addWeatherInformationToRoute(thisRoute, this.map).then(focusedRouteAndWeatherInfo => {
-      this.routeAndWeatherInformation.push(focusedRouteAndWeatherInfo);
-      this.focusedRouteId = this.routeAndWeatherInformation.length - 1;
-      this.graph.graphIntensityandProb(focusedRouteAndWeatherInfo.rainIntensities, focusedRouteAndWeatherInfo.rainProbabilitiesAverage);
-
-      let overallScores: string[] = [];
-      for (let departureTime = 0; departureTime <= 20; departureTime += 5) {
-        overallScores.push(this.weatherService.generateOverallRouteScore(focusedRouteAndWeatherInfo, departureTime)); // can delete this.whenleavingfortable
-      }
-      this.routeTable.addRouteToTable(thisRoute, overallScores, this.routeAndWeatherInformation.length - 1);
-
-    });
-    mapRoute.addListener('click', () => {
-      this.routeTable.selectRowByRouteId(thisRoute.id);
-    });
-  }
-
-  public onClickMe() {
-    console.log(this.routeAndWeatherInformation);
-    console.log(this.focusedRouteId);
-
-
+  public getIntProbGraph() {
     this.graph.graphIntensityandProb(this.routeAndWeatherInformation[this.focusedRouteId].rainIntensities,
       this.routeAndWeatherInformation[this.focusedRouteId].rainProbabilitiesAverage);
   }
 
-  public onClickMe2() {
-    this.graph.graphRainPercentageForRoute(this.routeAndWeatherInformation[this.focusedRouteId].rainProbabilitiesAverage,
-      this.routeAndWeatherInformation[this.focusedRouteId].routeInformation);
-  }
-
-  public onClickMe3() {
-    this.graph.JustIntensity(this.routeAndWeatherInformation[this.focusedRouteId].rainIntensities);
-  }
-
-  public onClickMe4() {
-    this.graph.graphExpectedTotalRainOnRoute(this.routeAndWeatherInformation, 0); // TODO: GIVE DEPARTURE TIME.
+  public getTotalRainGraph() {
+    this.graph.graphExpectedTotalRainOnRoute(this.routeAndWeatherInformation, 0);
   }
 
   public startRoute(): void {
@@ -235,15 +123,7 @@ export class MapComponent implements OnInit {
   }
 
   private updateLatLngInputValues(e: google.maps.MouseEvent): void {
-    if (this.StartOrEndIsFocused === 0) {
-      this.startLat = e.latLng.lat();
-      this.startLng = e.latLng.lng();
-      this.StartOrEndIsFocused = 1;
-    } else {
-      this.endLat = e.latLng.lat();
-      this.endLng = e.latLng.lng();
-      this.StartOrEndIsFocused = 0;
-    }
+    this.routeCreation.updateLatLngInputValues(e);
   }
 
   private placeStartEndMarkers(routePoints: google.maps.LatLng[]) {
@@ -267,45 +147,7 @@ export class MapComponent implements OnInit {
         });
       });
     } else {
-      alert('The user has not allowed to know its locaiton.');
+      alert('Permission of location has not been granted.');
     }
   }
-
-  // private findCentreLatLngValueOfRoute(polylineRoute: google.maps.Polyline): any {
-  //   debugger;
-  //   let arrayOfLatLng: google.maps.LatLng[] = polylineRoute.getPath().getArray();
-
-  //   let minLat: number = 90;
-  //   let maxLat: number = -90;
-  //   let minLng: number = 180;
-  //   let maxLng: number = -180;
-
-  //   arrayOfLatLng.forEach(latLngValues => {
-  //     if (latLngValues.lat() < minLat) { // prob can do if else on max and min comparisons
-  //       minLat = latLngValues.lat();
-  //     }
-  //     if (latLngValues.lat() > maxLat) {
-  //       maxLat = latLngValues.lat();
-  //     }
-  //     if (latLngValues.lng() < minLng) { // prob can do if else on max and min comparisons
-  //       minLng = latLngValues.lng();
-  //     }
-  //     if (latLngValues.lng() > maxLng) {
-  //       maxLng = latLngValues.lng();
-  //     }
-  //   });
-
-  //   let latDifference = Math.abs(maxLat - minLat);
-  //   let lngDifference = Math.abs(maxLng - minLng);
-
-  //   let latCentre = minLat + latDifference;
-  //   let lngCentre = minLng + lngDifference;
-
-  //   //let latLngCentre: google.maps.LatLng = {lat: () => { return latCentre }, lng: () => { return lngCentre }};  can t do it this way as not providing all methods
-
-  //   let latLngCentre = {lat: latCentre, lng: lngCentre};
-  //   return latLngCentre;
-  // }
-
-
 }

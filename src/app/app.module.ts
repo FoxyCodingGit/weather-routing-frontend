@@ -10,6 +10,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ChartsModule } from 'ng2-charts';
 import { GraphComponent } from './graph/graph.component';
 import { RouteDataTableComponent } from './route-data-table/route-data-table.component';
+import { RouteCreationComponent } from './route-creation/route-creation.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import { RouteDataTableComponent } from './route-data-table/route-data-table.com
     NavbarComponent,
     MapComponent,
     GraphComponent,
-    RouteDataTableComponent
+    RouteDataTableComponent,
+    RouteCreationComponent
   ],
   imports: [
     BrowserModule,

@@ -1,43 +1,12 @@
 <div id="map" style="width:100%;height:400px"></div>  
 
+<app-route-creation (RoutesCreated)="processNewRoutes($event)"></app-route-creation>
+<hr>
+
 <app-route-data-table (SelectRowAction)="selectActionPerformed($event)"></app-route-data-table>
 
-<h1>Routing</h1>
-<form #RouteForm = "ngForm" (ngSubmit)="onRoutingSubmit(RouteForm.value)">
-    <h2>Start:</h2><br>
-    Lattitude: <input type="text" name="startLat" [(ngModel)]="startLat"><br>
-    Longitude: <input type="text" name="startLng" [(ngModel)]="startLng"><br>
-    <h2>End:</h2><br>
-    Lattitude: <input type="text" name="endLat" [(ngModel)]="endLat"><br>
-    Longitude: <input type="text" name="endLng" [(ngModel)]="endLng"><br>
-    <h2>How You Are Travelling:</h2>
-    <select name=travelMode ngModel>
-      <option value="pedestrian">Pedestrian</option>
-      <option value="bicycle">Bicycle</option>
-      <option value="car">Car</option>
-    </select>
-
-    Name: <input type="text" name="name" ngModel><br>
-
-    <input type="submit" value="SUBMIT">
-</form>
-
-<!-- <h3>When are you leaving?</h3>
-<select name="WhenAreYouLeaving" [(ngModel)]="whenLeavingForTable" (change)="WhenAreYouLeavingHasChanged($event.target.value);" [value]='0'> this value doesnt work!!! do ngmodel so can check on value when route submitted.
-    <option value="0" selected>Now</option>
-    <option value="5">5 mins</option>
-    <option value="10">10 mins</option>
-    <option value="15">15 mins</option>
-    <option value="20">20 mins</option>
-</select>
--->
-
-<hr/>
 <app-graph></app-graph> 
 
 <button type="button" (click)="startRoute()">StartRoute</button>
-
-<button (click)="onClickMe()">Click me!</button>
-<button (click)="onClickMe2()">Click me!</button>
-<button (click)="onClickMe3()">Click me!</button>
-<button (click)="onClickMe4()">Click me NEW!</button>
+<button (click)="getIntProbGraph()">Intensity and Avg Probability!</button>
+<button (click)="getTotalRainGraph()">Total Rain!</button>

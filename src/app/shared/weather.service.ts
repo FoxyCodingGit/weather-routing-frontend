@@ -37,28 +37,13 @@ export class WeatherService {
     return thing; // might want to take away from 100 so bigger number is better.
   }
 
-  public async addWeatherInformationToRoute(thisRoute: RouteInformation, map: google.maps.Map): Promise<RouteAndWeatherInformation> {
+  public async addWeatherInformationToRoute(thisRoute: RouteInformation): Promise<RouteAndWeatherInformation> {
     this.setWeatherLegsEqualDistanceApart(thisRoute);
 
     return await this.getMinutelyData(thisRoute).then(minutelyRainData => {
-      this.placeWeatherMarkers(thisRoute, map);
-
       let refactorMe: ProbsAndIntensitiesPerWeatherPointPerDepartureTime = this.getWeatherInformationPerWeatherPointPerPerInterval(thisRoute, minutelyRainData);
       return new RouteAndWeatherInformation(thisRoute, refactorMe.rainIntensities, refactorMe.rainProbabilites);
     });
-  }
-
-  private placeWeatherMarkers(thisRoute: RouteInformation, map: google.maps.Map) {
-    for (let i = 1; i < thisRoute.weatherPoints.length - 1; i++) {
-      let weatherMarker = new google.maps.Marker({ // add marker to array that is currntly not being used.
-        map: map,
-        position: { lat: thisRoute.route.getPath().getArray()[thisRoute.weatherPoints[i].legNumberInRoute].lat(),
-          lng: thisRoute.route.getPath().getArray()[thisRoute.weatherPoints[i].legNumberInRoute].lng() },
-        icon: {
-          url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-        }
-      });
-    }
   }
 
   private async getMinutelyData(thisRoute: RouteInformation): Promise<MinutelyRainData[][]> {
