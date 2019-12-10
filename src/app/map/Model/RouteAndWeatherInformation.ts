@@ -24,7 +24,7 @@ export class RouteAndWeatherInformation {
                 average += probabilies * 100;
             });
 
-            averageRainProbForEachDeparture.push(average / departureTimeRainProbabilities.length);
+            averageRainProbForEachDeparture.push(+(average / departureTimeRainProbabilities.length).toFixed(0));
         });
 
         return averageRainProbForEachDeparture;

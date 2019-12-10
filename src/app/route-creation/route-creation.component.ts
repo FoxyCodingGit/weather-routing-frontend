@@ -16,18 +16,18 @@ export class RouteCreationComponent implements OnInit {
 
   constructor(private mapRoutingService: MapRoutingService, private weatherService: WeatherService) { }
 
-  routeId: number = 0;
-  private IsStartLatLngFocused = true;
-
-  ngOnInit() {
-  }
+  routeId = 0;
+  private numberOfAltRoutes = 1;
 
   public startLat = 55.583156106988;
   public startLng = -1.9225142006598617;
   public endLat = 55.575684498080676;
   public endLng = -1.920110941382518;
-  
-  private numberOfAltRoutes = 1;
+
+  private IsStartLatLngFocused = true;
+
+  ngOnInit() {
+  }
 
   public onRoutingSubmit(data: any) {
     this.mapRoutingService.GetRoutes(data.travelMode, data.startLat, data.startLng, data.endLat, data.endLng, this.numberOfAltRoutes).subscribe(
@@ -54,7 +54,7 @@ export class RouteCreationComponent implements OnInit {
           await this.createRouteWithWeatherInfo(startLocationName, endLocationName, routeInformation, data).then(route => {
             newRoutes.push(route);
           });
-          
+
           this.RoutesCreated.emit(newRoutes);
         });
       }
@@ -84,7 +84,7 @@ export class RouteCreationComponent implements OnInit {
 
       newRouteIWantFormat.push(new RouteIWant(latLngs, route.travelTimeInSeconds, route.distance));
     });
-    
+
     return newRouteIWantFormat;
   }
 
@@ -133,7 +133,7 @@ export class RouteCreationComponent implements OnInit {
     let thisRoute = new RouteInformation(this.routeId, mapRoute, routeInformation.travelTimeInSeconds, data.name, routeInformation.colour, routeInformation.distance, startLocation, endLocation);
     this.routeId++;
 
-    return await this.weatherService.addWeatherInformationToRoute(thisRoute);    
+    return await this.weatherService.addWeatherInformationToRoute(thisRoute);
   }
 
 }

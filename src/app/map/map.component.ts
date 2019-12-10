@@ -37,7 +37,7 @@ export class MapComponent implements OnInit {
 
       route.routeInformation.route.addListener('click', () => {
         this.routeTable.selectRowByRouteId(route.routeInformation.id);
-      });    
+      });
 
       this.routeAndWeatherInformation.push(route);
       this.placeWeatherMarkers(route.routeInformation, this.map);
@@ -105,7 +105,7 @@ export class MapComponent implements OnInit {
     this.map.setCenter({lat: this.userMarker.getPosition().lat(), lng: this.userMarker.getPosition().lng()});
     //navigator.geolocation.watchPosition(() => console.log('success'), () => console.log('error'));
   }
-  
+
   private generateMap() {
     const mapProperties = {
       center: new google.maps.LatLng(55.586698, -1.909815),

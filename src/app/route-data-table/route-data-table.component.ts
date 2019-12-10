@@ -34,9 +34,9 @@ export class RouteDataTableComponent implements OnInit {
     $('#table_id').DataTable(tableSettings);
 
     const componentScope = this;
-    let table = $('#table_id').DataTable();
+    const table = $('#table_id').DataTable();
 
-    let selectRowFunc = function() {
+    const selectRowFunc = function() {
       let selectRowOutcome = true;
 
       if ($(this).hasClass('selected')) {
@@ -47,7 +47,7 @@ export class RouteDataTableComponent implements OnInit {
         $(this).addClass('selected');
       }
 
-      let emitData = {routeIdfocused: table.row(this).data()[0], selectAction: selectRowOutcome};
+      const emitData = {routeIdfocused: table.row(this).data()[0], selectAction: selectRowOutcome};
 
       componentScope.SelectRowAction.emit(emitData);
       // TODO: hiddencolumForIdPosition is hacky. Tried placing id at start and hiding but would hide name column
@@ -75,7 +75,7 @@ export class RouteDataTableComponent implements OnInit {
   }
 
   private getCorrectIcons(overallScores: string[]): string[] {
-    let iconNames: string[] = [];
+    const iconNames: string[] = [];
 
     for (let i = 0; i < overallScores.length; i++) {
       if (overallScores[i + 1] > overallScores[i]) { // hacky hack as comparing strings, should work but fragile.
@@ -91,11 +91,11 @@ export class RouteDataTableComponent implements OnInit {
   }
 
   public selectRowByRouteId(routeId: number) {
-    let table = $('#table_id').DataTable();
+    const table = $('#table_id').DataTable();
     table.$('tr.selected').removeClass('selected');
 
     for (let i = 0; i < table.rows().count(); i++) { // check count
-      let focusedRouteId = table.row(i).data()[0];
+      const focusedRouteId = table.row(i).data()[0];
       if (routeId === focusedRouteId) {
         table.
         $(table.row(i).node()).addClass('selected');
@@ -104,7 +104,7 @@ export class RouteDataTableComponent implements OnInit {
     }
 
     // capitalisaiton
-    let emitData = {routeIdfocused: routeId, selectAction: true}; // clicking on map route will always select the row. // kinda hack. using for trigger but no dynamic info sent over.
+    const emitData = {routeIdfocused: routeId, selectAction: true}; // clicking on map route will always select the row. // kinda hack. using for trigger but no dynamic info sent over.
     this.SelectRowAction.emit(emitData);
   }
 }
