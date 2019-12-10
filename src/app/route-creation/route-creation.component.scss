@@ -1,0 +1,25 @@
+.container {
+    border: 1px dashed;
+    background-color: lightgrey;
+}
+
+p, h2 {
+    display: inline;
+}
+
+.wrapper {
+    display: flex;
+    min-width: 100%;
+}
+
+.active {
+    border: 1px solid green;
+}
+
+.isFocused{
+    display: inline;
+    color: white;
+    background-color: red;
+    text-align: center;
+    border-radius: 5px;
+}

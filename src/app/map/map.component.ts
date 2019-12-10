@@ -47,13 +47,13 @@ export class MapComponent implements OnInit {
     this.map.fitBounds(newestRoute.routeInformation.bounds);
     this.focusedRouteId = newestRoute.routeInformation.id;
 
-    this.graph.graphIntensityandProb(newestRoute.rainIntensities, newestRoute.rainProbabilitiesAverage);
+    this.graph.graphExpectedTotalRainOnRoute(this.routeAndWeatherInformation, 0);
   
     let overallScores: string[] = [];
     for (let departureTime = 0; departureTime <= 20; departureTime += 5) {
       overallScores.push(this.weatherService.generateOverallRouteScore(newestRoute, departureTime)); // can delete this.whenleavingfortable
     }
-    this.routeTable.addRouteToTable(newestRoute.routeInformation, overallScores);
+    this.routeTable.addRouteToTable(newestRoute.routeInformation, overallScores); // HOW IS THIS WORKING
   }
 
   public selectActionPerformed(routeIdandSelectAction: any): void { // bad name and needs model

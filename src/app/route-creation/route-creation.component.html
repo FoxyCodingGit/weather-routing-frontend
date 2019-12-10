@@ -1,19 +1,33 @@
-<h1>Routing</h1>
-<form #RouteForm = "ngForm" (ngSubmit)="onRoutingSubmit(RouteForm.value)">
-    <h2>Start:</h2><br>
-    Lattitude: <input type="text" name="startLat" [(ngModel)]="startLat"><br>
-    Longitude: <input type="text" name="startLng" [(ngModel)]="startLng"><br>
-    <h2>End:</h2><br>
-    Lattitude: <input type="text" name="endLat" [(ngModel)]="endLat"><br>
-    Longitude: <input type="text" name="endLng" [(ngModel)]="endLng"><br>
-    <h2>How You Are Travelling:</h2>
-    <select name=travelMode ngModel>
-      <option value="pedestrian">Pedestrian</option>
-      <option value="bicycle">Bicycle</option>
-      <option value="car">Car</option>
-    </select>
-
-    Name: <input type="text" name="name" ngModel><br>
-
-    <input type="submit" value="SUBMIT">
-</form>
+<div class="container">
+  <form #RouteForm="ngForm" (ngSubmit)="onRoutingSubmit(RouteForm.value)">
+      <div class="wrapper">
+          <div>
+              <h2>Start:</h2>
+              <div *ngIf="isStartLatLngFocused === true" class="isFocused">Is Focused</div><br/>
+              <p>Lattitude:</p><input type="text" name="startLat" [(ngModel)]="startLat">
+              <p>Longitude:</p><input type="text" name="startLng" [(ngModel)]="startLng">
+          </div>
+          <div>
+              <h2>End:</h2>
+              <div *ngIf="isStartLatLngFocused === false" class="isFocused">Is Focused</div><br/>
+              <p>Lattitude:</p><input type="text" name="endLat" [(ngModel)]="endLat">
+              <p>Longitude:</p><input type="text" name="endLng" [(ngModel)]="endLng">
+          </div>
+          <div>
+              <h2>Extra</h2><br/>
+              <p>Mode of Transport:</p>
+              <select name=travelMode ngModel>
+                <option value="pedestrian">Pedestrian</option>
+                <option value="bicycle">Bicycle</option>
+                <option value="car">Car</option>
+              </select>
+          
+              <p>Name:</p>
+              <input type="text" name="name" ngModel><br>
+          </div>
+          <div>
+            <input type="submit" value="SUBMIT">
+          </div>
+      </div>
+  </form>
+</div>

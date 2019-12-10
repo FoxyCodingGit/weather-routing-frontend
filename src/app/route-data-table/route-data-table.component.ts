@@ -24,10 +24,10 @@ export class RouteDataTableComponent implements OnInit {
         { title: 'Duration', width: '5%' },
         { title: 'Distance', width: '5%' },
         { title: 'Leave Now', width: '10%' },
-        { title: 'Leave in 5 Mins', width: '10%' },
-        { title: 'Leave in 10 Mins', width: '10%' },
-        { title: 'Leave in 15 Mins', width: '10%' },
-        { title: 'Leave in 20 Mins', width: '10%' }
+        { title: 'Leave in 5 Mins', width: '12%' },
+        { title: 'Leave in 10 Mins', width: '12%' },
+        { title: 'Leave in 15 Mins', width: '12%' },
+        { title: 'Leave in 20 Mins', width: '12%' }
        ]
     };
 

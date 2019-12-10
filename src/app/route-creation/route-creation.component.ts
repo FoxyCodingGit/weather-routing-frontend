@@ -24,7 +24,7 @@ export class RouteCreationComponent implements OnInit {
   public endLat = 55.575684498080676;
   public endLng = -1.920110941382518;
 
-  private IsStartLatLngFocused = true;
+  public isStartLatLngFocused = true;
 
   ngOnInit() {
   }
@@ -62,14 +62,14 @@ export class RouteCreationComponent implements OnInit {
   }
 
   public updateLatLngInputValues(e: google.maps.MouseEvent): void {
-    if (this.IsStartLatLngFocused) {
+    if (this.isStartLatLngFocused) {
       this.startLat = e.latLng.lat();
       this.startLng = e.latLng.lng();
-      this.IsStartLatLngFocused = !this.IsStartLatLngFocused;
+      this.isStartLatLngFocused = !this.isStartLatLngFocused;
     } else {
       this.endLat = e.latLng.lat();
       this.endLng = e.latLng.lng();
-      this.IsStartLatLngFocused = !this.IsStartLatLngFocused;
+      this.isStartLatLngFocused = !this.isStartLatLngFocused;
     }
   }
 
