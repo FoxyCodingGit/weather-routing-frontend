@@ -30,8 +30,8 @@ export class WeatherService {
     if (ree === 0) {
       thing = '-';
     } else {
-      thing += ree;
-      thing += " (" + this.workOutmmPerHourFromRouteDurationAndmmThatHitsPersonInThatTime(ree, routeAndWeatherInformation.routeInformation.travelTimeInSeconds) + ")";
+      thing += ree + 'mm';
+      thing += ' (' + this.workOutmmPerHourFromRouteDurationAndmmThatHitsPersonInThatTime(ree, routeAndWeatherInformation.routeInformation.travelTimeInSeconds).toFixed(3) + ' mm/h)';
     }
 
     return thing; // might want to take away from 100 so bigger number is better.

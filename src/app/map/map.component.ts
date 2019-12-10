@@ -105,11 +105,7 @@ export class MapComponent implements OnInit {
     this.map.setCenter({lat: this.userMarker.getPosition().lat(), lng: this.userMarker.getPosition().lng()});
     //navigator.geolocation.watchPosition(() => console.log('success'), () => console.log('error'));
   }
-
-  public WhenAreYouLeavingHasChanged(value: number) {
-    this.routeTable.changeEachRowScore(value, this.routeAndWeatherInformation);
-  }
-
+  
   private generateMap() {
     const mapProperties = {
       center: new google.maps.LatLng(55.586698, -1.909815),
