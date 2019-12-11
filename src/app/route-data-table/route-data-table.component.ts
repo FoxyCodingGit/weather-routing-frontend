@@ -61,7 +61,7 @@ export class RouteDataTableComponent implements OnInit {
 
     $('#table_id').DataTable().row.add([
       routeInformation.id,
-      routeInformation.name,
+      '<div class="wrapper"><div class="square" style="background-color: ' + routeInformation.color + ', 1); color: ' + routeInformation.basicContrastColour + '">'+ routeInformation.id + '</div>' + routeInformation.name + '</div>',
       routeInformation.startLocation,
       routeInformation.endLocation,
       Math.round(routeInformation.travelTimeInSeconds / 60) + ' mins',

@@ -6,6 +6,7 @@ export class RouteInformation {
         this.route = route;
         this.travelTimeInSeconds = travelTimeInSeconds;
         this.color = color;
+        this.basicContrastColour = this.calculateBasicContrastColour();
         this.name = name;
         this.distance = distance;
         this.bounds = this.createBoundForPolygon(route.getPath().getArray());
@@ -17,6 +18,7 @@ export class RouteInformation {
     public route: google.maps.Polyline;
     public travelTimeInSeconds: number;
     public color: string;
+    public basicContrastColour: string;
     public name: string;
     public distance: number;
     public bounds: google.maps.LatLngBounds;
@@ -25,10 +27,24 @@ export class RouteInformation {
     public endLocation: string;
 
     private createBoundForPolygon(latLngs: google.maps.LatLng[]): google.maps.LatLngBounds {
-        var bounds = new google.maps.LatLngBounds();
-        for (var i = 0; i < latLngs.length; i++) {
-        bounds.extend(latLngs[i]);
+        const bounds = new google.maps.LatLngBounds();
+
+        for (const latLng of latLngs)  {
+            bounds.extend(latLng);
         }
+
         return bounds;
     }
+
+    private calculateBasicContrastColour(): string { // rename
+        const rgbaRoughSplitter = this.color.split(',');
+        const firstNumber = rgbaRoughSplitter[0].split('(')[1];
+        const middleDarknessTotalRGBValue = 382;
+
+        if (+firstNumber + +rgbaRoughSplitter[1].trim() + +rgbaRoughSplitter[2].trim() > middleDarknessTotalRGBValue) {
+            return 'rgb(0, 0, 0)';
+        } else {
+            return 'rgb(255, 255, 255)';
+        }
+      }
 }
