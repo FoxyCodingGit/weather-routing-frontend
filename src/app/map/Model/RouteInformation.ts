@@ -36,7 +36,7 @@ export class RouteInformation {
         return bounds;
     }
 
-    private calculateBasicContrastColour(): string { // rename
+    private calculateBasicContrastColour(): string {
         const rgbaRoughSplitter = this.color.split(',');
         const firstNumber = rgbaRoughSplitter[0].split('(')[1];
         const middleDarknessTotalRGBValue = 382;
