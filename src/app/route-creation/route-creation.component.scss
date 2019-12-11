@@ -1,25 +1,38 @@
-.container {
-    border: 1px dashed;
-    background-color: lightgrey;
-}
-
-p, h2 {
-    display: inline;
-}
-
-.wrapper {
-    display: flex;
-    min-width: 100%;
-}
-
 .active {
     border: 1px solid green;
 }
 
 .isFocused{
-    display: inline;
     color: white;
     background-color: red;
     text-align: center;
+
     border-radius: 5px;
+    width: 100px;
+    height: 20px;
+}
+
+input[type=text], select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+input[type=submit] {
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+input[type=submit]:hover {
+    background-color: #45a049;
 }

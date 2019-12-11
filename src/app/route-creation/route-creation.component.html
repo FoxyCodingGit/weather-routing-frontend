@@ -1,33 +1,41 @@
-<div class="container">
-  <form #RouteForm="ngForm" (ngSubmit)="onRoutingSubmit(RouteForm.value)">
-      <div class="wrapper">
-          <div>
-              <h2>Start:</h2>
-              <div *ngIf="isStartLatLngFocused === true" class="isFocused">Is Focused</div><br/>
-              <p>Lattitude:</p><input type="text" name="startLat" [(ngModel)]="startLat">
-              <p>Longitude:</p><input type="text" name="startLng" [(ngModel)]="startLng">
-          </div>
-          <div>
-              <h2>End:</h2>
-              <div *ngIf="isStartLatLngFocused === false" class="isFocused">Is Focused</div><br/>
-              <p>Lattitude:</p><input type="text" name="endLat" [(ngModel)]="endLat">
-              <p>Longitude:</p><input type="text" name="endLng" [(ngModel)]="endLng">
-          </div>
-          <div>
-              <h2>Extra</h2><br/>
-              <p>Mode of Transport:</p>
-              <select name=travelMode ngModel>
-                <option value="pedestrian">Pedestrian</option>
-                <option value="bicycle">Bicycle</option>
-                <option value="car">Car</option>
-              </select>
-          
-              <p>Name:</p>
-              <input type="text" name="name" ngModel><br>
-          </div>
-          <div>
-            <input type="submit" value="SUBMIT">
-          </div>
-      </div>
-  </form>
-</div>
+<form #RouteForm="ngForm" (ngSubmit)="onRoutingSubmit(RouteForm.value)">
+  <div class="wrapper">
+      <h2>Start:</h2>
+      <div *ngIf="isStartLatLngFocused === true" class="isFocused">Is Focused</div>
+  </div>
+
+  <div class="wrapper">
+      <label for="startLat">Lattitude:</label>
+      <label for="startLng" style="margin-left: 40%;">Longitude:</label>
+  </div>
+
+  <div class="wrapper">
+      <input type="text" name="startLat" [(ngModel)]="startLat"><br/>
+      <input type="text" name="startLng" [(ngModel)]="startLng"><br/>
+  </div>
+  
+  <h2>End:</h2>
+  <div *ngIf="isStartLatLngFocused === false" class="isFocused">Is Focused</div>
+
+  <div class="wrapper">
+      <label for="endLat">Lattitude:</label>
+      <label for="endLng" style="margin-left: 40%;">Longitude:</label>
+  </div>
+  <div class="wrapper">
+      <input type="text" name="endLat" [(ngModel)]="endLat"><br/>
+      <input type="text" name="endLng" [(ngModel)]="endLng"><br/>
+  </div>
+
+  <h2>Extra</h2>
+  <div class="wrapper">
+      <p>Mode of Transport:</p>
+  <select name=travelMode ngModel>
+    <option value="pedestrian">Pedestrian</option>
+    <option value="bicycle">Bicycle</option>
+    <option value="car">Car</option>
+  </select><br/>
+  <p>Name:</p><input type="text" name="name" ngModel><br/>
+  </div>
+
+  <input type="submit" value="SUBMIT">
+</form>
