@@ -25,7 +25,7 @@ export class WeatherService {
 
   public generateOverallRouteScore(routeAndWeatherInformation: RouteAndWeatherInformation, whenRouteisStartedFromNow: number = 0): string {
     let thing: string = "";
-    let ree = this.calculateTotalExpectedRainYouAreGoingToHitBasedOnTimeTOTakeRoute(routeAndWeatherInformation, whenRouteisStartedFromNow);
+    const ree = this.calculateTotalExpectedRainYouAreGoingToHitBasedOnTimeTOTakeRoute(routeAndWeatherInformation, whenRouteisStartedFromNow);
 
     if (ree === 0) {
       thing = '-';
@@ -41,14 +41,14 @@ export class WeatherService {
     this.setWeatherLegsEqualDistanceApart(thisRoute);
 
     return await this.getMinutelyData(thisRoute).then(minutelyRainData => {
-      let refactorMe: ProbsAndIntensitiesPerWeatherPointPerDepartureTime = this.getWeatherInformationPerWeatherPointPerPerInterval(thisRoute, minutelyRainData);
+      const refactorMe: ProbsAndIntensitiesPerWeatherPointPerDepartureTime = this.getWeatherInformationPerWeatherPointPerPerInterval(thisRoute, minutelyRainData);
       return new RouteAndWeatherInformation(thisRoute, refactorMe.rainIntensities, refactorMe.rainProbabilites);
     });
   }
 
   private async getMinutelyData(thisRoute: RouteInformation): Promise<MinutelyRainData[][]> {
-    let MinutelyDatForThisWeatherMarkers: MinutelyRainData[][] = [];
-    let mapRoute = thisRoute.route.getPath().getArray();
+    const MinutelyDatForThisWeatherMarkers: MinutelyRainData[][] = [];
+    const mapRoute = thisRoute.route.getPath().getArray();
 
     console.log(mapRoute.toString());
 
@@ -65,15 +65,15 @@ export class WeatherService {
 
   private setWeatherLegsEqualDistanceApart(thisRoute: RouteInformation): void {
     for (let i = 0; i < this.howManyWeatherMarkerChecks; i++) {
-      let distancePercentageAlongRoute = i * (1 / (this.howManyWeatherMarkerChecks - 1));  // if four for example -> 0 33 66 100 the middle two are 1/3 and 2/3. top begins at one and below is one less that howmanyweathermarkers
+      const distancePercentageAlongRoute = i * (1 / (this.howManyWeatherMarkerChecks - 1));  // if four for example -> 0 33 66 100 the middle two are 1/3 and 2/3. top begins at one and below is one less that howmanyweathermarkers
       this.calculateWithLegIsClosestForDistance(thisRoute, thisRoute.distance * distancePercentageAlongRoute);
     }
     console.log(thisRoute.weatherPoints);
   }
 
   private calculateWithLegIsClosestForDistance(thisRoute: RouteInformation, idealWeatherPointDistance: number): void { // make sure value not off by one!!
-    let route = thisRoute.route;
-    let totalDistance = thisRoute.distance;
+    const route = thisRoute.route;
+    const totalDistance = thisRoute.distance;
     
     if (idealWeatherPointDistance === 0) {
       this.addToWeatherPointSetAndBeUniqueByLegNum(thisRoute, 0, 0);
@@ -89,8 +89,8 @@ export class WeatherService {
         
         if (toNextWeatherPointDistance >= idealWeatherPointDistance) { // its gone over
 
-          let distanceOverIdealDistance = toNextWeatherPointDistance - idealWeatherPointDistance;
-          let distanceUnderIdealDistance = idealWeatherPointDistance - accumulatedDistance
+          const distanceOverIdealDistance = toNextWeatherPointDistance - idealWeatherPointDistance;
+          const distanceUnderIdealDistance = idealWeatherPointDistance - accumulatedDistance
 
           if (distanceOverIdealDistance < distanceUnderIdealDistance) { // if gap of station over
             this.addToWeatherPointSetAndBeUniqueByLegNum(thisRoute, i + 1, toNextWeatherPointDistance);
@@ -105,12 +105,12 @@ export class WeatherService {
   }
 
   private addToWeatherPointSetAndBeUniqueByLegNum(thisRoute: RouteInformation, legNumberInRoute: number, distance: number): void {
-    let newWeatherPoint: WeatherPoint = {
+    const newWeatherPoint: WeatherPoint = {
       legNumberInRoute: legNumberInRoute,
       distance: Math.abs(distance)
     } 
 
-    let LegNums = [];
+    const LegNums = [];
 
     thisRoute.weatherPoints.forEach(weatherPoint => {
       if (!LegNums.includes(weatherPoint.legNumberInRoute)) {
@@ -125,18 +125,18 @@ export class WeatherService {
     return Math.abs(this.HaversineFormula(routePath[i].lat(), routePath[i].lng(), routePath[i+1].lat(), routePath[i+1].lng())); // I DONT THINK MATH ABS IS NOW NEEDED?!
   }
 
-  private HaversineFormula(lat1, lng1, lat2, lng2) {
-    var R = 6371; // radius of Earth in km
-    var dLat = this.degreeToRadian(lat2 - lat1);
-    var dLng = this.degreeToRadian(lng2 - lng1);
+  private HaversineFormula(lat1: number, lng1: number, lat2: number, lng2: number) {
+    const R = 6371; // radius of Earth in km
+    const dLat = this.degreeToRadian(lat2 - lat1);
+    const dLng = this.degreeToRadian(lng2 - lng1);
 
-    var a =
+    const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(this.degreeToRadian(lat1)) * Math.cos(this.degreeToRadian(lat2)) *
       Math.sin(dLng / 2) * Math.sin(dLng / 2);
 
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    var d = R * c; // Distance in km
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c; // Distance in km
     return d * 1000;
   }
 
@@ -150,12 +150,12 @@ export class WeatherService {
   }
 
   private getProbAndIntensities(RainDataForEachPointPerInterval: MinutelyRainData[][]): ProbsAndIntensitiesPerWeatherPointPerDepartureTime {
-    let intentsAndProbs: ProbsAndIntensitiesPerWeatherPointPerDepartureTime = new ProbsAndIntensitiesPerWeatherPointPerDepartureTime();
+    const intentsAndProbs: ProbsAndIntensitiesPerWeatherPointPerDepartureTime = new ProbsAndIntensitiesPerWeatherPointPerDepartureTime();
 
     for (const weatherStationLevel of RainDataForEachPointPerInterval) {
-      let focusedRainStation = weatherStationLevel;
-      let focusedRainIntensities: number[] = [];
-      let focusedRainProbs: number[] = [];
+      const focusedRainStation = weatherStationLevel;
+      const focusedRainIntensities: number[] = [];
+      const focusedRainProbs: number[] = [];
       focusedRainStation.forEach(focusedTime => {
         focusedRainIntensities.push(focusedTime.precipIntensity);
         focusedRainProbs.push(focusedTime.precipProbability);
@@ -168,23 +168,23 @@ export class WeatherService {
   }
 
   private getRainDataAtEachWeatherPointPerInterval(thisRoute: RouteInformation, MinutelyDatForThisWeatherMarkers: MinutelyRainData[][]): MinutelyRainData[][] {
-    let rainDataForEachInterval: MinutelyRainData[][] = [];
+    const rainDataForEachInterval: MinutelyRainData[][] = [];
     let rainDataForFocusedWeatherPoint: MinutelyRainData[] = [];
 
     for (let focusedTime = this.graphTimeMin; focusedTime <= this.graphTimeMax; focusedTime += this.graphTimeInterval) {
 
       rainDataForFocusedWeatherPoint = [];
       console.log("AT " + focusedTime + "!!!");
-      let routePath = thisRoute.route.getPath().getArray();
+      const routePath = thisRoute.route.getPath().getArray();
 
       for (let i = 0; i < thisRoute.weatherPoints.length; i++) {
-          let minuteneedToSearchFor = this.WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath, thisRoute.weatherPoints[i].legNumberInRoute); // working out same value multiple times.
-          let timeWithStartTimeTakenIntoAccount = minuteneedToSearchFor + focusedTime;
+          const minuteneedToSearchFor = this.WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath, thisRoute.weatherPoints[i].legNumberInRoute); // working out same value multiple times.
+          const timeWithStartTimeTakenIntoAccount = minuteneedToSearchFor + focusedTime;
 
           console.log("intensity of rain at weather marker " + i + " at " + timeWithStartTimeTakenIntoAccount + " mins is: " + MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipIntensity);
           console.log("prob of rain at weather marker " + i + " at " + timeWithStartTimeTakenIntoAccount + " mins is: " + MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipProbability*100);
 
-          let rainData: MinutelyRainData = {
+          const rainData: MinutelyRainData = {
             time: MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].time,
             precipIntensity: MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipIntensity,
             precipProbability: MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipProbability
@@ -212,26 +212,26 @@ export class WeatherService {
     let previousDistance = 0;
 
     route.routeInformation.weatherPoints.forEach(weatherPoint => {
-      let distanceToNext =  weatherPoint.distance - previousDistance;
+      const distanceToNext =  weatherPoint.distance - previousDistance;
       previousDistance = weatherPoint.distance;
 
       console.log("distanceToNext" + distanceToNext);
 
-      let secondToHourConverstionRatio = 1 / 3600;
-      let timeOfLeginhours = (distanceToNext / WeatherService.averageWalkingDistanceMetersPerSecond) * secondToHourConverstionRatio;
+      const secondToHourConverstionRatio = 1 / 3600;
+      const timeOfLeginhours = (distanceToNext / WeatherService.averageWalkingDistanceMetersPerSecond) * secondToHourConverstionRatio;
 
-      let expectedRainForleginMM = route.rainIntensities[departureTime / 5][focusedWeatherStation] * route.rainProbabilities[departureTime / 5][focusedWeatherStation];
+      const expectedRainForleginMM = route.rainIntensities[departureTime / 5][focusedWeatherStation] * route.rainProbabilities[departureTime / 5][focusedWeatherStation];
 
       totalExpectedRain += timeOfLeginhours * expectedRainForleginMM;
       focusedWeatherStation++;
     });
 
-    let to3SigFig = totalExpectedRain.toFixed(3);
+    const to3SigFig = totalExpectedRain.toFixed(3);
     return +to3SigFig; // shorthand to parse to int.
   }
 
   public workOutmmPerHourFromRouteDurationAndmmThatHitsPersonInThatTime(mmThatHitsPerson: number, durationinSeconds: number ): number {
-    let toAnHourFromSeconds = 3600 / durationinSeconds;
+    const toAnHourFromSeconds = 3600 / durationinSeconds;
 
     return mmThatHitsPerson * toAnHourFromSeconds;
   }
