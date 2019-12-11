@@ -1,12 +1,18 @@
-<div style="width: 40%;" *ngIf="chartData">
-    <canvas 
-        baseChart
-        [chartType]="mainChartType"
-        [datasets]="chartData"
-        [labels]="chartLabels"
-        [options]="chartOptions"
-        [colors]="chartColours">
-    </canvas>
+<div *ngIf="chartData" style="display: flex;">
+    <div style="width: 40%;" *ngIf="chartData">
+        <canvas 
+            baseChart
+            [chartType]="mainChartType"
+            [datasets]="chartData"
+            [labels]="chartLabels"
+            [options]="chartOptions"
+            [colors]="chartColours">
+        </canvas>
+    </div>
+    
+    <img src="/assets/images/rainfallLegend.png" alt="adam">
 </div>
+
+
 
 <!--<h1 *ngIf="bestRoute">You should leave {{bestRoute.whenShouldleave}} mins from now using route: {{bestRoute.name}}. This is due to the lowest Percentage to rain of {{bestRoute.lowestPercentage}}%</h1>-->
