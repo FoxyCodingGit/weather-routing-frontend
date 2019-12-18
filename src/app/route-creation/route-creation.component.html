@@ -1,40 +1,58 @@
+<h1>Route Creation</h1>
 <form #RouteForm="ngForm" (ngSubmit)="onRoutingSubmit(RouteForm.value)">
   <div class="wrapper">
-      <h2>Start:</h2>
-      <div *ngIf="isStartLatLngFocused === true" class="isFocused">Is Focused</div>
+    <div>    
+      <label for="name">Name:</label>
+      <input type="text" name="name" ngModel><br/>
+    </div>
+    <div>
+      <label for="travelMode">Mode of Transport:</label>
+      <select name=travelMode ngModel>
+        <option value="pedestrian">Pedestrian</option>
+        <option value="bicycle">Bicycle</option>
+        <option value="car">Car</option>
+      </select>
+    </div>
   </div>
 
   <div class="wrapper">
+      <h2><u>Starting Point</u></h2>
+      <div *ngIf="isStartLatLngFocused === true" class="isFocused">Is Focused</div> <!-- prob can replace === with boolean comparison -->
+  </div>
+
+  <input type="text" name="startingPoint" [(ngModel)]="startingPoint"> <!-- input but not saved anywhere (yet?)-->
+
+  Show Lat Lng?<input type="checkbox" [checked]="showStartLatLng" (change)="showStartLatLng = !showStartLatLng">
+
+  <div *ngIf="showStartLatLng" class="wrapper">
+    <div>
       <label for="startLat">Lattitude:</label>
-      <label for="startLng" style="margin-left: 40%;">Longitude:</label>
-  </div>
-
-  <div class="wrapper">
-      <input type="text" name="startLat" [(ngModel)]="startLat"><br/>
-      <input type="text" name="startLng" [(ngModel)]="startLng"><br/>
+      <input type="text" name="startLat" [(ngModel)]="startLat">
+    </div>
+    <div>
+      <label for="startLng" >Longitude:</label>
+      <input type="text" name="startLng" [(ngModel)]="startLng">
+    </div>
   </div>
   
-  <h2>End:</h2>
-  <div *ngIf="isStartLatLngFocused === false" class="isFocused">Is Focused</div>
-
   <div class="wrapper">
+    <h2><u>Destination</u></h2> <!-- put all stylings, e.g. underline to sass -->
+    <div *ngIf="isStartLatLngFocused === false" class="isFocused">Is Focused</div>
+  </div>
+
+  <input type="text" name="destination" [(ngModel)]="destination"> <!-- input but not saved anywhere (yet?)-->
+
+  Show Lat Lng?<input type="checkbox" [checked]="showEndLatLng" (change)="showEndLatLng = !showEndLatLng">
+  
+  <div *ngIf="showEndLatLng" class="wrapper">
+    <div>
       <label for="endLat">Lattitude:</label>
-      <label for="endLng" style="margin-left: 40%;">Longitude:</label>
-  </div>
-  <div class="wrapper">
-      <input type="text" name="endLat" [(ngModel)]="endLat"><br/>
+      <input type="text" name="endLat" [(ngModel)]="endLat">
+    </div>
+    <div>
+      <label for="endLng">Longitude:</label>
       <input type="text" name="endLng" [(ngModel)]="endLng"><br/>
-  </div>
-
-  <h2>Extra</h2>
-  <div class="wrapper">
-      <p>Mode of Transport:</p>
-  <select name=travelMode ngModel>
-    <option value="pedestrian">Pedestrian</option>
-    <option value="bicycle">Bicycle</option>
-    <option value="car">Car</option>
-  </select><br/>
-  <p>Name:</p><input type="text" name="name" ngModel><br/>
+    </div>
   </div>
 
   <input type="submit" value="SUBMIT">

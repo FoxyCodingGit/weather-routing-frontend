@@ -16,6 +16,12 @@ export class RouteCreationComponent implements OnInit {
 
   constructor(private mapRoutingService: MapRoutingService, private weatherService: WeatherService) { }
 
+  public showStartLatLng: boolean = false;
+  public showEndLatLng: boolean = false;
+
+  public startingPoint: string;
+  public destination: string;
+
   routeId = 0;
   private numberOfAltRoutes = 1;
 
@@ -30,7 +36,8 @@ export class RouteCreationComponent implements OnInit {
   }
 
   public onRoutingSubmit(data: any) {
-    this.mapRoutingService.GetRoutes(data.travelMode, data.startLat, data.startLng, data.endLat, data.endLng, this.numberOfAltRoutes).subscribe(
+    
+    this.mapRoutingService.GetRoutes(data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng, this.numberOfAltRoutes).subscribe(
       async (routes: RouteFromAPI[]) => {
         let newRoutesFormat: RouteIWant[] = this.RouteFromAPIToRouteIWant(routes);
 
@@ -65,10 +72,16 @@ export class RouteCreationComponent implements OnInit {
     if (this.isStartLatLngFocused) {
       this.startLat = e.latLng.lat();
       this.startLng = e.latLng.lng();
+
+      this.populateStartingPoint();
+
       this.isStartLatLngFocused = !this.isStartLatLngFocused;
     } else {
       this.endLat = e.latLng.lat();
       this.endLng = e.latLng.lng();
+
+      this.populateDestination();
+
       this.isStartLatLngFocused = !this.isStartLatLngFocused;
     }
   }
@@ -86,6 +99,18 @@ export class RouteCreationComponent implements OnInit {
     });
 
     return newRouteIWantFormat;
+  }
+
+  public async populateStartingPoint() {
+    await this.getLocationName(new google.maps.LatLng(this.startLat, this.startLng)).then(location => {
+      this.startingPoint = location;
+    });
+  }
+
+  public async populateDestination() {
+    await this.getLocationName(new google.maps.LatLng(this.endLat, this.endLng)).then(location => {
+      this.destination = location;
+    });
   }
 
   private async getLocationName(latLng: google.maps.LatLng): Promise<string> {

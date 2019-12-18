@@ -2,7 +2,7 @@
 
     <div class="wrapper">
         <div id="map"></div>  
-        <app-route-creation (RoutesCreated)="processNewRoutes($event)"></app-route-creation>
+        <app-route-creation style="overflow-y: scroll;" (RoutesCreated)="processNewRoutes($event)"></app-route-creation>
     </div>
     
     <app-route-data-table (SelectRowAction)="selectActionPerformed($event)"></app-route-data-table>

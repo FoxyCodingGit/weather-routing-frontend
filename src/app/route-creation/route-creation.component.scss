@@ -1,22 +1,28 @@
+h2 {
+    margin: 0;
+}
+
 .active {
     border: 1px solid green;
+}
+
+label {
+    display: block;
 }
 
 .isFocused{
     color: white;
     background-color: red;
     text-align: center;
-
     border-radius: 5px;
     width: 100px;
     height: 20px;
 }
 
 input[type=text], select {
-    width: 100%;
+    width: auto;
     padding: 12px 20px;
     margin: 8px 0;
-    display: inline-block;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
