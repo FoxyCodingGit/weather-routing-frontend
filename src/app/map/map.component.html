@@ -1,15 +1,1 @@
-<div class="mainContainer">
-
-    <div class="wrapper">
-        <div id="map"></div>  
-        <app-route-creation style="overflow-y: scroll;" (RoutesCreated)="processNewRoutes($event)"></app-route-creation>
-    </div>
-    
-    <app-route-data-table (SelectRowAction)="selectActionPerformed($event)"></app-route-data-table>
-    
-    <app-graph></app-graph> 
-    
-    <button type="button" (click)="startRoute()">Where am I?</button>
-    <button (click)="getIntProbGraph()">Intensity and Avg Probability!</button>
-    <button (click)="getTotalRainGraph()">Total Rain!</button>
-</div>
+<div id="map"></div>

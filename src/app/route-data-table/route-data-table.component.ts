@@ -10,7 +10,7 @@ import { WeatherService } from '../shared/weather.service';
   styleUrls: ['./route-data-table.component.scss']
 })
 export class RouteDataTableComponent implements OnInit {
-  @Output() SelectRowAction: EventEmitter<any> = new EventEmitter(); // turn to model
+  @Output() SelectRowAction: EventEmitter<number> = new EventEmitter();
 
   constructor() { }
 
@@ -47,9 +47,7 @@ export class RouteDataTableComponent implements OnInit {
         $(this).addClass('selected');
       }
 
-      const emitData = {routeIdfocused: table.row(this).data()[0], selectAction: selectRowOutcome};
-
-      componentScope.SelectRowAction.emit(emitData);
+      componentScope.SelectRowAction.emit(table.row(this).data()[0]);
       // TODO: hiddencolumForIdPosition is hacky. Tried placing id at start and hiding but would hide name column
     };
 
@@ -92,19 +90,28 @@ export class RouteDataTableComponent implements OnInit {
 
   public selectRowByRouteId(routeId: number) {
     const table = $('#table_id').DataTable();
-    table.$('tr.selected').removeClass('selected');
+    //table.$('tr.selected').removeClass('selected');
+
+    let rowIsSelected = false;
 
     for (let i = 0; i < table.rows().count(); i++) { // check count
+
       const focusedRouteId = table.row(i).data()[0];
+
+      let node = $(table.row(i).node());
+
       if (routeId === focusedRouteId) {
-        table.
-        $(table.row(i).node()).addClass('selected');
-        break;
+        if (node.hasClass('selected')) {
+          node.removeClass('selected');
+        } else {
+          node.addClass('selected');
+          rowIsSelected = true;
+        }
+      } else {
+        node.removeClass('selected');
       }
     }
 
-    // capitalisaiton
-    const emitData = {routeIdfocused: routeId, selectAction: true}; // clicking on map route will always select the row. // kinda hack. using for trigger but no dynamic info sent over.
-    this.SelectRowAction.emit(emitData);
+    this.SelectRowAction.emit(routeId); // emitting whats passed in. have to emit to update gui, not happy with solution.
   }
 }

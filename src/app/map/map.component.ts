@@ -1,6 +1,6 @@
 /// <reference types="@types/googlemaps" />
 
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
 import { WeatherService } from '../shared/weather.service';
 import { RouteInformation } from './Model/RouteInformation';
 import { GraphComponent } from '../graph/graph.component';
@@ -14,75 +14,25 @@ import { RouteCreationComponent } from '../route-creation/route-creation.compone
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit {
-  @ViewChild(GraphComponent, {static: false}) graph: GraphComponent;
-  @ViewChild(RouteDataTableComponent, {static: false}) routeTable: RouteDataTableComponent;
-  @ViewChild(RouteCreationComponent, {static: false}) routeCreation: RouteCreationComponent;
+  @Output() mapClicked: EventEmitter<any> = new EventEmitter();
 
   private map: google.maps.Map;
-  private routeAndWeatherInformation: RouteAndWeatherInformation[] = [];
-  private focusedRouteId: number;
   private userMarker: google.maps.Marker;
 
-  constructor(private weatherService: WeatherService) { }
+  private highlighedStrokeWeight = 8;
+  private unhighlighedStrokeWeight = 2;
+
+  constructor() { }
 
   ngOnInit(): void {
     this.generateMap();
     this.displayUserLocation();
   }
 
-  public processNewRoutes(newRoutes: RouteAndWeatherInformation[]): void {
-    newRoutes.forEach(route => {
-      this.placeStartEndMarkers(route.routeInformation.route.getPath().getArray());
-      route.routeInformation.route.setMap(this.map);
-
-      route.routeInformation.route.addListener('click', () => {
-        this.routeTable.selectRowByRouteId(route.routeInformation.id);
-      });
-
-      this.routeAndWeatherInformation.push(route);
-      this.placeWeatherMarkers(route.routeInformation, this.map);
-    });
-
-    let newestRoute = this.routeAndWeatherInformation[this.routeAndWeatherInformation.length - 1];
-    this.map.fitBounds(newestRoute.routeInformation.bounds);
-    this.focusedRouteId = newestRoute.routeInformation.id;
-
-    this.graph.graphExpectedTotalRainOnRoute(this.routeAndWeatherInformation, 0);
-  
-    let overallScores: string[] = [];
-    for (let departureTime = 0; departureTime <= 20; departureTime += 5) {
-      overallScores.push(this.weatherService.generateOverallRouteScore(newestRoute, departureTime)); // can delete this.whenleavingfortable
-    }
-    this.routeTable.addRouteToTable(newestRoute.routeInformation, overallScores); // HOW IS THIS WORKING
-  }
-
-  public selectActionPerformed(routeIdandSelectAction: any): void { // bad name and needs model
-    if (!routeIdandSelectAction.selectAction) {
-      this.routeAndWeatherInformation[routeIdandSelectAction.routeIdfocused].routeInformation.route.setOptions({ strokeWeight: 2 });
-    } else {
-      this.routeAndWeatherInformation.forEach(routeAndWeatherInfo => {
-        this.highlightSelectedRoute(routeIdandSelectAction.routeIdfocused, routeAndWeatherInfo);
-      });
-    }
-
-    this.focusedRouteId = routeIdandSelectAction.routeIdfocused;
-    this.graph.graphIntensityandProb(this.routeAndWeatherInformation[routeIdandSelectAction.routeIdfocused].rainIntensities,
-      this.routeAndWeatherInformation[routeIdandSelectAction.routeIdfocused].rainProbabilitiesAverage);
-  }
-
-  private highlightSelectedRoute(routeId: any, routeAndWeatherInfo: RouteAndWeatherInformation) {
-    if (routeId === routeAndWeatherInfo.routeInformation.id) {
-      this.routeAndWeatherInformation[routeAndWeatherInfo.routeInformation.id].routeInformation.route.setOptions({ strokeWeight: 8 });
-      this.map.fitBounds(this.routeAndWeatherInformation[routeAndWeatherInfo.routeInformation.id].routeInformation.bounds);
-    } else {
-      this.routeAndWeatherInformation[routeAndWeatherInfo.routeInformation.id].routeInformation.route.setOptions({ strokeWeight: 2 });
-    }
-  }
-
-  private placeWeatherMarkers(thisRoute: RouteInformation, map: google.maps.Map) {
+  public placeWeatherMarkers(thisRoute: RouteInformation) {
     for (let i = 1; i < thisRoute.weatherPoints.length - 1; i++) {
       let weatherMarker = new google.maps.Marker({ // add marker to array that is currntly not being used.
-        map: map,
+        map: this.map,
         position: { lat: thisRoute.route.getPath().getArray()[thisRoute.weatherPoints[i].legNumberInRoute].lat(),
           lng: thisRoute.route.getPath().getArray()[thisRoute.weatherPoints[i].legNumberInRoute].lng() },
         icon: {
@@ -92,13 +42,32 @@ export class MapComponent implements OnInit {
     }
   }
 
-  public getIntProbGraph() {
-    this.graph.graphIntensityandProb(this.routeAndWeatherInformation[this.focusedRouteId].rainIntensities,
-      this.routeAndWeatherInformation[this.focusedRouteId].rainProbabilitiesAverage);
+  public focusOnRoute(routeInformation: RouteInformation) {
+    this.map.fitBounds(routeInformation.bounds);
   }
 
-  public getTotalRainGraph() {
-    this.graph.graphExpectedTotalRainOnRoute(this.routeAndWeatherInformation, 0);
+  public addRouteToMap(route: RouteAndWeatherInformation) {
+    this.placeStartEndMarkers(route.routeInformation.route.getPath().getArray());
+    route.routeInformation.route.setMap(this.map);
+    this.placeWeatherMarkers(route.routeInformation);
+  }
+
+  public highlightSelectedRoute(routeId: any, routeInfo: RouteInformation) {
+    if (routeId === routeInfo.id) {
+      if (this.isCurrentlyHighlighted(routeInfo.route)) {
+        routeInfo.route.setOptions({ strokeWeight: this.unhighlighedStrokeWeight });
+      } else {
+        routeInfo.route.setOptions({ strokeWeight: this.highlighedStrokeWeight });
+        this.map.fitBounds(routeInfo.bounds);
+      }
+    } else {
+      routeInfo.route.setOptions({ strokeWeight: this.unhighlighedStrokeWeight });
+    }
+  }
+
+  private isCurrentlyHighlighted(hello: google.maps.Polyline): boolean {
+    if (hello.get('strokeWeight') === this.highlighedStrokeWeight) { return true; }
+    return false;
   }
 
   public startRoute(): void {
@@ -119,7 +88,7 @@ export class MapComponent implements OnInit {
   }
 
   private updateLatLngInputValues(e: google.maps.MouseEvent): void {
-    this.routeCreation.updateLatLngInputValues(e);
+    this.mapClicked.emit(e);
   }
 
   private placeStartEndMarkers(routePoints: google.maps.LatLng[]) {
