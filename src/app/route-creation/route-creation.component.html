@@ -17,7 +17,7 @@
 
   <div class="wrapper">
       <h2><u>Starting Point</u></h2>
-      <div *ngIf="isStartLatLngFocused === true" class="isFocused">Is Focused</div> <!-- prob can replace === with boolean comparison -->
+      <div *ngIf="isStartLatLngFocused === true" class="isFocused">FOCUSED</div> <!-- prob can replace === with boolean comparison -->
   </div>
 
   <input type="text" name="startingPoint" [(ngModel)]="startingPoint"> <!-- input but not saved anywhere (yet?)-->
@@ -37,7 +37,7 @@
   
   <div class="wrapper">
     <h2><u>Destination</u></h2> <!-- put all stylings, e.g. underline to sass -->
-    <div *ngIf="isStartLatLngFocused === false" class="isFocused">Is Focused</div>
+    <div *ngIf="isStartLatLngFocused === false" class="isFocused">FOCUSED</div>
   </div>
 
   <input type="text" name="destination" [(ngModel)]="destination"> <!-- input but not saved anywhere (yet?)-->
