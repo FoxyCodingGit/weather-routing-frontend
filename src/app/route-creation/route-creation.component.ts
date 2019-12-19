@@ -39,10 +39,6 @@ export class RouteCreationComponent implements OnInit {
   }
 
   public onRoutingSubmit(data: any) {
-
-    var adam = this.defaultRouteName;
-
-    debugger;
     this.mapRoutingService.GetRoutes(data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng, this.numberOfAltRoutes).subscribe(
       async (routes: RouteFromAPI[]) => {
         let newRoutesFormat: RouteIWant[] = this.RouteFromAPIToRouteIWant(routes);
