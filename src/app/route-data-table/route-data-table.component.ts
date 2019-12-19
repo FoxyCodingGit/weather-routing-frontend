@@ -2,7 +2,6 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import * as $ from 'jquery'; // we need this apparently? must be a cleaner way
 import 'datatables.net';
 import { RouteInformation } from '../map/Model/RouteInformation';
-import { WeatherService } from '../shared/weather.service';
 
 @Component({
   selector: 'app-route-data-table',

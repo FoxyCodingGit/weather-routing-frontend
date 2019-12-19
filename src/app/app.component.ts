@@ -5,6 +5,7 @@ import { RouteDataTableComponent } from './route-data-table/route-data-table.com
 import { RouteCreationComponent } from './route-creation/route-creation.component';
 import { MapComponent } from './map/map.component';
 import { WeatherService } from './shared/weather.service';
+import { ModalComponent } from './modal/modal.component';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +17,7 @@ export class AppComponent {
   @ViewChild(GraphComponent, {static: false}) graph: GraphComponent;
   @ViewChild(RouteDataTableComponent, {static: false}) routeTable: RouteDataTableComponent;
   @ViewChild(RouteCreationComponent, {static: false}) routeCreation: RouteCreationComponent;
+  @ViewChild(ModalComponent, {static: false}) modal: ModalComponent;
 
   private routeAndWeatherInformation: RouteAndWeatherInformation[] = [];
   private focusedRouteId: number;
@@ -67,5 +69,15 @@ export class AppComponent {
 
   public getTotalRainGraph() {
     this.graph.graphExpectedTotalRainOnRoute(this.routeAndWeatherInformation, 0);
+  }
+
+  public openModal() {
+
+    console.log("!!!");
+    console.log(this.routeAndWeatherInformation);
+    console.log(this.routeAndWeatherInformation[this.focusedRouteId]);
+    console.log(this.focusedRouteId);
+
+    this.modal.doThing(this.routeAndWeatherInformation[this.focusedRouteId]);
   }
 }
