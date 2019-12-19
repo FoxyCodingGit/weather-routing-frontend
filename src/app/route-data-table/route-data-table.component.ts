@@ -10,6 +10,7 @@ import { RouteInformation } from '../map/Model/RouteInformation';
 })
 export class RouteDataTableComponent implements OnInit {
   @Output() SelectRowAction: EventEmitter<number> = new EventEmitter();
+  @Output() routeInfoButtonPressed: EventEmitter<number> = new EventEmitter();
 
   constructor() { }
 
@@ -26,7 +27,8 @@ export class RouteDataTableComponent implements OnInit {
         { title: 'Leave in 5 Mins', width: '12%' },
         { title: 'Leave in 10 Mins', width: '12%' },
         { title: 'Leave in 15 Mins', width: '12%' },
-        { title: 'Leave in 20 Mins', width: '12%' }
+        { title: 'Leave in 20 Mins', width: '12%' },
+        { title: 'ROUTE INFO' }
        ]
     };
 
@@ -34,6 +36,8 @@ export class RouteDataTableComponent implements OnInit {
 
     const componentScope = this;
     const table = $('#table_id').DataTable();
+
+    let that = this;
 
     const selectRowFunc = function() {
       let selectRowOutcome = true;
@@ -47,6 +51,9 @@ export class RouteDataTableComponent implements OnInit {
       }
 
       componentScope.SelectRowAction.emit(table.row(this).data()[0]);
+
+      that.sendRouteInfoButtonPressedOutput(table.row(this).data()[0]);
+
       // TODO: hiddencolumForIdPosition is hacky. Tried placing id at start and hiding but would hide name column
     };
 
@@ -59,7 +66,7 @@ export class RouteDataTableComponent implements OnInit {
     $('#table_id').DataTable().row.add([
       routeInformation.id,
       '<div class="wrapper"><div class="square" style="background-color: ' + routeInformation.color + ', 1); color: ' + routeInformation.basicContrastColour + '">'+ routeInformation.id + '</div>' + routeInformation.name + '</div>',
-      routeInformation.startLocation,
+      routeInformation.startLocation, // move html to function for readability?
       routeInformation.endLocation,
       Math.round(routeInformation.travelTimeInSeconds / 60) + ' mins',
       routeInformation.distance + 'm',
@@ -68,7 +75,12 @@ export class RouteDataTableComponent implements OnInit {
       overallScores[2] + scoreComparisonIcons[1],
       overallScores[3] + scoreComparisonIcons[2],
       overallScores[4] + scoreComparisonIcons[3],
+      '<button (click)="sendRouteInfoButtonPressedOutput()">CLICK ME!!!</button>' // TODO: button no work. do on select row for dev.
     ]).draw();
+  }
+
+  public sendRouteInfoButtonPressedOutput(routeId: number): void {
+    this.routeInfoButtonPressed.emit(routeId);
   }
 
   private getCorrectIcons(overallScores: string[]): string[] {

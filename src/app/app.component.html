@@ -8,12 +8,11 @@
     </div>
     
     <hr>
-
-    <button (click)="openModal()">CLICK ME FOR MODAL</button >
+    
     <app-modal></app-modal>
 
     <div class="routeTable">
-        <app-route-data-table (SelectRowAction)="rowSelected($event)"></app-route-data-table>
+        <app-route-data-table (SelectRowAction)="rowSelected($event)" (routeInfoButtonPressed)="routeInfoButtonPressed($event)"></app-route-data-table>
     </div>
     
     <app-graph></app-graph> 

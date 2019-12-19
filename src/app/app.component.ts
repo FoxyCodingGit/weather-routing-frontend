@@ -24,7 +24,7 @@ export class AppComponent {
 
   title = 'WeatherRoutingFrontend';
 
-  constructor(private weatherService: WeatherService) { } // This wasnt here initially
+  constructor(private weatherService: WeatherService) { }
 
   public processNewRoutes(newRoutes: RouteAndWeatherInformation[]): void {
     newRoutes.forEach(route => {
@@ -54,7 +54,8 @@ export class AppComponent {
     this.routeCreation.updateLatLngInputValues(e);
   }
 
-  public rowSelected(routeIdFocused: number): void { // needs model
+  public rowSelected(routeIdFocused: number): void {
+    this.focusedRouteId = routeIdFocused;
     this.routeAndWeatherInformation.forEach(routeAndWeatherInfo => {
       this.map.highlightSelectedRoute(routeIdFocused, routeAndWeatherInfo.routeInformation);
     });
@@ -71,13 +72,13 @@ export class AppComponent {
     this.graph.graphExpectedTotalRainOnRoute(this.routeAndWeatherInformation, 0);
   }
 
-  public openModal() {
+  public routeInfoButtonPressed(): void {
+    console.log("this happens");
+    this.openModal();
+  }
 
-    console.log("!!!");
-    console.log(this.routeAndWeatherInformation);
-    console.log(this.routeAndWeatherInformation[this.focusedRouteId]);
+  private openModal(): void {
     console.log(this.focusedRouteId);
-
     this.modal.doThing(this.routeAndWeatherInformation[this.focusedRouteId]);
   }
 }
