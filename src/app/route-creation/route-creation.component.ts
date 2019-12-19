@@ -22,8 +22,8 @@ export class RouteCreationComponent implements OnInit {
   public startingPoint: string;
   public destination: string;
 
-  public routeName = 'My Route';
-  public travelMode = 'pedestrian';
+  public defaultRouteName = 'My Route';
+  public defaultTravelMode = 'pedestrian';
 
   routeId = 0;
   private numberOfAltRoutes = 1;
@@ -39,6 +39,9 @@ export class RouteCreationComponent implements OnInit {
   }
 
   public onRoutingSubmit(data: any) {
+
+    var adam = this.defaultRouteName;
+
     debugger;
     this.mapRoutingService.GetRoutes(data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng, this.numberOfAltRoutes).subscribe(
       async (routes: RouteFromAPI[]) => {

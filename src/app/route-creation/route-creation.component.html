@@ -3,11 +3,11 @@
   <div class="wrapper">
     <div>    
       <label for="name">Name:</label>
-      <input type="text" name="name" [(ngModel)]="routeName"><br/>
+      <input type="text" name="name" [ngModel]="defaultRouteName"><br/>
     </div>
     <div>
       <label for="travelMode">Mode of Transport:</label>
-      <select name=travelMode [(ngModel)]="travelMode">
+      <select name=travelMode [ngModel]="defaultTravelMode">
         <option value="pedestrian">Pedestrian</option>
         <option value="bicycle">Bicycle</option>
         <option value="car">Car</option>
