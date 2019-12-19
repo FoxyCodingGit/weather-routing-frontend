@@ -11,6 +11,7 @@ import { ChartsModule } from 'ng2-charts';
 import { GraphComponent } from './graph/graph.component';
 import { RouteDataTableComponent } from './route-data-table/route-data-table.component';
 import { RouteCreationComponent } from './route-creation/route-creation.component';
+import { ModalComponent } from './modal/modal.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { RouteCreationComponent } from './route-creation/route-creation.componen
     MapComponent,
     GraphComponent,
     RouteDataTableComponent,
-    RouteCreationComponent
+    RouteCreationComponent,
+    ModalComponent
   ],
   imports: [
     BrowserModule,
