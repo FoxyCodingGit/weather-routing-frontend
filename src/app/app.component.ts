@@ -19,7 +19,7 @@ export class AppComponent {
   @ViewChild(RouteCreationComponent, {static: false}) routeCreation: RouteCreationComponent;
   @ViewChild(ModalComponent, {static: false}) modal: ModalComponent;
 
-  private routeAndWeatherInformation: RouteAndWeatherInformation[] = [];
+  private routeAndWeatherInformation: RouteAndWeatherInformation[] = []; // TODO: WHEN INVLAID ONE ADDED FOR BEING TOO LONG. ARRAY NOT UDPATED prop so get id match problems
   private focusedRouteId: number;
 
   title = 'WeatherRoutingFrontend';
