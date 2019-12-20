@@ -70,11 +70,6 @@ export class MapComponent implements OnInit {
     return false;
   }
 
-  public startRoute(): void {
-    this.map.setCenter({lat: this.userMarker.getPosition().lat(), lng: this.userMarker.getPosition().lng()});
-    //navigator.geolocation.watchPosition(() => console.log('success'), () => console.log('error'));
-  }
-
   private generateMap() {
     const mapProperties = {
       center: new google.maps.LatLng(55.586698, -1.909815),

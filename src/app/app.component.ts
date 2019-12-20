@@ -1,6 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
 import { RouteAndWeatherInformation } from './map/Model/RouteAndWeatherInformation';
-import { GraphComponent } from './graph/graph.component';
 import { RouteDataTableComponent } from './route-data-table/route-data-table.component';
 import { RouteCreationComponent } from './route-creation/route-creation.component';
 import { MapComponent } from './map/map.component';
@@ -14,7 +13,6 @@ import { ModalComponent } from './modal/modal.component';
 })
 export class AppComponent {
   @ViewChild(MapComponent, {static: false}) map: MapComponent;
-  @ViewChild(GraphComponent, {static: false}) graph: GraphComponent;
   @ViewChild(RouteDataTableComponent, {static: false}) routeTable: RouteDataTableComponent;
   @ViewChild(RouteCreationComponent, {static: false}) routeCreation: RouteCreationComponent;
   @ViewChild(ModalComponent, {static: false}) modal: ModalComponent;
@@ -41,8 +39,6 @@ export class AppComponent {
     this.map.focusOnRoute(newestRoute.routeInformation);
     this.focusedRouteId = newestRoute.routeInformation.id;
 
-    this.graph.graphExpectedTotalRainOnRoute(this.routeAndWeatherInformation, 0, this.focusedRouteId);
-
     let overallScores: string[] = [];
     for (let departureTime = 0; departureTime <= 20; departureTime += 5) {
       overallScores.push(this.weatherService.generateOverallRouteScore(newestRoute, departureTime)); // can delete this.whenleavingfortable
@@ -59,21 +55,9 @@ export class AppComponent {
     this.routeAndWeatherInformation.forEach(routeAndWeatherInfo => {
       this.map.highlightSelectedRoute(routeIdFocused, routeAndWeatherInfo.routeInformation);
     });
-
-    this.getIntProbGraph();
-  }
-
-  public getIntProbGraph() {
-    this.graph.graphIntensityandProb(this.routeAndWeatherInformation[this.focusedRouteId].rainIntensities,
-      this.routeAndWeatherInformation[this.focusedRouteId].rainProbabilitiesAverage);
-  }
-
-  public getTotalRainGraph(focusedRouteId: number) {
-    this.graph.graphExpectedTotalRainOnRoute(this.routeAndWeatherInformation, 0, focusedRouteId);
   }
 
   public routeInfoButtonPressed(): void {
-    console.log("this happens");
     this.openModal();
   }
 
