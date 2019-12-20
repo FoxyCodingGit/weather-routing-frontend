@@ -15,9 +15,9 @@
         <app-route-data-table (SelectRowAction)="rowSelected($event)" (routeInfoButtonPressed)="routeInfoButtonPressed($event)"></app-route-data-table>
     </div>
     
-    <app-graph></app-graph> 
+    <app-graph></app-graph>
     
     <button type="button" (click)="startRoute()">Where am I?</button>
     <button (click)="getIntProbGraph()">Intensity and Avg Probability!</button>
-    <button (click)="getTotalRainGraph()">Total Rain!</button>
+    <button (click)="getTotalRainGraph(this.focusedRouteId)">Total Rain!</button>
 </div>

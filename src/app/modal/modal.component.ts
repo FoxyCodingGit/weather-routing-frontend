@@ -12,15 +12,18 @@ import * as bootstrap from 'bootstrap'; // This works DONT REMOVE
   styleUrls: ['./modal.component.scss']
 })
 export class ModalComponent implements OnInit {
-  @ViewChild(GraphComponent, {static: false}) graph: GraphComponent;
+  @ViewChild('rainInfo', {static: false}) rainInfoGraph: GraphComponent;
+  @ViewChild('totalRain', {static: false}) totalRainGraph: GraphComponent;
 
   constructor() { }
 
   ngOnInit() { }
 
-  public doThing(focusedRoute: RouteAndWeatherInformation): void {
+  public doThing(routes: RouteAndWeatherInformation[], focusedRouteId: number): void {
     $('#exampleModal').modal();
 
-    this.graph.graphIntensityandProb(focusedRoute.rainIntensities, focusedRoute.rainProbabilitiesAverage);
+    // TODO: change [focusedRoute] to check id.
+    this.rainInfoGraph.graphIntensityandProb(routes[focusedRouteId].rainIntensities, routes[focusedRouteId].rainProbabilitiesAverage);
+    this.totalRainGraph.graphExpectedTotalRainOnRoute(routes, 0, focusedRouteId);
   }
 }

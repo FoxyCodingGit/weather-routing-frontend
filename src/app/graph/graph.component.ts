@@ -45,14 +45,14 @@ export class GraphComponent {
     this.addRainPercentages(percentages, route.name, route.color + ', 0.6)');
   }
 
-  public graphExpectedTotalRainOnRoute(routeWeatherInfo: RouteAndWeatherInformation[], departureTime: number) {
+  public graphExpectedTotalRainOnRoute(routeWeatherInfo: RouteAndWeatherInformation[], departureTime: number, focusedRouteId: number) {
     this.chartData = [];
     this.chartColours = [];
     this.mainChartType = 'bar';
     this.chartOptions = myChartOptions.noLabelBeginAtZero;
     this.generateLabelsForRoutes(routeWeatherInfo);
 
-    this.displayTotalRainPerRoute(routeWeatherInfo, departureTime);
+    this.displayTotalRainPerRoute(routeWeatherInfo, departureTime, focusedRouteId);
   }
 
   private generateLabelsForDepartureTimes() { // make dynamic
@@ -99,9 +99,11 @@ export class GraphComponent {
     this.chartColours.push({backgroundColor: colour});
   }
 
-  private displayTotalRainPerRoute(routeWeatherInfo: RouteAndWeatherInformation[], departureTime: number): void {
+  private displayTotalRainPerRoute(routeWeatherInfo: RouteAndWeatherInformation[], departureTime: number, focusedRouteId: number): void {
     let totalRainForAllRoutes: number[] = [];
     let colours: Array<ChartColor> = [];
+    let borderColours: Array<ChartColor> = [];
+    let borderWidths: Array<number> = [];
 
     routeWeatherInfo.forEach(routeAndWeather => {
       let rainThatWillHitPersonInmm = this.weatherService.calculateTotalExpectedRainYouAreGoingToHitBasedOnTimeTOTakeRoute(routeAndWeather, departureTime);
@@ -111,12 +113,27 @@ export class GraphComponent {
 
       colours.push(this.getColourForRouteRainIntensity(avdmmPerHourOfRoute));
 
+      if (focusedRouteId !== null) {
+        if (routeAndWeather.routeInformation.id === focusedRouteId) {
+          borderColours.push('rgb(255,0,0)');
+          borderWidths.push(10);
+        } else {
+          borderColours.push(null);
+          borderWidths.push(0);
+        }
+      }
+
+
       totalRainForAllRoutes.push(rainThatWillHitPersonInmm);
     });
 
+    console.log(borderColours);
+
     this.chartData.push({
       data: totalRainForAllRoutes,
-      backgroundColor: colours
+      backgroundColor: colours,
+      borderColor: borderColours,
+      borderWidth: borderWidths
     });
   }
 

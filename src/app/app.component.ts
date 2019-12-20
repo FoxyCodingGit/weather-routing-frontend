@@ -41,7 +41,7 @@ export class AppComponent {
     this.map.focusOnRoute(newestRoute.routeInformation);
     this.focusedRouteId = newestRoute.routeInformation.id;
 
-    this.graph.graphExpectedTotalRainOnRoute(this.routeAndWeatherInformation, 0);
+    this.graph.graphExpectedTotalRainOnRoute(this.routeAndWeatherInformation, 0, this.focusedRouteId);
 
     let overallScores: string[] = [];
     for (let departureTime = 0; departureTime <= 20; departureTime += 5) {
@@ -68,8 +68,8 @@ export class AppComponent {
       this.routeAndWeatherInformation[this.focusedRouteId].rainProbabilitiesAverage);
   }
 
-  public getTotalRainGraph() {
-    this.graph.graphExpectedTotalRainOnRoute(this.routeAndWeatherInformation, 0);
+  public getTotalRainGraph(focusedRouteId: number) {
+    this.graph.graphExpectedTotalRainOnRoute(this.routeAndWeatherInformation, 0, focusedRouteId);
   }
 
   public routeInfoButtonPressed(): void {
@@ -79,6 +79,6 @@ export class AppComponent {
 
   private openModal(): void {
     console.log(this.focusedRouteId);
-    this.modal.doThing(this.routeAndWeatherInformation[this.focusedRouteId]);
+    this.modal.doThing(this.routeAndWeatherInformation, this.focusedRouteId);
   }
 }
