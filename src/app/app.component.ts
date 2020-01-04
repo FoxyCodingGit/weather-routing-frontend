@@ -49,8 +49,13 @@ export class AppComponent {
     this.routeTable.addRouteToTable(newestRoute.routeInformation, overallScores); // HOW IS THIS WORKING
   }
 
-  public updateLatLngInputValues(e: google.maps.MouseEvent) {
+  public updateLatLngInputValues(e: google.maps.MouseEvent) { // TODO: update so shows that map icon is also changed
     this.routeCreation.updateLatLngInputValues(e);
+    this.updateOrPlaceMapMarkerFORstartorEmndREEE(e);
+  }
+
+  private updateOrPlaceMapMarkerFORstartorEmndREEE(e: google.maps.MouseEvent) {
+    this.map.placeFocusedStartOrEndMarkers(e, this.routeCreation.isStartLatLngFocused);
   }
 
   public rowSelected(routeIdFocused: number): void {

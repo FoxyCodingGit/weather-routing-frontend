@@ -19,6 +19,9 @@ export class MapComponent implements OnInit {
   private map: google.maps.Map;
   private userMarker: google.maps.Marker;
 
+  private focusedStartMarker: google.maps.Marker;
+  private focusedEndMarker: google.maps.Marker;
+
   private highlighedStrokeWeight = 8;
   private unhighlighedStrokeWeight = 2;
 
@@ -63,6 +66,35 @@ export class MapComponent implements OnInit {
     } else {
       routeInfo.route.setOptions({ strokeWeight: this.unhighlighedStrokeWeight });
     }
+  }
+
+  public placeFocusedStartOrEndMarkers(e: google.maps.MouseEvent, isStartFocused: boolean) {
+    if (isStartFocused) {
+      if (this.focusedStartMarker !== undefined) {
+        this.deleteMarker(this.focusedStartMarker);
+      }      
+
+      this.focusedStartMarker = new google.maps.Marker({position: e.latLng, map: this.map, 
+        icon: {
+        url: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+        }
+      });
+    } else {
+      if (this.focusedEndMarker !== undefined) {
+        this.deleteMarker(this.focusedEndMarker);
+      }
+            
+      this.focusedEndMarker = new google.maps.Marker({position: e.latLng, map: this.map, 
+        icon: {
+        url: "http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
+        }
+      });
+    }
+  }
+
+  private deleteMarker(marker: google.maps.Marker) {
+    marker.setMap(null);
+    marker = null;
   }
 
   private isCurrentlyHighlighted(hello: google.maps.Polyline): boolean {
