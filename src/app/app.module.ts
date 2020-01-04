@@ -12,6 +12,7 @@ import { GraphComponent } from './graph/graph.component';
 import { RouteDataTableComponent } from './route-data-table/route-data-table.component';
 import { RouteCreationComponent } from './route-creation/route-creation.component';
 import { ModalComponent } from './modal/modal.component';
+import { AlertComponent } from './alert/alert.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { ModalComponent } from './modal/modal.component';
     GraphComponent,
     RouteDataTableComponent,
     RouteCreationComponent,
-    ModalComponent
+    ModalComponent,
+    AlertComponent
   ],
   imports: [
     BrowserModule,

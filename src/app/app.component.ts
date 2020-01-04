@@ -5,6 +5,7 @@ import { RouteCreationComponent } from './route-creation/route-creation.componen
 import { MapComponent } from './map/map.component';
 import { WeatherService } from './shared/weather.service';
 import { ModalComponent } from './modal/modal.component';
+import { AlertService } from './shared/alert.service';
 
 @Component({
   selector: 'app-root',
@@ -22,9 +23,11 @@ export class AppComponent {
 
   title = 'WeatherRoutingFrontend';
 
-  constructor(private weatherService: WeatherService) { }
+  constructor(private weatherService: WeatherService, private alertService: AlertService) { }
 
   public processNewRoutes(newRoutes: RouteAndWeatherInformation[]): void {
+    
+    this.alertService.error("pee pee poo poo");
     newRoutes.forEach(route => {
       this.map.addRouteToMap(route);
 
