@@ -16,6 +16,7 @@
   </div>
 
   <div class="wrapper">
+      <img src="{{assetService.focusedStartMarkerFile}}" alt="FocusedStartMarker">
       <h2><u>Starting Point</u></h2>
       <div *ngIf="isStartLatLngFocused === true" class="isFocused">FOCUSED</div> <!-- prob can replace === with boolean comparison -->
   </div>
@@ -36,6 +37,7 @@
   </div>
   
   <div class="wrapper">
+    <img src="{{assetService.focusedEndMarkerFile}}" alt="FocusedEndMarker">
     <h2><u>Destination</u></h2> <!-- put all stylings, e.g. underline to sass -->
     <div *ngIf="isStartLatLngFocused === false" class="isFocused">FOCUSED</div>
   </div>

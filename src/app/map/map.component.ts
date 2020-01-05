@@ -7,6 +7,7 @@ import { GraphComponent } from '../graph/graph.component';
 import { RouteDataTableComponent } from '../route-data-table/route-data-table.component';
 import { RouteAndWeatherInformation } from './Model/RouteAndWeatherInformation';
 import { RouteCreationComponent } from '../route-creation/route-creation.component';
+import { AssetService } from 'src/assets/asset.service';
 
 @Component({
   selector: 'app-map',
@@ -25,7 +26,7 @@ export class MapComponent implements OnInit {
   private highlighedStrokeWeight = 8;
   private unhighlighedStrokeWeight = 2;
 
-  constructor() { }
+  constructor(private assetService: AssetService) { }
 
   ngOnInit(): void {
     this.generateMap();
@@ -76,7 +77,7 @@ export class MapComponent implements OnInit {
 
       this.focusedStartMarker = new google.maps.Marker({position: e.latLng, map: this.map, 
         icon: {
-        url: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png"
+        url: this.assetService.focusedEndMarkerFile
         }
       });
     } else {
@@ -86,7 +87,7 @@ export class MapComponent implements OnInit {
             
       this.focusedEndMarker = new google.maps.Marker({position: e.latLng, map: this.map, 
         icon: {
-        url: "http://maps.google.com/mapfiles/ms/icons/purple-dot.png"
+        url:  this.assetService.focusedStartMarkerFile
         }
       });
     }
