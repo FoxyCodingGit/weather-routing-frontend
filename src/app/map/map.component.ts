@@ -26,6 +26,11 @@ export class MapComponent implements OnInit {
   private highlighedStrokeWeight = 8;
   private unhighlighedStrokeWeight = 2;
 
+  public isChecked1 = true;
+  public isChecked2 = true;
+
+  private currentlyFocusedRouteRainIndication: google.maps.Circle[] = [];
+
   constructor(private assetService: AssetService) { }
 
   ngOnInit(): void {
@@ -46,6 +51,27 @@ export class MapComponent implements OnInit {
     }
   }
 
+  public placeRainIndicatorsAtWeatherPoints(thisRoute: RouteAndWeatherInformation) {
+    for (let i = 1; i < thisRoute.routeInformation.weatherPoints.length - 1; i++) {
+
+      var cityCircle = new google.maps.Circle({
+        strokeColor: '#FF0000',
+        strokeOpacity: 0.2,
+        strokeWeight: 2,
+        fillColor: '#FF0000',
+        fillOpacity: 0.35,
+        map: this.map,
+        center: {
+          lat: thisRoute.routeInformation.route.getPath().getArray()[thisRoute.routeInformation.weatherPoints[i].legNumberInRoute].lat(),
+          lng: thisRoute.routeInformation.route.getPath().getArray()[thisRoute.routeInformation.weatherPoints[i].legNumberInRoute].lng()
+        },
+        radius: 20 //thisRoute.rainIntensities[0][i] * 100 // 0 so deprature time of now.  //Math.sqrt(citymap[city].population) * 100
+      });
+
+      this.currentlyFocusedRouteRainIndication.push(cityCircle);
+    }
+  }
+
   public focusOnRoute(routeInformation: RouteInformation) {
     this.map.fitBounds(routeInformation.bounds);
   }
@@ -53,7 +79,14 @@ export class MapComponent implements OnInit {
   public addRouteToMap(route: RouteAndWeatherInformation) {
     this.placeStartEndMarkers(route.routeInformation.route.getPath().getArray());
     route.routeInformation.route.setMap(this.map);
-    this.placeWeatherMarkers(route.routeInformation);
+
+    if (this.isChecked1) {
+      this.placeWeatherMarkers(route.routeInformation);
+    }
+
+    if (this.isChecked2) {
+      this.placeRainIndicatorsAtWeatherPoints(route);
+    }
   }
 
   public highlightSelectedRoute(routeId: any, routeInfo: RouteInformation) {
