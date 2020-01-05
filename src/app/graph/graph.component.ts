@@ -111,7 +111,7 @@ export class GraphComponent {
       let avdmmPerHourOfRoute = this.weatherService.workOutmmPerHourFromRouteDurationAndmmThatHitsPersonInThatTime(rainThatWillHitPersonInmm, routeAndWeather.routeInformation.travelTimeInSeconds)
       console.log("average mm per hour for route is :" + avdmmPerHourOfRoute);
 
-      colours.push(this.getColourForRouteRainIntensity(avdmmPerHourOfRoute));
+      colours.push(GraphComponent.getColourForRouteRainIntensity(avdmmPerHourOfRoute));
 
       if (focusedRouteId !== null) {
         if (routeAndWeather.routeInformation.id === focusedRouteId) {
@@ -137,7 +137,7 @@ export class GraphComponent {
     });
   }
 
-  private getColourForRouteRainIntensity(rainIntensitymmPerHour: number): string {
+  public static getColourForRouteRainIntensity(rainIntensitymmPerHour: number): string { // using here and in map so making static and public so available // prob can be in better place
     const VERY_LIGHT_BLUE = 'rgb(190, 230, 255)';
     const LIGHT_BLUE = 'rgb(170, 210, 240)';
     const BLUE = 'rgb(125, 165, 230)';

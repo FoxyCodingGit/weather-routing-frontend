@@ -52,23 +52,37 @@ export class MapComponent implements OnInit {
   }
 
   public placeRainIndicatorsAtWeatherPoints(thisRoute: RouteAndWeatherInformation) {
+    let focusedrainintensity: number;
+
     for (let i = 1; i < thisRoute.routeInformation.weatherPoints.length - 1; i++) {
+      focusedrainintensity = thisRoute.rainIntensities[0][i];
 
       var cityCircle = new google.maps.Circle({
-        strokeColor: '#FF0000',
+        strokeColor: GraphComponent.getColourForRouteRainIntensity(focusedrainintensity),
         strokeOpacity: 0.2,
         strokeWeight: 2,
-        fillColor: '#FF0000',
+        fillColor: GraphComponent.getColourForRouteRainIntensity(focusedrainintensity),
         fillOpacity: 0.35,
         map: this.map,
         center: {
           lat: thisRoute.routeInformation.route.getPath().getArray()[thisRoute.routeInformation.weatherPoints[i].legNumberInRoute].lat(),
           lng: thisRoute.routeInformation.route.getPath().getArray()[thisRoute.routeInformation.weatherPoints[i].legNumberInRoute].lng()
         },
-        radius: 20 //thisRoute.rainIntensities[0][i] * 100 // 0 so deprature time of now.  //Math.sqrt(citymap[city].population) * 100
+        radius: this.calculateQuickRainCircleColourRadius(focusedrainintensity)
       });
 
       this.currentlyFocusedRouteRainIndication.push(cityCircle);
+    }
+  }
+
+  private calculateQuickRainCircleColourRadius(intensity: number): number {
+    let baseSize = 50;
+    let lowestRainIntensity = 0.01;
+
+    if (intensity < lowestRainIntensity) {
+      return 0;
+    } else {
+      return baseSize + (intensity * (150 / 8))  // if biggest 8 want size of 150 so max radiusn is 200 
     }
   }
 
