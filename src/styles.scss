@@ -35,8 +35,11 @@ app-navbar {
 .square {
     width: 20px;
     height: 20px;
-    text-align: center;
     margin-right: 5px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .wrapper {
