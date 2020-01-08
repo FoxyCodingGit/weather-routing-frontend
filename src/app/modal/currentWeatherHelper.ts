@@ -7,7 +7,7 @@ export class currentWeatherHelper {
         return {
             title: 'Summary',
             icons: ["/assets/images/summary-icon/" + currentWeather.icon + ".png"],
-            texts: [{ text: 'Summary', value: currentWeather.summary }]
+            texts: [currentWeather.summary]
           };
     }
 
@@ -18,10 +18,7 @@ export class currentWeatherHelper {
                 '/assets/images/storm.png',
                 '/assets/images/bearing/' + this.workOutBearing(currentWeather.nearestStormBearing) + '.png'
             ],
-            texts: [
-                { text: 'Nearest Storm Distance (MEESUREMENT!)', value: currentWeather.nearestStormDistance.toString() },
-                { text: 'Bearing', value: currentWeather.nearestStormBearing.toString() }
-            ]
+            texts: ['Nearest Storm Distance (MEESUREMENT!) ' + currentWeather.nearestStormDistance.toString()]
           };
     }
 
@@ -30,8 +27,8 @@ export class currentWeatherHelper {
             title: 'Temperature',
             icons: ['/assets/images/temperature/' + this.workOutTemperatureIcon(currentWeather.apparentTemperature) + '.png'],
             texts: [
-                { text: 'Temperature', value: currentWeather.temperature.toString() },
-                { text: 'Apparent Temperature', value: currentWeather.apparentTemperature.toString() }
+                'Temperature: ' + currentWeather.temperature.toString(),
+                'Apparent Temperature: ' +  currentWeather.apparentTemperature.toString()
             ]
           };
     }
@@ -44,9 +41,8 @@ export class currentWeatherHelper {
                 '/assets/images/bearing/' + this.workOutBearing(currentWeather.windBearing) + '.png'
             ],
             texts: [
-                { text: 'Speed', value: currentWeather.windSpeed + 'm/s [' +
-                    this.workOutWindSpeedIntensity(currentWeather.windSpeed) + ']' },
-                { text: 'Gust', value: currentWeather.windGust + 'm/s' }
+                'Speed:' + currentWeather.windSpeed + 'm/s [' + this.workOutWindSpeedIntensity(currentWeather.windSpeed) + ']',
+                'Gust:' + currentWeather.windGust + 'm/s'
             ]
           };
     }
@@ -55,7 +51,7 @@ export class currentWeatherHelper {
         return {
             title: 'Cloud Coverage',
             icons: ['/assets/images/cloud-coverage/' + this.workOutCloudCoverageIcon(cloudCover) + '.png'],
-            texts: [{ text: 'cloud Coverage', value: cloudCover * 100 + '%' }]
+            texts: ['Cloud Coverage: ' + cloudCover * 100 + '%']
           };
     }
 
@@ -71,7 +67,7 @@ export class currentWeatherHelper {
         return {
             title: 'Visibility',
             icons: ['/assets/images/visibility/' + this.workOutVisibility(visibility) + '.png'],
-            texts: [{ text: 'Visibility', value: visibility + 'km' }]
+            texts: ['Visibility: ' + visibility + 'km']
           };
     }
 

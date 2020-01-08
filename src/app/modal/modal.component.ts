@@ -5,7 +5,6 @@ import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformat
 // import * as $ from 'jquery'; // cant have this as Property 'modal' does not exist on type 'JQuery<HTMLElement>'.
 import * as bootstrap from 'bootstrap'; // This works DONT REMOVE
 import { Currently } from '../shared/Models/Currently';
-import { TextAdam } from '../icon-text/Models/TextAdam';
 import { IconTextThings } from '../icon-text/Models/IconTextThings';
 import { currentWeatherHelper } from './currentWeatherHelper';
 // https://stackoverflow.com/questions/32735396/error-ts2339-property-modal-does-not-exist-on-type-jquery

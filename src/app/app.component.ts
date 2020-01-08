@@ -6,7 +6,6 @@ import { MapComponent } from './map/map.component';
 import { WeatherService } from './shared/weather.service';
 import { ModalComponent } from './modal/modal.component';
 import { AlertService } from './shared/alert.service';
-import { TextAdam } from './icon-text/Models/TextAdam';
 
 @Component({
   selector: 'app-root',
