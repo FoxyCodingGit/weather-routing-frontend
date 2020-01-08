@@ -8,7 +8,7 @@
 <div class="mainContainer">
     <div class="wrapper">
         <app-map (mapClicked)="updateLatLngInputValues($event)"></app-map>
-        <app-route-creation style="overflow-y: scroll;" (RoutesCreated)="processNewRoutes($event)"></app-route-creation>
+        <app-route-creation (RoutesCreated)="processNewRoutes($event)"></app-route-creation>
     </div>
     
     <hr>
