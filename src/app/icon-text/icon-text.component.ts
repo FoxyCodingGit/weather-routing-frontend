@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { IconTextThings } from './Models/IconTextThings';
 
 @Component({
   selector: 'app-icon-text',
@@ -6,7 +7,5 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./icon-text.component.scss']
 })
 export class IconTextComponent {
-  @Input() title: string;
-  @Input() icons: string[];
-  @Input() texts: Text[];
+  @Input() thing: IconTextThings;
 }

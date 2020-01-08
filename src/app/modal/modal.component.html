@@ -11,7 +11,7 @@
         <div class="modal-body">
             <div class="currentWeather">
                 <div class="wrapper">
-                    <app-icon-text *ngFor="let iconTextThing of iconTextThings" [title]="iconTextThing.title" [icons]="iconTextThing.icons" [texts]="iconTextThing.texts"></app-icon-text>
+                    <app-icon-text *ngFor="let iconTextThing of iconTextThings" [thing]="iconTextThing"></app-icon-text>
                 </div>
             </div>
             <div class="wrapper" >

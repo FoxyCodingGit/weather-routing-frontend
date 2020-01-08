@@ -1,9 +1,7 @@
-<h3>{{title}}</h3>
+<h3>{{thing.title}}</h3>
 
 <div class="wrapper">
-    <img *ngFor="let icon of icons" src="{{icon}}">
+    <img *ngFor="let icon of thing.icons" src="{{icon}}">
 </div>
 
-<div class="wrapper">
-    <p *ngFor="let text of texts">{{text}}</p>
-</div>
+<p>{{thing.text}}</p>
