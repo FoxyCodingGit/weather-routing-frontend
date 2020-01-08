@@ -16,7 +16,7 @@ export class WeatherService {
   public static averageWalkingDistanceMetersPerSecond = 1.4;
 
   private baseURL = 'https://localhost:44338/weather';
-  private howManyWeatherMarkerChecks = 4;
+  private howManyWeatherMarkerChecks = 3;
 
   private graphTimeMin = 0; // need to decide if these be these or can be dynamic
   private graphTimeMax = 20;
