@@ -7,6 +7,7 @@ import { RouteInformation } from '../map/Model/RouteInformation';
 import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformation';
 import { WeatherPoint } from '../map/Model/weatherPoint';
 import { ProbsAndIntensitiesPerWeatherPointPerDepartureTime } from './Models/ProbsAndIntensitiesPerWeatherPointPerDepartureTime';
+import { Currently } from './Models/Currently';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,7 @@ export class WeatherService {
   public static averageWalkingDistanceMetersPerSecond = 1.4;
 
   private baseURL = 'https://localhost:44338/weather';
-  private howManyWeatherMarkerChecks = 3;
+  private howManyWeatherMarkerChecks = 4;
 
   private graphTimeMin = 0; // need to decide if these be these or can be dynamic
   private graphTimeMax = 20;
@@ -249,6 +250,13 @@ export class WeatherService {
         map(percentage => percentage * 100),
         catchError(this.handleError<number>(0))
       );
+  }
+
+  // conventional call
+  public async GetCurrentForPoint(lat: number, lng: number): Promise<Currently> {
+    const url = `${this.baseURL}/currently/${lat}/${lng}`;
+
+    return await this.http.get<Currently>(url).toPromise();
   }
 
   public GetRainMinutelyDataForWeatherPoint(lat: number, lng: number): Observable<MinutelyRainData[]> { // move * 100 to percentage back to map.

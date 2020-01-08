@@ -23,11 +23,16 @@ export class AppComponent {
 
   title = 'WeatherRoutingFrontend';
 
+  public async toot() {
+    await this.weatherService.GetCurrentForPoint(55.583156106988, -1.9225142006598617).then( result => {
+      console.log(result);
+    });
+  }
+
   constructor(private weatherService: WeatherService, private alertService: AlertService) { }
 
   public processNewRoutes(newRoutes: RouteAndWeatherInformation[]): void {
-    
-    this.alertService.error("pee pee poo poo");
+    this.alertService.error("This is an error :o");
     newRoutes.forEach(route => {
       this.map.addRouteToMap(route);
 
