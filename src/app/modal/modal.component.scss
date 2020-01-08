@@ -1,10 +1,7 @@
 .modal-dialog {
-    width: 100%;
-    margin: 20px;
-}
-
-.modal-content {
-    width: 1800px; // TODO: hardcoded pxs
+    max-width: 90%; // removes one added by bootstrap, prob is cleaner way
+    margin: auto;
+    margin-top: 20px; // get auto version for vertical so same spacing above and below
 }
 
 app-graph {
@@ -17,4 +14,8 @@ app-icon-text {
     height: 200px;    
     border: 2px black solid;    
     margin: auto;
+}
+
+.wrapper {
+    margin-bottom: 20px;
 }
