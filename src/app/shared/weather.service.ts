@@ -41,9 +41,16 @@ export class WeatherService {
   public async addWeatherInformationToRoute(thisRoute: RouteInformation): Promise<RouteAndWeatherInformation> {
     this.setWeatherLegsEqualDistanceApart(thisRoute);
 
-    return await this.getMinutelyData(thisRoute).then(minutelyRainData => {
+    return await this.getMinutelyData(thisRoute).then(async minutelyRainData => {
       const refactorMe: ProbsAndIntensitiesPerWeatherPointPerDepartureTime = this.getWeatherInformationPerWeatherPointPerPerInterval(thisRoute, minutelyRainData);
-      return new RouteAndWeatherInformation(thisRoute, refactorMe.rainIntensities, refactorMe.rainProbabilites);
+
+
+      let tempBeginningLat = thisRoute.route.getPath().getArray()[0].lat();
+      let tempBeginningLng = thisRoute.route.getPath().getArray()[0].lng();
+
+      let thing = await this.GetCurrentForPoint(tempBeginningLat, tempBeginningLng);
+
+      return new RouteAndWeatherInformation(thisRoute, refactorMe.rainIntensities, refactorMe.rainProbabilites, thing);
     });
   }
 

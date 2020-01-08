@@ -2,22 +2,22 @@ export class Currently {
     time: number; // DONT CARE ABOUT
     summary: string;
     icon: IconType;
-    NearestStormDistance: number;
-    NearestStormBearing: number;
-    PrecipIntensity: number; // DONT CARE ABOUT?
-    PrecipProbability: number; // DONT CARE ABOUT?
-    Temperature: number;
-    ApparentTemperature: number;
-    DewPoint: number; // DONT CARE ABOUT
-    Humidity: number;
-    Pressure: number; // DONT CARE ABOUT
-    WindSpeed: number;
-    WindGust: number;
-    WindBearing: number;
-    CloudCover: number;
-    UvIndex: number;
-    Visibility: number;
-    Ozone: number; // DONT CARE ABOUT
+    nearestStormDistance: number;
+    nearestStormBearing: number;
+    precipIntensity: number; // DONT CARE ABOUT?
+    precipProbability: number; // DONT CARE ABOUT?
+    temperature: number;
+    apparentTemperature: number;
+    dewPoint: number; // DONT CARE ABOUT
+    humidity: number;
+    pressure: number; // DONT CARE ABOUT
+    windSpeed: number;
+    windGust: number;
+    windBearing: number;
+    cloudCover: number;
+    uvIndex: number;
+    visibility: number;
+    ozone: number; // DONT CARE ABOUT
 }
 
 export enum IconType {

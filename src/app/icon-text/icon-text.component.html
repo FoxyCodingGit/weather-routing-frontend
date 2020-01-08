@@ -1,0 +1,16 @@
+<div class="adameee">
+    <h1>{{title}}</h1>
+
+    <div class="wrapper">
+        <div *ngFor="let icon of icons">
+            <img src="{{icon}}">
+        </div>    
+    </div>
+    
+    <div class="wrapper">
+        <div *ngFor="let text of texts">
+            <p>{{text.text}}: {{text.value}}</p>
+        </div>    
+    </div>
+</div>
+

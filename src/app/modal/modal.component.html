@@ -9,6 +9,17 @@
             </button>
         </div>
         <div class="modal-body">
+
+
+            <div class="currentWeather">
+                <div class="wrapper">
+                    <div *ngFor="let iconTextThing of iconTextThings" >
+                        <app-icon-text [title]="iconTextThing.title" [icons]="iconTextThing.icons" [texts]="iconTextThing.texts"></app-icon-text>
+                    </div>
+                </div>
+            </div>
+
+
             <app-graph #rainInfo></app-graph>
             <app-graph #totalRain></app-graph>
         </div>

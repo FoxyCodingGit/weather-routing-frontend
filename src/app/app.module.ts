@@ -13,6 +13,7 @@ import { RouteDataTableComponent } from './route-data-table/route-data-table.com
 import { RouteCreationComponent } from './route-creation/route-creation.component';
 import { ModalComponent } from './modal/modal.component';
 import { AlertComponent } from './alert/alert.component';
+import { IconTextComponent } from './icon-text/icon-text.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { AlertComponent } from './alert/alert.component';
     RouteDataTableComponent,
     RouteCreationComponent,
     ModalComponent,
-    AlertComponent
+    AlertComponent,
+    IconTextComponent
   ],
   imports: [
     BrowserModule,
