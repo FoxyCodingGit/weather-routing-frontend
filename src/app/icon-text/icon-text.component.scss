@@ -1,9 +1,10 @@
 img {
     width: 100px;
     height: 100px;
+    margin: auto;
 }
 
-.adameee {
-    border: 2px black solid;
-    width: 200px;
+.wrapper {
+    align-items: center;
+    justify-content: center;
 }

@@ -6,3 +6,14 @@
 .modal-content {
     width: 1800px; // TODO: hardcoded pxs
 }
+
+app-graph {
+    min-width: 48%;
+    margin: auto;
+}
+
+app-icon-text {
+    width: 250px;    
+    border: 2px black solid;    
+    margin: auto;
+}
