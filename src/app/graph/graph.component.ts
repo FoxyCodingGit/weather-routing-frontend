@@ -102,7 +102,6 @@ export class GraphComponent {
   private displayTotalRainPerRoute(routeWeatherInfo: RouteAndWeatherInformation[], departureTime: number, focusedRouteId: number): void {
     let totalRainForAllRoutes: number[] = [];
     let colours: Array<ChartColor> = [];
-    let borderColours: Array<ChartColor> = [];
     let borderWidths: Array<number> = [];
 
     routeWeatherInfo.forEach(routeAndWeather => {
@@ -115,24 +114,19 @@ export class GraphComponent {
 
       if (focusedRouteId !== null) {
         if (routeAndWeather.routeInformation.id === focusedRouteId) {
-          borderColours.push('rgb(255,0,0)');
           borderWidths.push(10);
         } else {
-          borderColours.push(null);
           borderWidths.push(0);
         }
       }
 
-
       totalRainForAllRoutes.push(rainThatWillHitPersonInmm);
     });
-
-    console.log(borderColours);
 
     this.chartData.push({
       data: totalRainForAllRoutes,
       backgroundColor: colours,
-      borderColor: borderColours,
+      borderColor: 'rgb(255,0,0)',
       borderWidth: borderWidths
     });
   }

@@ -33,7 +33,7 @@ export class AppComponent {
   constructor(private weatherService: WeatherService, private alertService: AlertService) { }
 
   public processNewRoutes(newRoutes: RouteAndWeatherInformation[]): void {
-    this.alertService.error("This is an error :o");
+    //this.alertService.error("This is an error :o");
     newRoutes.forEach(route => {
       this.map.addRouteToMap(route);
 
