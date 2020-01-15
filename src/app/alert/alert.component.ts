@@ -33,6 +33,9 @@ export class AlertComponent implements OnInit {
       }
 
       alertGUI.message = alert.message;
+
+      console.log(alert.message);
+
       this.alerts.push(alertGUI);
     });
   }

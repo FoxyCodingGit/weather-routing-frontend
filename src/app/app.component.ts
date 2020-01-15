@@ -6,6 +6,7 @@ import { MapComponent } from './map/map.component';
 import { WeatherService } from './shared/weather.service';
 import { ModalComponent } from './modal/modal.component';
 import { AlertService } from './shared/alert.service';
+import { LoginModalComponent } from './login/login-modal/login-modal.component';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +18,7 @@ export class AppComponent {
   @ViewChild(RouteDataTableComponent, {static: false}) routeTable: RouteDataTableComponent;
   @ViewChild(RouteCreationComponent, {static: false}) routeCreation: RouteCreationComponent;
   @ViewChild(ModalComponent, {static: false}) modal: ModalComponent;
+  @ViewChild(LoginModalComponent, {static: false} ) loginModal: LoginModalComponent;
 
   private routeAndWeatherInformation: RouteAndWeatherInformation[] = []; // TODO: WHEN INVLAID ONE ADDED FOR BEING TOO LONG. ARRAY NOT UDPATED prop so get id match problems
   private focusedRouteId: number;
@@ -78,5 +80,9 @@ export class AppComponent {
   private openModal(): void {
     console.log(this.focusedRouteId);
     this.modal.doThing(this.routeAndWeatherInformation, this.focusedRouteId);
+  }
+
+  public login(): void { // again, do funcs that only are used in html have to be public??
+    this.loginModal.start();
   }
 }

@@ -1,5 +1,5 @@
 <router-outlet></router-outlet> <!-- idk what this is -->
-<app-navbar></app-navbar>
+<app-navbar (loginPressed)="login()"></app-navbar>
 
 <app-alert></app-alert>
 
@@ -14,6 +14,7 @@
     <hr>
     
     <app-modal></app-modal>
+    <app-login-modal></app-login-modal>
 
     <div class="routeTable">
         <app-route-data-table (SelectRowAction)="rowSelected($event)" (routeInfoButtonPressed)="routeInfoButtonPressed($event)"></app-route-data-table>

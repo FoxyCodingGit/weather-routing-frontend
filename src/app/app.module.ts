@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { MapComponent } from './map/map.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { ChartsModule } from 'ng2-charts';
 import { GraphComponent } from './graph/graph.component';
@@ -14,6 +14,7 @@ import { RouteCreationComponent } from './route-creation/route-creation.componen
 import { ModalComponent } from './modal/modal.component';
 import { AlertComponent } from './alert/alert.component';
 import { IconTextComponent } from './icon-text/icon-text.component';
+import { LoginModalComponent } from './login/login-modal/login-modal.component';
 
 @NgModule({
   declarations: [
@@ -25,12 +26,14 @@ import { IconTextComponent } from './icon-text/icon-text.component';
     RouteCreationComponent,
     ModalComponent,
     AlertComponent,
-    IconTextComponent
+    IconTextComponent,
+    LoginModalComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     ChartsModule
   ],
