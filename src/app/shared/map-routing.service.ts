@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, map } from 'rxjs/operators';
 import { Point } from '../map/Model/Point';
 import { RouteFromAPI } from '../map/Model/RouteFromAPI';
@@ -18,7 +18,21 @@ export class MapRoutingService {
   public GetRoutes(travelMode: string, startLat: number, startLng: number, endLat: number, endLng: number, numberofAlternates: number = 0): Observable<RouteFromAPI[]> {
     const url = `${this.baseURL}/${travelMode}/${numberofAlternates}/${startLat}/${startLng}/${endLat}/${endLng}`;
 
-    return this.http.get<RouteFromAPI[]>(url);
+
+    const headerDict = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Authorization': 'Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE1Nzk1MjU5NjMsImlzcyI6Im1lIiwiYXVkIjoieW91In0.fd1LOx6xxJOXXLLLmgimaqZEAkPkOo9m2H5L6dPcOCo'
+    };
+    
+    const requestOptions = {                                                                                                                                                                                 
+      headers: new HttpHeaders(headerDict)
+    };
+    
+
+
+    return this.http.get<RouteFromAPI[]>(url, requestOptions);
       // .pipe(
       //   map(whatsReturnedFromApi => {
       //     whatsReturnedFromApi.forEach(route => { // IF SOMETHING BREAKS ITS PROB THIS.

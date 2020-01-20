@@ -7,6 +7,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 })
 export class NavbarComponent implements OnInit {
   @Output() loginPressed: EventEmitter<boolean> = new EventEmitter();
+  @Output() logOutPressed: EventEmitter<boolean> = new EventEmitter();
 
   constructor() { }
 
@@ -15,6 +16,10 @@ export class NavbarComponent implements OnInit {
 
   public login() {
     this.loginPressed.emit(true);
+  }
+
+  public logOut() {
+    this.logOutPressed.emit(true);
   }
 
 }

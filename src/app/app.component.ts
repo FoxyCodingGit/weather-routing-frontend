@@ -7,6 +7,9 @@ import { WeatherService } from './shared/weather.service';
 import { ModalComponent } from './modal/modal.component';
 import { AlertService } from './shared/alert.service';
 import { LoginModalComponent } from './login/login-modal/login-modal.component';
+import { Router } from '@angular/router';
+import { AuthenticationService } from './login/services/authentification.service';
+import { User } from './login/user';
 
 @Component({
   selector: 'app-root',
@@ -22,6 +25,7 @@ export class AppComponent {
 
   private routeAndWeatherInformation: RouteAndWeatherInformation[] = []; // TODO: WHEN INVLAID ONE ADDED FOR BEING TOO LONG. ARRAY NOT UDPATED prop so get id match problems
   private focusedRouteId: number;
+  private currentUser: User;
 
   title = 'WeatherRoutingFrontend';
 
@@ -32,7 +36,10 @@ export class AppComponent {
   }
 
 
-  constructor(private weatherService: WeatherService, private alertService: AlertService) { }
+  constructor(private weatherService: WeatherService, private alertService: AlertService, private router: Router,
+              private authenticationService: AuthenticationService) {
+                this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
+              }
 
   public processNewRoutes(newRoutes: RouteAndWeatherInformation[]): void {
     //this.alertService.error("This is an error :o");
@@ -84,5 +91,10 @@ export class AppComponent {
 
   public login(): void { // again, do funcs that only are used in html have to be public??
     this.loginModal.start();
+  }
+
+  public logOut(): void {
+    this.authenticationService.logout();
+    this.router.navigate(['/login']);
   }
 }
