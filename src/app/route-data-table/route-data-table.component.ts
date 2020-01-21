@@ -28,7 +28,7 @@ export class RouteDataTableComponent implements OnInit {
         { title: 'Leave in 10 Mins', width: '12%' },
         { title: 'Leave in 15 Mins', width: '12%' },
         { title: 'Leave in 20 Mins', width: '12%' },
-        { title: 'ROUTE INFO' }
+        { title: 'SPECIAL' }
        ]
     };
 
@@ -57,10 +57,15 @@ export class RouteDataTableComponent implements OnInit {
 
     that = this;
 
-    $('#table_id tbody').on( 'click', 'button', function () {
+    $('#table_id tbody').on( 'click', 'button.weatherInfo', function () {
       var data = table.row( $(this).parents('tr') ).data();
       that.sendRouteInfoButtonPressedOutput(data[0]);
-  } );
+    });
+
+    $('#table_id tbody').on( 'click', 'i.fas.fa-star', function () {
+      var data = table.row( $(this).parents('tr') ).data();
+      that.toggleFavouriteRoute(data[0]);
+    });
 
     $('#table_id').on('click', 'tr', selectRowFunc);
   }
@@ -80,12 +85,16 @@ export class RouteDataTableComponent implements OnInit {
       overallScores[2] + scoreComparisonIcons[1],
       overallScores[3] + scoreComparisonIcons[2],
       overallScores[4] + scoreComparisonIcons[3],
-      '<button>CLICK ME!!!</button>' // TODO: button no work. do on select row for dev.
+      '<button class="weatherInfo">CLICK ME!!!</button><i class="fas fa-star"></i>' // TODO: button no work. do on select row for dev.
     ]).draw();
   }
 
   public sendRouteInfoButtonPressedOutput(routeId: number): void {
     this.routeInfoButtonPressed.emit(routeId);
+  }
+
+  private toggleFavouriteRoute(routeId: number) {
+    console.log("GROOVY IT WORKS WHN YOU PRESS THE STAR");
   }
 
   private getCorrectIcons(overallScores: string[]): string[] {
