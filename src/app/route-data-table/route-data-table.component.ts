@@ -52,10 +52,15 @@ export class RouteDataTableComponent implements OnInit {
 
       componentScope.SelectRowAction.emit(table.row(this).data()[0]);
 
-      that.sendRouteInfoButtonPressedOutput(table.row(this).data()[0]);
-
       // TODO: hiddencolumForIdPosition is hacky. Tried placing id at start and hiding but would hide name column
     };
+
+    that = this;
+
+    $('#table_id tbody').on( 'click', 'button', function () {
+      var data = table.row( $(this).parents('tr') ).data();
+      that.sendRouteInfoButtonPressedOutput(data[0]);
+  } );
 
     $('#table_id').on('click', 'tr', selectRowFunc);
   }
@@ -75,7 +80,7 @@ export class RouteDataTableComponent implements OnInit {
       overallScores[2] + scoreComparisonIcons[1],
       overallScores[3] + scoreComparisonIcons[2],
       overallScores[4] + scoreComparisonIcons[3],
-      '<button (click)="sendRouteInfoButtonPressedOutput()">CLICK ME!!!</button>' // TODO: button no work. do on select row for dev.
+      '<button>CLICK ME!!!</button>' // TODO: button no work. do on select row for dev.
     ]).draw();
   }
 

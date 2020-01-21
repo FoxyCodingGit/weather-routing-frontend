@@ -35,7 +35,6 @@ export class AppComponent {
     });
   }
 
-
   constructor(private weatherService: WeatherService, private alertService: AlertService, private router: Router,
               private authenticationService: AuthenticationService) {
                 this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
