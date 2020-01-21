@@ -7,7 +7,7 @@ import { User } from '../user';
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
 
-  private baseURL = 'https://localhost:44338/routing'; // move this to confgi
+  private baseURL = 'https://localhost:44338/user'; // move this to confgi
 
     private currentUserSubject: BehaviorSubject<User>;
     public currentUser: Observable<User>;
@@ -22,7 +22,7 @@ export class AuthenticationService {
     }
 
     login(username, password): Observable<User> {
-        return this.http.post<User>(`${this.baseURL}/user/Token`, { username, password })
+        return this.http.post<User>(`${this.baseURL}/login`, { UserId: username, password })
             .pipe(map(user => {
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
                 localStorage.setItem('currentUser', JSON.stringify(user));
