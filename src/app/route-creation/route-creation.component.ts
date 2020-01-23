@@ -3,7 +3,7 @@ import { RouteFromAPI } from '../map/Model/RouteFromAPI';
 import { RouteIWant } from '../map/Model/RouteIWant';
 import { RouteInformation } from '../map/Model/RouteInformation';
 import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformation';
-import { MapRoutingService } from '../shared/map-routing.service'; // should this be renamed to routing service. Single responsibiltiy.
+import { RoutingService } from '../shared/routing.service';
 import { WeatherService } from '../shared/weather.service';
 import { AssetService } from 'src/assets/asset.service';
 
@@ -15,7 +15,7 @@ import { AssetService } from 'src/assets/asset.service';
 export class RouteCreationComponent implements OnInit {
   @Output() RoutesCreated: EventEmitter<RouteAndWeatherInformation[]> = new EventEmitter();
 
-  constructor(private mapRoutingService: MapRoutingService, private weatherService: WeatherService, private assetService: AssetService) { }
+  constructor(private routingService: RoutingService, private weatherService: WeatherService, private assetService: AssetService) { }
 
   public showStartLatLng: boolean = false;
   public showEndLatLng: boolean = false;
@@ -40,7 +40,7 @@ export class RouteCreationComponent implements OnInit {
   }
 
   public onRoutingSubmit(data: any) {
-    this.mapRoutingService.GetRoutes(data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng, this.numberOfAltRoutes).subscribe(
+    this.routingService.GetRoutes(data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng, this.numberOfAltRoutes).subscribe(
       async (routes: RouteFromAPI[]) => {
         let newRoutesFormat: RouteIWant[] = this.RouteFromAPIToRouteIWant(routes);
 
