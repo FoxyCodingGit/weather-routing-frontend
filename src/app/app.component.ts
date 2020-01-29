@@ -10,6 +10,7 @@ import { LoginModalComponent } from './login/login-modal/login-modal.component';
 import { Router } from '@angular/router';
 import { AuthenticationService } from './login/services/authentification.service';
 import { User } from './login/user';
+import { RoutingService } from './shared/routing.service';
 
 @Component({
   selector: 'app-root',
@@ -35,8 +36,7 @@ export class AppComponent {
     });
   }
 
-  constructor(private weatherService: WeatherService, private alertService: AlertService, private router: Router,
-              private authenticationService: AuthenticationService) {
+  constructor(private weatherService: WeatherService, private authenticationService: AuthenticationService, private routingService: RoutingService) {
                 this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
               }
 
@@ -81,6 +81,18 @@ export class AppComponent {
 
   public routeInfoButtonPressed(): void {
     this.openModal();
+  }
+
+  public toggleFavouriteRoute(routeId: number) {
+    console.log("star works: " + routeId);
+
+    // for now just save to db when star clicked
+    this.routingService.CreateUserDefinedRoute(this.routeAndWeatherInformation[routeId].routeInformation).subscribe(
+      (result) => {
+        console.log("!!!!!!!!!");
+        console.log(result);
+      }
+    );
   }
 
   private openModal(): void {

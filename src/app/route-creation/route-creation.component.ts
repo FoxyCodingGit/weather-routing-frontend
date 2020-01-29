@@ -73,13 +73,6 @@ export class RouteCreationComponent implements OnInit {
             newRoutes.push(route);
           });
 
-          this.routingService.CreateUserDefinedRoute(newRoutes[0].routeInformation).subscribe(
-            (result) => {
-              console.log("!!!!!!!!!");
-              console.log(result);
-            }
-          );
-
           this.RoutesCreated.emit(newRoutes);
         });
       }

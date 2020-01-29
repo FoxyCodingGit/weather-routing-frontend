@@ -11,6 +11,7 @@ import { RouteInformation } from '../map/Model/RouteInformation';
 export class RouteDataTableComponent implements OnInit {
   @Output() SelectRowAction: EventEmitter<number> = new EventEmitter();
   @Output() routeInfoButtonPressed: EventEmitter<number> = new EventEmitter();
+  @Output() favouritePressed: EventEmitter<number> = new EventEmitter();
 
   constructor() { }
 
@@ -64,7 +65,7 @@ export class RouteDataTableComponent implements OnInit {
 
     $('#table_id tbody').on( 'click', 'i.fas.fa-star', function () {
       var data = table.row( $(this).parents('tr') ).data();
-      that.toggleFavouriteRoute(data[0]);
+      that.favouriteClicked(data[0]);
     });
 
     $('#table_id').on('click', 'tr', selectRowFunc);
@@ -93,8 +94,8 @@ export class RouteDataTableComponent implements OnInit {
     this.routeInfoButtonPressed.emit(routeId);
   }
 
-  private toggleFavouriteRoute(routeId: number) {
-    console.log("GROOVY IT WORKS WHN YOU PRESS THE STAR");
+  private favouriteClicked(routeId: number) {
+    this.favouritePressed.emit(routeId);
   }
 
   private getCorrectIcons(overallScores: string[]): string[] {
