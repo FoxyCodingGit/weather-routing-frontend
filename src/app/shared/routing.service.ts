@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RouteFromAPI } from '../map/Model/RouteFromAPI';
-import { UserDefinedRoute } from './Models/UserDefinedRoute';
 import { User } from '../login/user';
+import { ReadableUserDefinedRoute } from './Models/ReadableUserDefinedRoute';
 
 @Injectable({
   providedIn: 'root'
@@ -22,8 +22,8 @@ export class RoutingService {
     return this.http.get<RouteFromAPI[]>(url);
   }
 
-  public GetUserDefinedRoutes(): Observable<UserDefinedRoute[]> {
-    const url = `${this.userDefinedBaseURL}/get`;
+  public GetUserDefinedRoutes(): Observable<ReadableUserDefinedRoute[]> {
+    const url = `${this.userDefinedBaseURL}/get/readable`;
 
     const currentUser: User = JSON.parse(localStorage.getItem('currentUser'));
 
@@ -36,6 +36,6 @@ export class RoutingService {
       })
     };
 
-    return this.http.get<UserDefinedRoute[]>(url, requestOptions);
+    return this.http.get<ReadableUserDefinedRoute[]>(url, requestOptions);
   }
 }
