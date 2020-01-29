@@ -5,6 +5,7 @@ import { RouteInformation } from '../map/Model/RouteInformation';
 import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformation';
 import { RoutingService } from '../shared/routing.service';
 import { WeatherService } from '../shared/weather.service';
+import { AssetService } from 'src/assets/asset.service';
 
 @Component({
   selector: 'app-route-creation',
@@ -14,7 +15,7 @@ import { WeatherService } from '../shared/weather.service';
 export class RouteCreationComponent implements OnInit {
   @Output() RoutesCreated: EventEmitter<RouteAndWeatherInformation[]> = new EventEmitter();
 
-  constructor(private routingService: RoutingService, private weatherService: WeatherService) { }
+  constructor(private routingService: RoutingService, private weatherService: WeatherService, private assetService: AssetService) { }
 
   public showStartLatLng: boolean = false;
   public showEndLatLng: boolean = false;
