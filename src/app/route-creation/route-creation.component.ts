@@ -40,6 +40,14 @@ export class RouteCreationComponent implements OnInit {
   }
 
   public onRoutingSubmit(data: any) {
+
+    this.routingService.GetUserDefinedRoutes().subscribe(
+      (result) => {
+        console.log("!!!!!!!!!");
+        console.log(result);
+      }
+    );
+
     this.routingService.GetRoutes(data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng, this.numberOfAltRoutes).subscribe(
       async (routes: RouteFromAPI[]) => {
         let newRoutesFormat: RouteIWant[] = this.RouteFromAPIToRouteIWant(routes);
