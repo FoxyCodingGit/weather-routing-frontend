@@ -58,7 +58,9 @@ export class LoginModalComponent implements OnInit {
           .pipe(first())
           .subscribe(
               data => {
-                  this.router.navigate([this.returnUrl]);
+                  //this.router.navigate([this.returnUrl]);
+                  this.loading = false;
+                  $('#loginModal').modal('hide');
               },
               error => {
                   this.alertService.error(error);

@@ -21,10 +21,13 @@ export class AuthenticationService {
         return this.currentUserSubject.value;
     }
 
-    login(username, password): Observable<User> {
-        return this.http.post<User>(`${this.baseURL}/login`, { UserId: username, password })
-            .pipe(map(user => {
-                // store user details and jwt token in local storage to keep user logged in between page refreshes
+    login(username: string, password: string): Observable<User> {
+        return this.http.post<string>(`${this.baseURL}/login`, { UserId: username, password })
+            .pipe(map(token => {
+                const user: User = {
+                    username,
+                    token
+                };
                 localStorage.setItem('currentUser', JSON.stringify(user));
                 this.currentUserSubject.next(user);
                 return user;
@@ -32,7 +35,6 @@ export class AuthenticationService {
     }
 
     logout() {
-        // remove user from local storage and set current user to null
         localStorage.removeItem('currentUser');
         this.currentUserSubject.next(null);
     }
