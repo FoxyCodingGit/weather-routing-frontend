@@ -4,6 +4,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RouteFromAPI } from '../map/Model/RouteFromAPI';
 import { User } from '../login/user';
 import { ReadableUserDefinedRoute } from './Models/ReadableUserDefinedRoute';
+import { RouteInformation } from '../map/Model/RouteInformation';
+import { UserDefinedRoute } from './Models/UserDefinedRoute';
 
 @Injectable({
   providedIn: 'root'
@@ -37,5 +39,26 @@ export class RoutingService {
     };
 
     return this.http.get<ReadableUserDefinedRoute[]>(url, requestOptions);
+  }
+
+  public CreateUserDefinedRoute(routeInformation: RouteInformation): Observable<UserDefinedRoute[]> { // harcoding pedestrian in the stor proc executing code.
+
+    const startCoords = routeInformation.route.getPath().getArray()[0];
+    const endCoords = routeInformation.route.getPath().getArray()[routeInformation.route.getPath().getArray().length - 1];
+
+    const url = `${this.userDefinedBaseURL}/create/${routeInformation.name}/Pedestrian/${startCoords.lat()}/${startCoords.lng()}/${endCoords.lat()}/${endCoords.lng()}`;
+
+    const currentUser: User = JSON.parse(localStorage.getItem('currentUser'));
+
+    const requestOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Authorization': `Bearer ${currentUser.token}`
+      })
+    };
+
+    return this.http.get<UserDefinedRoute[]>(url, requestOptions);
   }
 }
