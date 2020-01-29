@@ -94,6 +94,5 @@ export class AppComponent {
 
   public logOut(): void {
     this.authenticationService.logout();
-    this.router.navigate(['/login']);
   }
 }
