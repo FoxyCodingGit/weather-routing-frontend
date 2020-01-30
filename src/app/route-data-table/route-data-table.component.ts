@@ -63,7 +63,7 @@ export class RouteDataTableComponent implements OnInit {
       that.sendRouteInfoButtonPressedOutput(data[0]);
     });
 
-    $('#table_id tbody').on( 'click', 'i.fas.fa-star', function () {
+    $('#table_id tbody').on( 'click', 'i.fa-star', function () {
       var data = table.row( $(this).parents('tr') ).data();
       that.favouriteClicked(data[0]);
     });
@@ -73,6 +73,13 @@ export class RouteDataTableComponent implements OnInit {
 
   public addRouteToTable(routeInformation: RouteInformation, overallScores: string[]) {
     const scoreComparisonIcons = this.getCorrectIcons(overallScores);
+
+    let starIconType: string;
+    if (routeInformation.isFavourite) {
+      starIconType = 'fas';
+    } else {
+      starIconType = 'far';
+    }
 
     $('#table_id').DataTable().row.add([
       routeInformation.id,
@@ -86,7 +93,7 @@ export class RouteDataTableComponent implements OnInit {
       overallScores[2] + scoreComparisonIcons[1],
       overallScores[3] + scoreComparisonIcons[2],
       overallScores[4] + scoreComparisonIcons[3],
-      '<button class="weatherInfo">CLICK ME!!!</button><i class="fas fa-star"></i>' // TODO: button no work. do on select row for dev.
+      '<button class="weatherInfo">CLICK ME!!!</button><i class="' + starIconType + ' fa-star"></i>' // TODO: button no work. do on select row for dev.
     ]).draw();
   }
 

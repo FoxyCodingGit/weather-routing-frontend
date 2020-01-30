@@ -37,7 +37,7 @@ export class RouteCreationComponent implements OnInit {
   }
 
   public onRoutingSubmit(data: any) {
-    this.routingService.alalalal(data.name, data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng);
+    this.routingService.alalalal(false, data.name, data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng);
   }
 
   public updateLatLngInputValues(e: google.maps.MouseEvent): void {

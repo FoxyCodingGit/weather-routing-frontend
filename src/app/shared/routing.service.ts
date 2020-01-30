@@ -82,11 +82,11 @@ export class RoutingService {
     });
 
     userSavedRoutes.forEach(route => {
-      this.alalalal(route.routeName, route.modeOfTransport, route.startLat, route.startLng, route.endLat, route.endLng);
+      this.alalalal(true, route.routeName, route.modeOfTransport, route.startLat, route.startLng, route.endLat, route.endLng);
     });
   }
 
-  public alalalal(routeName: string, travelMode: string, startLat: number, startLng: number, endLat: number, endLng: number) {
+  public alalalal(isFavourite: boolean, routeName: string, travelMode: string, startLat: number, startLng: number, endLat: number, endLng: number) {
     this.GetRoutes(travelMode, startLat, startLng, endLat, endLng, this.numberOfAltRoutes).subscribe(
       async (routes: RouteFromAPI[]) => {
 
@@ -95,7 +95,7 @@ export class RoutingService {
 
           let newRoutes: RouteAndWeatherInformation[] = [];
 
-          await this.createRouteWithWeatherInfo(routeInformation, routeName).then(route => {
+          await this.createRouteWithWeatherInfo(isFavourite, routeInformation, routeName).then(route => {
             newRoutes.push(route);
           });
 
@@ -121,8 +121,7 @@ export class RoutingService {
     return newRouteIWantFormat;
   }
 
-  
-  private async createRouteWithWeatherInfo(routeInformation: RouteIWant, routeName: string): Promise<RouteAndWeatherInformation> {
+  private async createRouteWithWeatherInfo(isFavourite: boolean, routeInformation: RouteIWant, routeName: string): Promise<RouteAndWeatherInformation> {
     let mapRoute = new google.maps.Polyline({
       path: routeInformation.points,
       geodesic: true,
@@ -131,7 +130,7 @@ export class RoutingService {
       strokeWeight: 2
     });
 
-    let thisRoute = new RouteInformation(RoutingService.routeId, mapRoute, routeInformation.travelTimeInSeconds, routeName, routeInformation.colour, routeInformation.distance);
+    let thisRoute = new RouteInformation(RoutingService.routeId, mapRoute, routeInformation.travelTimeInSeconds, routeName, routeInformation.colour, routeInformation.distance, isFavourite);
     RoutingService.routeId++;
 
     return await this.weatherService.addWeatherInformationToRoute(thisRoute);
