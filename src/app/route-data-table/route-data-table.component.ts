@@ -25,12 +25,10 @@ export class RouteDataTableComponent implements OnInit {
   private changeFavouriteStatus(routeId: number) {
     const table = $('#table_id').DataTable();
 
-    for (let i = 0; i < table.rows().count(); i++) { // check count
-      if (RoutingService.routeAndWeatherInformation[routeId].routeInformation.isFavourite) {
-        table.cell({row: i, column: 11}).data('<button class="weatherInfo">CLICK ME!!!</button><i class="fas fa-star"></i>');
-      } else {
-        table.cell({row: i, column: 11}).data('<button class="weatherInfo">CLICK ME!!!</button><i class="far fa-star"></i>');
-      }
+    if (RoutingService.routeAndWeatherInformation[routeId].routeInformation.isFavourite) {
+      table.cell({row: routeId, column: 11}).data('<button class="weatherInfo">CLICK ME!!!</button><i class="fas fa-star"></i>');
+    } else {
+      table.cell({row: routeId, column: 11}).data('<button class="weatherInfo">CLICK ME!!!</button><i class="far fa-star"></i>');
     }
 
     $('#table_id').DataTable().draw();
