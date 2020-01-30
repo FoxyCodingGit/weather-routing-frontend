@@ -1,5 +1,5 @@
 export class ReadableUserDefinedRoute {
-    routeId: number;
+    readableRouteId: number;
     routeName: string;
     modeOfTransport: string;
     startLat: number;

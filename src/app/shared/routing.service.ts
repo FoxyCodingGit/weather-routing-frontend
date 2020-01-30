@@ -98,7 +98,7 @@ export class RoutingService {
     });
 
     userSavedRoutes.forEach(route => {
-      this.alalalal(route.routeId.toString(), true, route.routeName, route.modeOfTransport, route.startLat, route.startLng, route.endLat, route.endLng);
+      this.alalalal(route.readableRouteId.toString(), true, route.routeName, route.modeOfTransport, route.startLat, route.startLng, route.endLat, route.endLng);
     });
   }
 

@@ -21,6 +21,10 @@ export class AppComponent implements OnInit {
     this.routingService.getNewRoutes().subscribe((newRoutes) => {
       this.processNewRoutes(newRoutes);
     });
+
+    if (this.currentUser != null) {
+      this.routingService.applyUserDefinedRoutes();
+    }
   }
 
   @ViewChild(MapComponent, {static: false}) map: MapComponent;

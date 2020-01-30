@@ -63,7 +63,7 @@ export class LoginModalComponent implements OnInit {
                   //this.router.navigate([this.returnUrl]);
                   this.loading = false;
                   $('#loginModal').modal('hide');
-                  this.routingService.applyUserDefinedRoutes(); // wrong place as might start being logged in.
+                  this.routingService.applyUserDefinedRoutes();
               },
               error => {
                   this.alertService.error(error);
