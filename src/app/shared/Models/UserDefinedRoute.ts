@@ -1,7 +1,7 @@
 export class UserDefinedRoute {
-    RouteId: number;
-    Name: string;
-    ModeOfTransportId: number;
-    StartLatLngCoordId: number;
-    EndLatLngCoordId: number;
+    routeId: number;
+    name: string;
+    modeOfTransportId: number;
+    startLatLngCoordId: number;
+    endLatLngCoordId: number;
 }

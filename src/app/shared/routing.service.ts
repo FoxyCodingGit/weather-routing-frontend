@@ -9,7 +9,6 @@ import { UserDefinedRoute } from './Models/UserDefinedRoute';
 import { RouteIWant } from '../map/Model/RouteIWant';
 import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformation';
 import { WeatherService } from './weather.service';
-import { async } from '@angular/core/testing';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +20,7 @@ export class RoutingService {
     return this.subject.asObservable();
   }
 
+  public static routeAndWeatherInformation: RouteAndWeatherInformation[] = []; // TODO: WHEN INVLAID ONE ADDED FOR BEING TOO LONG. ARRAY NOT UDPATED prop so get id match problems
   public static routeId = 0;
   private readonly numberOfAltRoutes = 1;
 
@@ -53,8 +53,7 @@ export class RoutingService {
     return this.http.get<ReadableUserDefinedRoute[]>(url, requestOptions);
   }
 
-  public CreateUserDefinedRoute(routeInformation: RouteInformation): Observable<UserDefinedRoute[]> { // harcoding pedestrian in the stor proc executing code.
-
+  public createUserDefinedRoute(routeInformation: RouteInformation): Observable<UserDefinedRoute> { // harcoding pedestrian in the stor proc executing code.
     const startCoords = routeInformation.route.getPath().getArray()[0];
     const endCoords = routeInformation.route.getPath().getArray()[routeInformation.route.getPath().getArray().length - 1];
 
@@ -71,7 +70,24 @@ export class RoutingService {
       })
     };
 
-    return this.http.get<UserDefinedRoute[]>(url, requestOptions);
+    return this.http.get<UserDefinedRoute>(url, requestOptions);
+  }
+
+  public deleteUserDefinedRoute(databaseRouteId: string): Observable<UserDefinedRoute> { // harcoding pedestrian in the stor proc executing code.
+    const url = `${this.userDefinedBaseURL}/delete/${databaseRouteId}`;
+
+    const currentUser: User = JSON.parse(localStorage.getItem('currentUser'));
+
+    const requestOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Authorization': `Bearer ${currentUser.token}`
+      })
+    };
+
+    return this.http.get<UserDefinedRoute>(url, requestOptions);
   }
 
   public async applyUserDefinedRoutes() {
@@ -82,11 +98,11 @@ export class RoutingService {
     });
 
     userSavedRoutes.forEach(route => {
-      this.alalalal(true, route.routeName, route.modeOfTransport, route.startLat, route.startLng, route.endLat, route.endLng);
+      this.alalalal(route.routeId.toString(), true, route.routeName, route.modeOfTransport, route.startLat, route.startLng, route.endLat, route.endLng);
     });
   }
 
-  public alalalal(isFavourite: boolean, routeName: string, travelMode: string, startLat: number, startLng: number, endLat: number, endLng: number) {
+  public alalalal(databaseRouteId: string, isFavourite: boolean, routeName: string, travelMode: string, startLat: number, startLng: number, endLat: number, endLng: number) {
     this.GetRoutes(travelMode, startLat, startLng, endLat, endLng, this.numberOfAltRoutes).subscribe(
       async (routes: RouteFromAPI[]) => {
 
@@ -95,7 +111,7 @@ export class RoutingService {
 
           let newRoutes: RouteAndWeatherInformation[] = [];
 
-          await this.createRouteWithWeatherInfo(isFavourite, routeInformation, routeName).then(route => {
+          await this.createRouteWithWeatherInfo(databaseRouteId, isFavourite, routeInformation, routeName).then(route => {
             newRoutes.push(route);
           });
 
@@ -121,7 +137,7 @@ export class RoutingService {
     return newRouteIWantFormat;
   }
 
-  private async createRouteWithWeatherInfo(isFavourite: boolean, routeInformation: RouteIWant, routeName: string): Promise<RouteAndWeatherInformation> {
+  private async createRouteWithWeatherInfo(databaseRouteId: string, isFavourite: boolean, routeInformation: RouteIWant, routeName: string): Promise<RouteAndWeatherInformation> {
     let mapRoute = new google.maps.Polyline({
       path: routeInformation.points,
       geodesic: true,
@@ -130,7 +146,7 @@ export class RoutingService {
       strokeWeight: 2
     });
 
-    let thisRoute = new RouteInformation(RoutingService.routeId, mapRoute, routeInformation.travelTimeInSeconds, routeName, routeInformation.colour, routeInformation.distance, isFavourite);
+    let thisRoute = new RouteInformation(RoutingService.routeId, mapRoute, routeInformation.travelTimeInSeconds, routeName, routeInformation.colour, routeInformation.distance, isFavourite, databaseRouteId);
     RoutingService.routeId++;
 
     return await this.weatherService.addWeatherInformationToRoute(thisRoute);

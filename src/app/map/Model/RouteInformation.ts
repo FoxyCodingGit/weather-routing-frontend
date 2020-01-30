@@ -2,7 +2,7 @@ import { WeatherPoint } from './weatherPoint';
 import { TempRouteHelper } from 'src/app/shared/tempRouteHelper';
 
 export class RouteInformation {
-    public constructor(id: number, route: google.maps.Polyline, travelTimeInSeconds: number, name: string, color: string, distance: number, isFavourite: boolean) {
+    public constructor(id: number, route: google.maps.Polyline, travelTimeInSeconds: number, name: string, color: string, distance: number, isFavourite: boolean, databaseRouteId: string) {
         this.id = id;
         this.route = route;
         this.travelTimeInSeconds = travelTimeInSeconds;
@@ -12,6 +12,7 @@ export class RouteInformation {
         this.distance = distance;
         this.bounds = this.createBoundForPolygon(route.getPath().getArray());
         this.isFavourite = isFavourite;
+        this.databaseRouteId = databaseRouteId;
         this.getStartEndLocationName();
     }
 
@@ -27,6 +28,7 @@ export class RouteInformation {
     public startLocation: string;
     public endLocation: string;
     public isFavourite: boolean;
+    public databaseRouteId: string;
 
     private createBoundForPolygon(latLngs: google.maps.LatLng[]): google.maps.LatLngBounds {
         const bounds = new google.maps.LatLngBounds();

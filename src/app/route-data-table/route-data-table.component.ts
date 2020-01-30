@@ -2,6 +2,8 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import * as $ from 'jquery'; // we need this apparently? must be a cleaner way
 import 'datatables.net';
 import { RouteInformation } from '../map/Model/RouteInformation';
+import { Subject, Observable } from 'rxjs';
+import { RoutingService } from '../shared/routing.service';
 
 @Component({
   selector: 'app-route-data-table',
@@ -11,11 +13,50 @@ import { RouteInformation } from '../map/Model/RouteInformation';
 export class RouteDataTableComponent implements OnInit {
   @Output() SelectRowAction: EventEmitter<number> = new EventEmitter();
   @Output() routeInfoButtonPressed: EventEmitter<number> = new EventEmitter();
-  @Output() favouritePressed: EventEmitter<number> = new EventEmitter();
 
-  constructor() { }
+  private favouritePressedSubject = new Subject<number>();
+
+  constructor(private routingService: RoutingService) { }
+
+  public getFavouriteObserver(): Observable<number> {
+    return this.favouritePressedSubject.asObservable();
+  }
+
+  private changeFavouriteStatus(routeId: number) {
+    const table = $('#table_id').DataTable();
+
+    for (let i = 0; i < table.rows().count(); i++) { // check count
+      if (RoutingService.routeAndWeatherInformation[routeId].routeInformation.isFavourite) {
+        table.cell({row: i, column: 11}).data('<button class="weatherInfo">CLICK ME!!!</button><i class="fas fa-star"></i>');
+      } else {
+        table.cell({row: i, column: 11}).data('<button class="weatherInfo">CLICK ME!!!</button><i class="far fa-star"></i>');
+      }
+    }
+
+    $('#table_id').DataTable().draw();
+  }
 
   ngOnInit() {
+    this.getFavouriteObserver().subscribe(
+      async (routeId) => {
+      if (RoutingService.routeAndWeatherInformation[routeId].routeInformation.isFavourite) {
+        await this.routingService.deleteUserDefinedRoute(RoutingService.routeAndWeatherInformation[routeId].routeInformation.databaseRouteId).toPromise().then(
+          async (result) => {
+            RoutingService.routeAndWeatherInformation[routeId].routeInformation.isFavourite = false;
+            RoutingService.routeAndWeatherInformation[routeId].routeInformation.databaseRouteId = null;
+          }
+        );
+      } else {
+        await this.routingService.createUserDefinedRoute(RoutingService.routeAndWeatherInformation[routeId].routeInformation).toPromise().then(
+          async (result) => {
+            RoutingService.routeAndWeatherInformation[routeId].routeInformation.isFavourite = true;
+            RoutingService.routeAndWeatherInformation[routeId].routeInformation.databaseRouteId = result.routeId.toString();
+          }
+        );
+      }
+      this.changeFavouriteStatus(routeId);
+    });
+
     const tableSettings: DataTables.Settings = {
       columns: [
         { title: 'id', visible: false },
@@ -102,7 +143,7 @@ export class RouteDataTableComponent implements OnInit {
   }
 
   private favouriteClicked(routeId: number) {
-    this.favouritePressed.emit(routeId);
+    this.favouritePressedSubject.next(routeId);
   }
 
   private getCorrectIcons(overallScores: string[]): string[] {

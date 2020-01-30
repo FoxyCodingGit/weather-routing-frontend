@@ -5,9 +5,7 @@ import { RouteCreationComponent } from './route-creation/route-creation.componen
 import { MapComponent } from './map/map.component';
 import { WeatherService } from './shared/weather.service';
 import { ModalComponent } from './modal/modal.component';
-import { AlertService } from './shared/alert.service';
 import { LoginModalComponent } from './login/login-modal/login-modal.component';
-import { Router } from '@angular/router';
 import { AuthenticationService } from './login/services/authentification.service';
 import { User } from './login/user';
 import { RoutingService } from './shared/routing.service';
@@ -18,20 +16,19 @@ import { RoutingService } from './shared/routing.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  
+
   ngOnInit(): void {
     this.routingService.getNewRoutes().subscribe((newRoutes) => {
       this.processNewRoutes(newRoutes);
     });
   }
-  
+
   @ViewChild(MapComponent, {static: false}) map: MapComponent;
   @ViewChild(RouteDataTableComponent, {static: false}) routeTable: RouteDataTableComponent;
   @ViewChild(RouteCreationComponent, {static: false}) routeCreation: RouteCreationComponent;
   @ViewChild(ModalComponent, {static: false}) modal: ModalComponent;
   @ViewChild(LoginModalComponent, {static: false} ) loginModal: LoginModalComponent;
 
-  private routeAndWeatherInformation: RouteAndWeatherInformation[] = []; // TODO: WHEN INVLAID ONE ADDED FOR BEING TOO LONG. ARRAY NOT UDPATED prop so get id match problems
   private focusedRouteId: number;
   private currentUser: User;
 
@@ -56,10 +53,10 @@ export class AppComponent implements OnInit {
         this.routeTable.selectRowByRouteId(route.routeInformation.id);
       });
 
-      this.routeAndWeatherInformation.push(route);
+      RoutingService.routeAndWeatherInformation.push(route);
     });
 
-    let newestRoute = this.routeAndWeatherInformation[this.routeAndWeatherInformation.length - 1];
+    let newestRoute = RoutingService.routeAndWeatherInformation[RoutingService.routeAndWeatherInformation.length - 1];
     this.map.focusOnRoute(newestRoute.routeInformation);
     this.focusedRouteId = newestRoute.routeInformation.id;
 
@@ -80,8 +77,8 @@ export class AppComponent implements OnInit {
   }
 
   public rowSelected(routeIdFocused: number): void {
-    this.focusedRouteId = routeIdFocused;
-    this.routeAndWeatherInformation.forEach(routeAndWeatherInfo => {
+    this.focusedRouteId = routeIdFocused; // move focused id to service??
+    RoutingService.routeAndWeatherInformation.forEach(routeAndWeatherInfo => {
       this.map.highlightSelectedRoute(routeIdFocused, routeAndWeatherInfo.routeInformation);
     });
   }
@@ -90,21 +87,9 @@ export class AppComponent implements OnInit {
     this.openModal();
   }
 
-  public toggleFavouriteRoute(routeId: number) {
-    console.log("star works: " + routeId);
-
-    // for now just save to db when star clicked
-    this.routingService.CreateUserDefinedRoute(this.routeAndWeatherInformation[routeId].routeInformation).subscribe(
-      (result) => {
-        console.log("!!!!!!!!!");
-        console.log(result);
-      }
-    );
-  }
-
   private openModal(): void {
     console.log(this.focusedRouteId);
-    this.modal.doThing(this.routeAndWeatherInformation, this.focusedRouteId);
+    this.modal.doThing(RoutingService.routeAndWeatherInformation, this.focusedRouteId);
   }
 
   public login(): void { // again, do funcs that only are used in html have to be public??
