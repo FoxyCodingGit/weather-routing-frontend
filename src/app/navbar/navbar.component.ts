@@ -1,4 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { AuthenticationService } from '../login/services/authentification.service';
 
 @Component({
   selector: 'app-navbar',
@@ -9,9 +10,16 @@ export class NavbarComponent implements OnInit {
   @Output() loginPressed: EventEmitter<boolean> = new EventEmitter();
   @Output() logOutPressed: EventEmitter<boolean> = new EventEmitter();
 
-  constructor() { }
+  public currentUsername: string = null;
+
+  constructor(private authenticationService: AuthenticationService) { }
 
   ngOnInit() {
+    this.authenticationService.currentUser.subscribe((currentUser) => {
+      if (currentUser != null) {
+        this.currentUsername = currentUser.username;
+      }
+    });
   }
 
   public login() {
@@ -20,6 +28,6 @@ export class NavbarComponent implements OnInit {
 
   public logOut() {
     this.logOutPressed.emit(true);
+    this.currentUsername = null;
   }
-
 }

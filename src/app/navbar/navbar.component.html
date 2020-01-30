@@ -1,3 +1,6 @@
 <h1>Weather Based Routing Application</h1>
-<button (click)="login()">Login</button>
-<button (click)="logOut()">logOut</button>
+<button *ngIf="currentUsername == null; else logout" (click)="login()">Login</button>
+<ng-template #logout>
+    <h3>You are logged in as {{currentUsername}}</h3>
+    <button (click)="logOut()">logOut</button>
+</ng-template>
