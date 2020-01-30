@@ -1,5 +1,6 @@
 import { WeatherPoint } from './weatherPoint';
 import { RoutingService } from 'src/app/shared/routing.service';
+import { TempRouteHelper } from 'src/app/shared/tempRouteHelper';
 
 export class RouteInformation {
     public constructor(id: number, route: google.maps.Polyline, travelTimeInSeconds: number, name: string, color: string, distance: number) {
@@ -56,11 +57,11 @@ export class RouteInformation {
         const endLat = this.route.getPath().getArray()[lestLatLngIndex].lat();
         const endLng = this.route.getPath().getArray()[lestLatLngIndex].lng();
 
-        await RoutingService.getLocationName(new google.maps.LatLng(startLat, startLng)).then(result => {
+        await TempRouteHelper.getLocationName(new google.maps.LatLng(startLat, startLng)).then(result => {
         this.startLocation = result;
         });
 
-        await RoutingService.getLocationName(new google.maps.LatLng(endLat, endLng)).then(result => {
+        await TempRouteHelper.getLocationName(new google.maps.LatLng(endLat, endLng)).then(result => {
         this.endLocation = result;
         });
     }

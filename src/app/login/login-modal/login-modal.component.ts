@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { AuthenticationService } from '../services/authentification.service';
 import { AlertService } from 'src/app/shared/alert.service';
+import { RoutingService } from 'src/app/shared/routing.service';
 
 @Component({
   selector: 'app-login-modal',
@@ -21,7 +22,8 @@ export class LoginModalComponent implements OnInit {
       private route: ActivatedRoute,
       private router: Router,
       private authenticationService: AuthenticationService,
-      private alertService: AlertService
+      private alertService: AlertService,
+      private routingService: RoutingService
   ) {
       // redirect to home if already logged in
       if (this.authenticationService.currentUserValue) {
@@ -61,6 +63,7 @@ export class LoginModalComponent implements OnInit {
                   //this.router.navigate([this.returnUrl]);
                   this.loading = false;
                   $('#loginModal').modal('hide');
+                  this.routingService.applyUserDefinedRoutes(); // wrong place as might start being logged in.
               },
               error => {
                   this.alertService.error(error);

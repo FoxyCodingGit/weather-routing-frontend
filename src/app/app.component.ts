@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { RouteAndWeatherInformation } from './map/Model/RouteAndWeatherInformation';
 import { RouteDataTableComponent } from './route-data-table/route-data-table.component';
 import { RouteCreationComponent } from './route-creation/route-creation.component';
@@ -17,7 +17,14 @@ import { RoutingService } from './shared/routing.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+  
+  ngOnInit(): void {
+    this.routingService.getNewRoutes().subscribe((newRoutes) => {
+      this.processNewRoutes(newRoutes);
+    });
+  }
+  
   @ViewChild(MapComponent, {static: false}) map: MapComponent;
   @ViewChild(RouteDataTableComponent, {static: false}) routeTable: RouteDataTableComponent;
   @ViewChild(RouteCreationComponent, {static: false}) routeCreation: RouteCreationComponent;

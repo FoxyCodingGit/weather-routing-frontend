@@ -1,57 +1,33 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RouteFromAPI } from '../map/Model/RouteFromAPI';
 import { User } from '../login/user';
 import { ReadableUserDefinedRoute } from './Models/ReadableUserDefinedRoute';
 import { RouteInformation } from '../map/Model/RouteInformation';
 import { UserDefinedRoute } from './Models/UserDefinedRoute';
+import { RouteIWant } from '../map/Model/RouteIWant';
+import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformation';
+import { WeatherService } from './weather.service';
+import { async } from '@angular/core/testing';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoutingService {
+  private subject = new Subject<RouteAndWeatherInformation[]>(); // why private subject etc.
+
+  public getNewRoutes(): Observable<RouteAndWeatherInformation[]> {
+    return this.subject.asObservable();
+  }
 
   public static routeId = 0;
+  private readonly numberOfAltRoutes = 1;
 
   private baseURL = 'https://localhost:44338/routing';
   private userDefinedBaseURL = 'https://localhost:44338/api/UserDefinedRoute'; // TODO: on backend need to change the url.
 
-  public static async getLocationName(latLng: google.maps.LatLng): Promise<string> {
-    let geocoder = new google.maps.Geocoder;
-
-    return new Promise(function(resolve, reject) {
-      geocoder.geocode({ 'location': latLng }, function (results) {
-        let addressOutput = '';
-
-        if (!results) {
-          addressOutput = 'Geocoder passed but result null';
-        } else if (results[0]) {
-          //that.zoom = 11;
-          //that.currentLocation = results[0].formatted_address;
-
-          console.log(results[0]);
-
-          results[0].address_components.forEach(addressPart => {
-            if (addressPart.types[0] === 'street_number'
-            || addressPart.types[0] === 'route'
-            || addressPart.types[0] === 'postal_code') {
-              addressOutput += addressPart.long_name + ' ';
-            }
-          });
-
-          addressOutput = addressOutput.substring(0, addressOutput.length - 1);
-
-          resolve(addressOutput);
-        } else {
-          console.log('No results found');
-          reject('Error!');
-        }
-      });
-    });
-  }
-
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private weatherService: WeatherService) { }
 
   public GetRoutes(travelMode: string, startLat: number, startLng: number,
                    endLat: number, endLng: number, numberofAlternates: number = 0): Observable<RouteFromAPI[]> {
@@ -60,7 +36,7 @@ export class RoutingService {
     return this.http.get<RouteFromAPI[]>(url);
   }
 
-  public GetUserDefinedRoutes(): Observable<ReadableUserDefinedRoute[]> {
+  public GetReadableUserDefinedRoutes(): Observable<ReadableUserDefinedRoute[]> {
     const url = `${this.userDefinedBaseURL}/get/readable`;
 
     const currentUser: User = JSON.parse(localStorage.getItem('currentUser'));
@@ -97,4 +73,77 @@ export class RoutingService {
 
     return this.http.get<UserDefinedRoute[]>(url, requestOptions);
   }
+
+  public async applyUserDefinedRoutes() {
+    let userSavedRoutes: ReadableUserDefinedRoute[];
+
+    await this.GetReadableUserDefinedRoutes().toPromise().then(result => {
+      userSavedRoutes = result;
+    });
+
+    userSavedRoutes.forEach(route => {
+      this.alalalal(route.routeName, route.modeOfTransport, route.startLat, route.startLng, route.endLat, route.endLng);
+    });
+  }
+
+  public alalalal(routeName: string, travelMode: string, startLat: number, startLng: number, endLat: number, endLng: number) {
+    this.GetRoutes(travelMode, startLat, startLng, endLat, endLng, this.numberOfAltRoutes).subscribe(
+      async (routes: RouteFromAPI[]) => {
+
+        let newRoutesFormat: RouteIWant[] = this.RouteFromAPIToRouteIWant(routes);
+        newRoutesFormat.forEach(async routeInformation => {
+
+          let newRoutes: RouteAndWeatherInformation[] = [];
+
+          await this.createRouteWithWeatherInfo(routeInformation, routeName).then(route => {
+            newRoutes.push(route);
+          });
+
+          this.subject.next(newRoutes);
+        });
+      }
+    );
+  }
+
+  
+  private RouteFromAPIToRouteIWant(routes: RouteFromAPI[]): RouteIWant[] { // move to service or someytinh
+    let newRouteIWantFormat: RouteIWant[] = [];
+
+    routes.forEach(route => {
+      let latLngs: google.maps.LatLng[] = [];
+      route.points.forEach(point => {
+        latLngs.push(new google.maps.LatLng(point.latitude, point.longitude));
+      });
+
+      newRouteIWantFormat.push(new RouteIWant(latLngs, route.travelTimeInSeconds, route.distance));
+    });
+
+    return newRouteIWantFormat;
+  }
+
+  
+  private async createRouteWithWeatherInfo(routeInformation: RouteIWant, routeName: string): Promise<RouteAndWeatherInformation> {
+    let mapRoute = new google.maps.Polyline({
+      path: routeInformation.points,
+      geodesic: true,
+      strokeColor: routeInformation.colour + ', 1)',
+      strokeOpacity: 1.0,
+      strokeWeight: 2
+    });
+
+    let thisRoute = new RouteInformation(RoutingService.routeId, mapRoute, routeInformation.travelTimeInSeconds, routeName, routeInformation.colour, routeInformation.distance);
+    RoutingService.routeId++;
+
+    return await this.weatherService.addWeatherInformationToRoute(thisRoute);
+  }
+
+
+
+
+
+
+
+
+
+
 }
