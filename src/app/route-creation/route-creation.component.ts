@@ -25,8 +25,6 @@ export class RouteCreationComponent implements OnInit {
 
   public defaultRouteName = 'My Route';
   public defaultTravelMode = 'pedestrian';
-
-  routeId = 0;
   private numberOfAltRoutes = 1;
 
   public startLat = 55.583156106988;
@@ -124,8 +122,8 @@ export class RouteCreationComponent implements OnInit {
       strokeWeight: 2
     });
 
-    let thisRoute = new RouteInformation(this.routeId, mapRoute, routeInformation.travelTimeInSeconds, routeName, routeInformation.colour, routeInformation.distance);
-    this.routeId++;
+    let thisRoute = new RouteInformation(RoutingService.routeId, mapRoute, routeInformation.travelTimeInSeconds, routeName, routeInformation.colour, routeInformation.distance);
+    RoutingService.routeId++;
 
     return await this.weatherService.addWeatherInformationToRoute(thisRoute);
   }

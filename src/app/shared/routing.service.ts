@@ -12,6 +12,8 @@ import { UserDefinedRoute } from './Models/UserDefinedRoute';
 })
 export class RoutingService {
 
+  public static routeId = 0;
+
   private baseURL = 'https://localhost:44338/routing';
   private userDefinedBaseURL = 'https://localhost:44338/api/UserDefinedRoute'; // TODO: on backend need to change the url.
 
