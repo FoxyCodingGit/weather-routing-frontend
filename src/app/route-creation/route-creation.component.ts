@@ -48,28 +48,19 @@ export class RouteCreationComponent implements OnInit {
       }
     );
 
-    this.routingService.GetRoutes(data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng, this.numberOfAltRoutes).subscribe(
+    this.alalalal(data.name, data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng);
+  }
+
+  public alalalal(routeName: string, travelMode: string, startLat: number, startLng: number, endLat: number, endLng: number) {
+    this.routingService.GetRoutes(travelMode, startLat, startLng, endLat, endLng, this.numberOfAltRoutes).subscribe(
       async (routes: RouteFromAPI[]) => {
+
         let newRoutesFormat: RouteIWant[] = this.RouteFromAPIToRouteIWant(routes);
-
-        let lestLatLngIndex = routes[0].points.length - 1;
-        let startLocationName: string;
-        let endLocationName: string;
-
-        await this.getLocationName(new google.maps.LatLng(routes[0].points[0].latitude, routes[0].points[0].longitude)).then(result => {
-          startLocationName = result;
-        });
-
-        await this.getLocationName(new google.maps.LatLng(routes[0].points[lestLatLngIndex].latitude, routes[0].points[lestLatLngIndex].longitude)).then(result => {
-          endLocationName = result;
-        });
-
-
         newRoutesFormat.forEach(async routeInformation => {
 
           let newRoutes: RouteAndWeatherInformation[] = [];
 
-          await this.createRouteWithWeatherInfo(startLocationName, endLocationName, routeInformation, data).then(route => {
+          await this.createRouteWithWeatherInfo(routeInformation, routeName).then(route => {
             newRoutes.push(route);
           });
 
@@ -113,52 +104,18 @@ export class RouteCreationComponent implements OnInit {
   }
 
   public async populateStartingPoint() {
-    await this.getLocationName(new google.maps.LatLng(this.startLat, this.startLng)).then(location => {
+    await RoutingService.getLocationName(new google.maps.LatLng(this.startLat, this.startLng)).then(location => {
       this.startingPoint = location;
     });
   }
 
   public async populateDestination() {
-    await this.getLocationName(new google.maps.LatLng(this.endLat, this.endLng)).then(location => {
+    await RoutingService.getLocationName(new google.maps.LatLng(this.endLat, this.endLng)).then(location => {
       this.destination = location;
     });
   }
 
-  private async getLocationName(latLng: google.maps.LatLng): Promise<string> {
-    let geocoder = new google.maps.Geocoder;
-
-    return new Promise(function(resolve, reject) {
-      geocoder.geocode({ 'location': latLng }, function (results) {
-        let addressOutput = '';
-
-        if (!results) {
-          addressOutput = 'Geocoder passed but result null';
-        } else if (results[0]) {
-          //that.zoom = 11;
-          //that.currentLocation = results[0].formatted_address;
-
-          console.log(results[0]);
-
-          results[0].address_components.forEach(addressPart => {
-            if (addressPart.types[0] === 'street_number'
-            || addressPart.types[0] === 'route'
-            || addressPart.types[0] === 'postal_code') {
-              addressOutput += addressPart.long_name + ' ';
-            }
-          });
-
-          addressOutput = addressOutput.substring(0, addressOutput.length - 1);
-
-          resolve(addressOutput);
-        } else {
-          console.log('No results found');
-          reject('Error!');
-        }
-      });
-    });
-  }
-
-  private async createRouteWithWeatherInfo(startLocation: string, endLocation: string, routeInformation: RouteIWant, data: any): Promise<RouteAndWeatherInformation> {
+  private async createRouteWithWeatherInfo(routeInformation: RouteIWant, routeName: string): Promise<RouteAndWeatherInformation> {
     let mapRoute = new google.maps.Polyline({
       path: routeInformation.points,
       geodesic: true,
@@ -167,7 +124,7 @@ export class RouteCreationComponent implements OnInit {
       strokeWeight: 2
     });
 
-    let thisRoute = new RouteInformation(this.routeId, mapRoute, routeInformation.travelTimeInSeconds, data.name, routeInformation.colour, routeInformation.distance, startLocation, endLocation);
+    let thisRoute = new RouteInformation(this.routeId, mapRoute, routeInformation.travelTimeInSeconds, routeName, routeInformation.colour, routeInformation.distance);
     this.routeId++;
 
     return await this.weatherService.addWeatherInformationToRoute(thisRoute);

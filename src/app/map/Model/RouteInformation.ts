@@ -1,7 +1,8 @@
 import { WeatherPoint } from './weatherPoint';
+import { RoutingService } from 'src/app/shared/routing.service';
 
 export class RouteInformation {
-    public constructor(id: number, route: google.maps.Polyline, travelTimeInSeconds: number, name: string, color: string, distance: number, startLocation: string, endLocation: string) {
+    public constructor(id: number, route: google.maps.Polyline, travelTimeInSeconds: number, name: string, color: string, distance: number) {
         this.id = id;
         this.route = route;
         this.travelTimeInSeconds = travelTimeInSeconds;
@@ -10,8 +11,7 @@ export class RouteInformation {
         this.name = name;
         this.distance = distance;
         this.bounds = this.createBoundForPolygon(route.getPath().getArray());
-        this.startLocation = startLocation;
-        this.endLocation = endLocation;
+        this.getStartEndLocationName();
     }
 
     public id: number;
@@ -47,4 +47,21 @@ export class RouteInformation {
             return 'rgb(255, 255, 255)';
         }
       }
+
+    private async getStartEndLocationName() {
+        const startLat = this.route.getPath().getArray()[0].lat();
+        const startLng = this.route.getPath().getArray()[0].lng();
+
+        const lestLatLngIndex = this.route.getPath().getArray().length - 1;
+        const endLat = this.route.getPath().getArray()[lestLatLngIndex].lat();
+        const endLng = this.route.getPath().getArray()[lestLatLngIndex].lng();
+
+        await RoutingService.getLocationName(new google.maps.LatLng(startLat, startLng)).then(result => {
+        this.startLocation = result;
+        });
+
+        await RoutingService.getLocationName(new google.maps.LatLng(endLat, endLng)).then(result => {
+        this.endLocation = result;
+        });
+    }
 }
