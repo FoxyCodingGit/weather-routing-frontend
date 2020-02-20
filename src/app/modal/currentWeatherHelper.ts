@@ -11,24 +11,11 @@ export class currentWeatherHelper {
         };
     }
 
-    public static getStorm(currentWeather: Currently): IconTextThings {
-        const nearestStormDistance: string = Math.round(currentWeather.nearestStormDistance).toString();
-        let text: string;
-
-        if (nearestStormDistance === '0') {
-            text = 'You are in a storm!!!';
-        } else {
-            text = 'Nearest Storm Distance: ' + nearestStormDistance + 'km';
-        }
-
-
+    public static getUvIndex(uvIndex: number): IconTextThings {
         return {
-            title: 'Storm',
-            icons: [
-                '/assets/images/storm/' + this.workOutStorm(nearestStormDistance) + '.png',
-                '/assets/images/bearing/' + this.workOutBearing(currentWeather.nearestStormBearing) + '.png'
-            ],
-            text
+            title: 'UV Index',
+            icons: ['/assets/images/uv-index/' + uvIndex + '.png'],
+            text: '' // TODO: Advise people what to do depending on uc index.
         };
     }
 
@@ -81,14 +68,6 @@ export class currentWeatherHelper {
             icons: ['/assets/images/visibility/' + visibilityIdentifier + '.png'],
             text: visibilityIdentifier + ' (' + visibility + 'km)'
         };
-    }
-
-    private static workOutStorm(nearestStormDistance: string): string {
-        if (nearestStormDistance === '0') {
-            return 'storm';
-        } else {
-            return 'no-storm';
-        }
     }
 
     private static workOutBearing(bearing: number): string {

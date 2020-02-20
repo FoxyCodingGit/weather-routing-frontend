@@ -37,12 +37,10 @@ export class ModalComponent implements OnInit {
   private assignCurrentWeatherInfo(currentWeather: Currently) {
     this.iconTextThings = [];
     this.iconTextThings.push(currentWeatherHelper.getSummary(currentWeather));
-    this.iconTextThings.push(currentWeatherHelper.getStorm(currentWeather));
+    this.iconTextThings.push(currentWeatherHelper.getUvIndex(currentWeather.uvIndex));
     this.iconTextThings.push(currentWeatherHelper.getTemperature(currentWeather));
     this.iconTextThings.push(currentWeatherHelper.getWind(currentWeather));
     this.iconTextThings.push(currentWeatherHelper.getCloudCoverage(currentWeather.cloudCover));
-    // this.iconTextThings.push(currentWeatherHelper.getCloudCoverage(currentWeather.cloudCover)); TODO: do UV
     this.iconTextThings.push(currentWeatherHelper.getVisibility(currentWeather.visibility));
-    
   }
 }
