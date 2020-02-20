@@ -6,7 +6,7 @@ import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformat
 import * as bootstrap from 'bootstrap'; // This works DONT REMOVE
 import { Currently } from '../shared/Models/Currently';
 import { IconTextThings } from '../icon-text/Models/IconTextThings';
-import { currentWeatherHelper } from './currentWeatherHelper';
+import { CurrentWeatherHelper } from './CurrentWeatherHelper';
 // https://stackoverflow.com/questions/32735396/error-ts2339-property-modal-does-not-exist-on-type-jquery
 
 @Component({
@@ -36,11 +36,11 @@ export class ModalComponent implements OnInit {
 
   private assignCurrentWeatherInfo(currentWeather: Currently) {
     this.iconTextThings = [];
-    this.iconTextThings.push(currentWeatherHelper.getSummary(currentWeather));
-    this.iconTextThings.push(currentWeatherHelper.getUvIndex(currentWeather.uvIndex));
-    this.iconTextThings.push(currentWeatherHelper.getTemperature(currentWeather));
-    this.iconTextThings.push(currentWeatherHelper.getWind(currentWeather));
-    this.iconTextThings.push(currentWeatherHelper.getCloudCoverage(currentWeather.cloudCover));
-    this.iconTextThings.push(currentWeatherHelper.getVisibility(currentWeather.visibility));
+    this.iconTextThings.push(CurrentWeatherHelper.getSummary(currentWeather));
+    this.iconTextThings.push(CurrentWeatherHelper.getUvIndex(currentWeather.uvIndex));
+    this.iconTextThings.push(CurrentWeatherHelper.getTemperature(currentWeather));
+    this.iconTextThings.push(CurrentWeatherHelper.getWind(currentWeather));
+    this.iconTextThings.push(CurrentWeatherHelper.getCloudCoverage(currentWeather.cloudCover));
+    this.iconTextThings.push(CurrentWeatherHelper.getVisibility(currentWeather.visibility));
   }
 }

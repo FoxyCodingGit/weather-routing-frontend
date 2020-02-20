@@ -1,12 +1,12 @@
 import { Currently } from '../shared/Models/Currently';
 import { IconTextThings } from '../icon-text/Models/IconTextThings';
 
-export class currentWeatherHelper {
+export class CurrentWeatherHelper {
 
     public static getSummary(currentWeather: Currently): IconTextThings {
         return {
             title: 'Summary',
-            icons: ["/assets/images/summary-icon/" + currentWeather.icon + ".png"],
+            icons: ['/assets/images/summary-icon/' + currentWeather.icon + '.png'],
             text: currentWeather.summary
         };
     }
