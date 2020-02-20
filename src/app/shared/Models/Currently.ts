@@ -16,7 +16,7 @@ export class Currently {
     windBearing: number;
     cloudCover: number;
     uvIndex: number;
-    visibility: number;
+    visibility: number; // in km. Trimmed to lower km so 6.7km equals 6.
     ozone: number; // DONT CARE ABOUT
 }
 

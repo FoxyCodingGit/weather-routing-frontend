@@ -12,13 +12,23 @@ export class currentWeatherHelper {
     }
 
     public static getStorm(currentWeather: Currently): IconTextThings {
+        const nearestStormDistance: string = Math.round(currentWeather.nearestStormDistance).toString();
+        let text: string;
+
+        if (nearestStormDistance === '0') {
+            text = 'You are in a storm!!!';
+        } else {
+            text = 'Nearest Storm Distance: ' + nearestStormDistance + 'km';
+        }
+
+
         return {
             title: 'Storm',
             icons: [
-                '/assets/images/storm.png',
+                '/assets/images/storm/' + this.workOutStorm(nearestStormDistance) + '.png',
                 '/assets/images/bearing/' + this.workOutBearing(currentWeather.nearestStormBearing) + '.png'
             ],
-            text: 'Nearest Storm Distance: ' + Math.round(currentWeather.nearestStormDistance).toString() + 'km'
+            text
         };
     }
 
@@ -26,8 +36,9 @@ export class currentWeatherHelper {
         return {
             title: 'Temperature',
             icons: ['/assets/images/temperature/' + this.workOutTemperatureIcon(currentWeather.apparentTemperature) + '.png'],
-            text: 'Temperature: ' + Math.round(currentWeather.temperature).toString() + '°C\n' +
-                'Apparent Temperature: ' +  Math.round(currentWeather.apparentTemperature).toString() + '°C'
+            text: Math.round(currentWeather.temperature).toString() + '°C'
+                    + '<br>' +
+                    'Feels Like ' +  Math.round(currentWeather.apparentTemperature).toString() + '°C'
         };
     }
 
@@ -38,7 +49,10 @@ export class currentWeatherHelper {
                 '/assets/images/wind/' + this.workOutWindSpeedIntensity(currentWeather.windSpeed) + '.png',
                 '/assets/images/bearing/' + this.workOutBearing(currentWeather.windBearing) + '.png'
             ],
-            text: 'Speed:' + (Math.round(currentWeather.windSpeed * 10) / 100).toString() + 'm/s ['+ this.workOutWindSpeedIntensity(currentWeather.windSpeed) + ']' + '\n' +
+            text: this.workOutWindSpeedIntensity(currentWeather.windSpeed)
+                + '<br>' +
+                'Speed:' + (Math.round(currentWeather.windSpeed * 10) / 100).toString() + 'm/s'
+                + '<br>' +
                 'Gust:' + (Math.round(currentWeather.windGust * 10) / 100).toString() + 'm/s'
         };
     }
@@ -47,7 +61,7 @@ export class currentWeatherHelper {
         return {
             title: 'Cloud Coverage',
             icons: ['/assets/images/cloud-coverage/' + this.workOutCloudCoverageIcon(cloudCover) + '.png'],
-            text: 'Cloud Coverage: ' + cloudCover * 100 + '%'
+            text: cloudCover * 100 + '%'
         };
     }
 
@@ -65,9 +79,16 @@ export class currentWeatherHelper {
         return {
             title: 'Visibility',
             icons: ['/assets/images/visibility/' + visibilityIdentifier + '.png'],
-            text: visibilityIdentifier + '\n' +
-                'Visibility: ' + visibility + 'km'
+            text: visibilityIdentifier + ' (' + visibility + 'km)'
         };
+    }
+
+    private static workOutStorm(nearestStormDistance: string): string {
+        if (nearestStormDistance === '0') {
+            return 'storm';
+        } else {
+            return 'no-storm';
+        }
     }
 
     private static workOutBearing(bearing: number): string {
@@ -144,12 +165,12 @@ export class currentWeatherHelper {
         }
     }
 
-    private static workOutVisibility(visibility: number) { // https://www.metoffice.gov.uk/weather/guides/coast-and-sea/glossary
-        if (visibility < 1) {
+    private static workOutVisibility(visibility: number) { // https://en.wikipedia.org/wiki/Visibility
+        if (visibility < 0.1) { // very low visibility
             return Visibility.VERY_POOR;
-        } else if (visibility < 2) {
+        } else if (visibility < 2) { // 1 - 2km is fog (no citation though)
             return Visibility.POOR;
-        } else if (visibility < 5) {
+        } else if (visibility < 5) { // 2 - 5 is haze
             return Visibility.MODERATE;
         } else {
             return Visibility.GOOD;

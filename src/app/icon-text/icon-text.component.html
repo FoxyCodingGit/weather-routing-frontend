@@ -4,4 +4,4 @@
     <img *ngFor="let icon of thing.icons" src="{{icon}}">
 </div>
 
-<p>{{thing.text}}</p>
+<p [innerHtml]="thing.text"></p>

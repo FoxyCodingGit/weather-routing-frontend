@@ -42,15 +42,12 @@ export class WeatherService {
     this.setWeatherLegsEqualDistanceApart(thisRoute);
 
     return await this.getMinutelyData(thisRoute).then(async minutelyRainData => {
-      const refactorMe: ProbsAndIntensitiesPerWeatherPointPerDepartureTime = this.getWeatherInformationPerWeatherPointPerPerInterval(thisRoute, minutelyRainData);
+      const refactorMe: ProbsAndIntensitiesPerWeatherPointPerDepartureTime =
+        this.getWeatherInformationPerWeatherPointPerPerInterval(thisRoute, minutelyRainData);
+      const currentWeather: Currently = await this.GetCurrentForPoint(thisRoute.route.getPath().getArray()[0].lat(),
+        thisRoute.route.getPath().getArray()[0].lng());
 
-
-      let tempBeginningLat = thisRoute.route.getPath().getArray()[0].lat();
-      let tempBeginningLng = thisRoute.route.getPath().getArray()[0].lng();
-
-      let thing = await this.GetCurrentForPoint(tempBeginningLat, tempBeginningLng);
-
-      return new RouteAndWeatherInformation(thisRoute, refactorMe.rainIntensities, refactorMe.rainProbabilites, thing);
+      return new RouteAndWeatherInformation(thisRoute, refactorMe.rainIntensities, refactorMe.rainProbabilites, currentWeather);
     });
   }
 
@@ -263,7 +260,14 @@ export class WeatherService {
   public async GetCurrentForPoint(lat: number, lng: number): Promise<Currently> {
     const url = `${this.baseURL}/currently/${lat}/${lng}`;
 
-    return await this.http.get<Currently>(url).toPromise();
+    return await this.http.get<Currently>(url)
+    .pipe(
+      map(result => {
+        result.visibility = Number.parseFloat(result.visibility.toFixed(1)); // changes visibility to 1 dp.
+        return result;
+      })
+    )
+    .toPromise();
   }
 
   public GetRainMinutelyDataForWeatherPoint(lat: number, lng: number): Observable<MinutelyRainData[]> { // move * 100 to percentage back to map.
