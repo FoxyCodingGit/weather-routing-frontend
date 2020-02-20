@@ -11,11 +11,15 @@ export class CurrentWeatherHelper {
         };
     }
 
-    public static getUvIndex(uvIndex: number): IconTextThings {
+    public static getRain(precipIntensity: number, precipProb: number): IconTextThings { // This is rain information for current. (only first weather point).
+        const precipIntensitySummary: string = this.workOutRainIntensity(precipIntensity); 
+        
         return {
-            title: 'UV Index',
-            icons: ['/assets/images/uv-index/' + uvIndex + '.png'],
-            text: '' // TODO: Advise people what to do depending on uc index.
+            title: 'Rain',
+            icons: ['/assets/images/rain/' + precipIntensitySummary + '.png'],
+            text: precipIntensitySummary.charAt(0).toUpperCase() + precipIntensitySummary.substring(1)
+                + '<br>' +
+                precipProb + "%"
         };
     }
 
@@ -36,11 +40,9 @@ export class CurrentWeatherHelper {
                 '/assets/images/wind/' + this.workOutWindSpeedIntensity(currentWeather.windSpeed) + '.png',
                 '/assets/images/bearing/' + this.workOutBearing(currentWeather.windBearing) + '.png'
             ],
-            text: this.workOutWindSpeedIntensity(currentWeather.windSpeed)
+            text: this.toHumanText(this.workOutWindSpeedIntensity(currentWeather.windSpeed))
                 + '<br>' +
-                'Speed:' + (Math.round(currentWeather.windSpeed * 10) / 100).toString() + 'm/s'
-                + '<br>' +
-                'Gust:' + (Math.round(currentWeather.windGust * 10) / 100).toString() + 'm/s'
+                (Math.round(currentWeather.windSpeed * 10) / 100).toString() + 'm/s' + ' (Gust ' + (Math.round(currentWeather.windGust * 10) / 100).toString() + 'm/s)'
         };
     }
 
@@ -52,22 +54,38 @@ export class CurrentWeatherHelper {
         };
     }
 
-    // public static getCloudCoverage(cloudCover: number): IconTextThings { // UV
-    //     return {
-    //         title: 'Cloud Coverage',
-    //         icons: ['/assets/images/cloud-coverage/' + this.workOutCloudCoverageIcon(cloudCover) + '.png'],
-    //         texts: [{ text: 'cloud Coverage', value: cloudCover * 100 + '%' }]
-    //       };
-    // }
-
     public static getVisibility(visibility: number): IconTextThings {
         const visibilityIdentifier = this.workOutVisibility(visibility);
 
         return {
             title: 'Visibility',
             icons: ['/assets/images/visibility/' + visibilityIdentifier + '.png'],
-            text: visibilityIdentifier + ' (' + visibility + 'km)'
+            text: visibilityIdentifier.charAt(0).toUpperCase() + visibilityIdentifier.substring(1)
         };
+    }
+
+    public static getUvIndex(uvIndex: number): IconTextThings {
+        return {
+            title: 'UV Index',
+            icons: ['/assets/images/uv-index/' + uvIndex + '.png'],
+            text: '' // TODO: Advise people what to do depending on uc index.
+        };
+    }
+
+    private static workOutRainIntensity(rainIntensity: number): string {
+        if (rainIntensity < 0.01) {
+            return Rain.NONE
+        }        
+        if (rainIntensity < 0.5) {
+            return Rain.DRIZZLE;
+        }
+        if (rainIntensity < 1) {
+            return Rain.LIGHT;
+        }
+        if (rainIntensity < 4) {
+            return Rain.MODERATE;
+        }        
+        return Rain.HEAVY;   
     }
 
     private static workOutBearing(bearing: number): string {
@@ -155,6 +173,19 @@ export class CurrentWeatherHelper {
             return Visibility.GOOD;
         }
     }
+
+    private static toHumanText(uglyString: string): string {
+        const capitalised = uglyString.charAt(0).toUpperCase() + uglyString.substring(1);
+        return capitalised.split("-").join(" ");
+    }
+}
+
+export enum Rain {
+    NONE = 'none',
+    DRIZZLE = 'drizzle',
+    LIGHT = 'light',
+    MODERATE = 'moderate',
+    HEAVY = 'heavy'
 }
 
 export enum CompassDirections {
