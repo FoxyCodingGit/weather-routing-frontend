@@ -19,7 +19,7 @@ export class CurrentWeatherHelper {
             icons: ['/assets/images/rain/' + precipIntensitySummary + '.png'],
             text: precipIntensitySummary.charAt(0).toUpperCase() + precipIntensitySummary.substring(1)
                 + '<br>' +
-                precipProb + "%"
+                precipProb * 100 + "%"
         };
     }
 
@@ -37,10 +37,9 @@ export class CurrentWeatherHelper {
         return {
             title: 'Wind',
             icons: [
-                '/assets/images/wind/' + this.workOutWindSpeedIntensity(currentWeather.windSpeed) + '.png',
                 '/assets/images/bearing/' + this.workOutBearing(currentWeather.windBearing) + '.png'
             ],
-            text: this.toHumanText(this.workOutWindSpeedIntensity(currentWeather.windSpeed))
+            text: this.workOutWindSpeedIntensity(currentWeather.windSpeed)
                 + '<br>' +
                 (Math.round(currentWeather.windSpeed * 10) / 100).toString() + 'm/s' + ' (Gust ' + (Math.round(currentWeather.windGust * 10) / 100).toString() + 'm/s)'
         };
@@ -173,11 +172,6 @@ export class CurrentWeatherHelper {
             return Visibility.GOOD;
         }
     }
-
-    private static toHumanText(uglyString: string): string {
-        const capitalised = uglyString.charAt(0).toUpperCase() + uglyString.substring(1);
-        return capitalised.split("-").join(" ");
-    }
 }
 
 export enum Rain {
@@ -206,14 +200,14 @@ export enum Temperature {
 }
 
 export enum WindSpeed {
-    CALM = 'calm',
-    LIGHT_AIR = 'light-air',
-    LIGHT_BREEZE = 'light-breeze',
-    GENTLE_BREEZE = 'gentle-breeze',
-    MODERATE_BREEZE = 'moderate-breeze',
-    FRESH_BREEZE = 'fresh-breeze',
-    STRONG_BREEZE = 'strong-breeze',
-    HIGH_WIND = 'high-wind'
+    CALM = 'Calm',
+    LIGHT_AIR = 'Light Air',
+    LIGHT_BREEZE = 'Light Breeze',
+    GENTLE_BREEZE = 'Gentle Breeze',
+    MODERATE_BREEZE = 'Moderate Breeze',
+    FRESH_BREEZE = 'Fresh Breeze',
+    STRONG_BREEZE = 'Strong Breeze',
+    HIGH_WIND = 'High Wind'
 }
 
 export enum CloudCoverage {
