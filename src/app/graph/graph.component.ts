@@ -9,8 +9,7 @@ import { Color } from 'ng2-charts';
 
 @Component({
   selector: 'app-graph',
-  templateUrl: './graph.component.html',
-  styleUrls: ['./graph.component.scss']
+  templateUrl: './graph.component.html'
 })
 export class GraphComponent {
   public chartData: ChartDataSets[];
