@@ -17,6 +17,8 @@ import { AssetService } from 'src/assets/asset.service';
 export class MapComponent implements OnInit {
   @Output() mapClicked: EventEmitter<any> = new EventEmitter();
 
+  public canAssignMarkerByClick = false;
+
   private map: google.maps.Map;
   private userMarker: google.maps.Marker;
 
@@ -167,7 +169,7 @@ export class MapComponent implements OnInit {
   }
 
   private updateLatLngInputValues(e: google.maps.MouseEvent): void {
-    this.mapClicked.emit(e);
+    if (this.canAssignMarkerByClick) this.mapClicked.emit(e);
   }
 
   private placeStartEndMarkers(routePoints: google.maps.LatLng[]) {

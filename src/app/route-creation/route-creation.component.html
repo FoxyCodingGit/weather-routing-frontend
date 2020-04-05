@@ -61,6 +61,7 @@
 
   Show Start Lat Lng?<input type="checkbox" [checked]="showStartLatLng" (change)="showStartLatLng = !showStartLatLng">
   Show End Lat Lng?<input type="checkbox" [checked]="showEndLatLng" (change)="showEndLatLng = !showEndLatLng">
+  click on map to set location?<input type="checkbox" [(ngModel)]="canClickMapForMarker" (change)="setMapClickableState()" [ngModelOptions]="{standalone: true}">
 
   <input type="submit" value="SUBMIT">
 </form>

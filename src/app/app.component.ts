@@ -109,4 +109,8 @@ export class AppComponent implements OnInit {
   public logOut(): void {
     this.authenticationService.logout();
   }
+
+  public setMapClickableForMarkers(canClickMapForMarker: boolean) {
+    this.map.canAssignMarkerByClick = canClickMapForMarker;
+  }
 }

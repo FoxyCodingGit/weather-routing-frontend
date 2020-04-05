@@ -15,8 +15,11 @@ import { TempRouteHelper } from '../shared/tempRouteHelper';
 })
 export class RouteCreationComponent implements OnInit {
   @Output() settingLocationByName: EventEmitter<google.maps.LatLng> = new EventEmitter();
+  @Output() canAssignMarkersOnClick: EventEmitter<boolean> = new EventEmitter();
 
   constructor(private routingService: RoutingService, private weatherService: WeatherService, private assetService: AssetService) { }
+
+  public canClickMapForMarker: boolean = false;
 
   public showStartLatLng = false;
   public showEndLatLng = false;
@@ -83,5 +86,9 @@ export class RouteCreationComponent implements OnInit {
       this.isStartLatLngFocused = false; // if clicked on map this would then be wrong.
       this.settingLocationByName.emit(latLng);
     });
+  }
+
+  public setMapClickableState() {
+    this.canAssignMarkersOnClick.emit(this.canClickMapForMarker);
   }
 }
