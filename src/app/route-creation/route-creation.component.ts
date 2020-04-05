@@ -14,6 +14,7 @@ import { TempRouteHelper } from '../shared/tempRouteHelper';
   styleUrls: ['./route-creation.component.scss']
 })
 export class RouteCreationComponent implements OnInit {
+  @Output() settingLocationByName: EventEmitter<google.maps.LatLng> = new EventEmitter();
 
   constructor(private routingService: RoutingService, private weatherService: WeatherService, private assetService: AssetService) { }
 
@@ -26,10 +27,10 @@ export class RouteCreationComponent implements OnInit {
   public defaultRouteName = 'My Route';
   public defaultTravelMode = 'pedestrian';
 
-  public startLat = 55.583156106988;
-  public startLng = -1.9225142006598617;
-  public endLat = 55.575684498080676;
-  public endLng = -1.920110941382518;
+  public startLat = 55.583156;
+  public startLng = -1.922514;
+  public endLat = 55.575684;
+  public endLng = -1.920110;
 
   public isStartLatLngFocused = true;
 
@@ -40,17 +41,17 @@ export class RouteCreationComponent implements OnInit {
     this.routingService.alalalal(null, false, data.name, data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng);
   }
 
-  public updateLatLngInputValues(e: google.maps.MouseEvent): void {
+  public updateLatLngInputValues(latLng: google.maps.LatLng): void {
     if (this.isStartLatLngFocused) {
-      this.startLat = e.latLng.lat();
-      this.startLng = e.latLng.lng();
+      this.startLat = +latLng.lat().toFixed(6);
+      this.startLng = +latLng.lng().toFixed(6);
 
       this.populateStartingPoint();
 
       this.isStartLatLngFocused = !this.isStartLatLngFocused;
     } else {
-      this.endLat = e.latLng.lat();
-      this.endLng = e.latLng.lng();
+      this.endLat = latLng.lat();
+      this.endLng = latLng.lng();
 
       this.populateDestination();
 
@@ -67,6 +68,20 @@ export class RouteCreationComponent implements OnInit {
   public async populateDestination() {
     await TempRouteHelper.getLocationName(new google.maps.LatLng(this.endLat, this.endLng)).then(location => {
       this.destination = location;
+    });
+  }
+
+  public async setStartName() {
+    await TempRouteHelper.getLatLngValue(this.startingPoint).then(latLng => {
+      this.isStartLatLngFocused = true; // if clicked on map this would then be wrong.
+      this.settingLocationByName.emit(latLng);
+    });
+  }
+
+  public async setEndName() {
+    await TempRouteHelper.getLatLngValue(this.destination).then(latLng => {
+      this.isStartLatLngFocused = false; // if clicked on map this would then be wrong.
+      this.settingLocationByName.emit(latLng);
     });
   }
 }

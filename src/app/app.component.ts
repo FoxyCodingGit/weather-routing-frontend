@@ -71,13 +71,19 @@ export class AppComponent implements OnInit {
     this.routeTable.addRouteToTable(newestRoute.routeInformation, overallScores); // HOW IS THIS WORKING
   }
 
-  public updateLatLngInputValues(e: google.maps.MouseEvent) { // TODO: update so shows that map icon is also changed
-    this.routeCreation.updateLatLngInputValues(e);
-    this.updateOrPlaceMapMarkerFORstartorEmndREEE(e);
+  public updateMapThroughLocationSetting(latLng: google.maps.LatLng) { // copy of below. Can refactor!!!!
+    this.routeCreation.updateLatLngInputValues(latLng);
+    this.updateOrPlaceMapMarkerFORstartorEmndREEE(latLng);
+    this.map.focusOnPoint(latLng);
   }
 
-  private updateOrPlaceMapMarkerFORstartorEmndREEE(e: google.maps.MouseEvent) {
-    this.map.placeFocusedStartOrEndMarkers(e, this.routeCreation.isStartLatLngFocused);
+  public updateLatLngInputValues(e: google.maps.MouseEvent) { // TODO: update so shows that map icon is also changed
+    this.routeCreation.updateLatLngInputValues(e.latLng);
+    this.updateOrPlaceMapMarkerFORstartorEmndREEE(e.latLng);
+  }
+
+  private updateOrPlaceMapMarkerFORstartorEmndREEE(latLng: google.maps.LatLng) {
+    this.map.placeFocusedStartOrEndMarkers(latLng, this.routeCreation.isStartLatLngFocused);
   }
 
   public rowSelected(routeIdFocused: number): void {

@@ -90,6 +90,10 @@ export class MapComponent implements OnInit {
     this.map.fitBounds(routeInformation.bounds);
   }
 
+  public focusOnPoint(latLng: google.maps.LatLng) {
+    this.map.setCenter(latLng);
+  }
+
   public addRouteToMap(route: RouteAndWeatherInformation) {
     this.placeStartEndMarkers(route.routeInformation.route.getPath().getArray());
     route.routeInformation.route.setMap(this.map);
@@ -116,13 +120,13 @@ export class MapComponent implements OnInit {
     }
   }
 
-  public placeFocusedStartOrEndMarkers(e: google.maps.MouseEvent, isStartFocused: boolean) {
+  public placeFocusedStartOrEndMarkers(latLng: google.maps.LatLng, isStartFocused: boolean) {
     if (isStartFocused) {
       if (this.focusedStartMarker !== undefined) {
         this.deleteMarker(this.focusedStartMarker);
       }      
 
-      this.focusedStartMarker = new google.maps.Marker({position: e.latLng, map: this.map, 
+      this.focusedStartMarker = new google.maps.Marker({position: latLng, map: this.map, 
         icon: {
         url: this.assetService.focusedEndMarkerFile
         }
@@ -132,7 +136,7 @@ export class MapComponent implements OnInit {
         this.deleteMarker(this.focusedEndMarker);
       }
             
-      this.focusedEndMarker = new google.maps.Marker({position: e.latLng, map: this.map, 
+      this.focusedEndMarker = new google.maps.Marker({position: latLng, map: this.map, 
         icon: {
         url:  this.assetService.focusedStartMarkerFile
         }

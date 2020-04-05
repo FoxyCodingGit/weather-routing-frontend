@@ -1,13 +1,14 @@
 <h1>Route Creation</h1>
+<hr/>
 <form #RouteForm="ngForm" (ngSubmit)="onRoutingSubmit(RouteForm.value)">
   <div class="wrapper">
     <div>    
-      <label for="name">Name:</label>
+      <label for="name">Name</label>
       <input type="text" name="name" [ngModel]="defaultRouteName"><br/>
     </div>
-    <div>
-      <label for="travelMode">Mode of Transport:</label>
-      <select name=travelMode [ngModel]="defaultTravelMode">
+    <div class="travelModeSection">
+      <label for="travelMode">Mode of Transport</label>
+      <select name=travelMode [ngModel]="defaultTravelMode" class>
         <option value="pedestrian">Pedestrian</option>
         <option value="bicycle">Bicycle</option>
         <option value="car">Car</option>
@@ -15,15 +16,16 @@
     </div>
   </div>
 
+  <!--<div *ngIf="isStartLatLngFocused === true" class="isFocused">FOCUSED</div>  prob can replace === with boolean comparison -->
   <div class="wrapper">
-      <img src="{{assetService.focusedStartMarkerFile}}" alt="FocusedStartMarker">
-      <h2><u>Starting Point</u></h2>
-      <div *ngIf="isStartLatLngFocused === true" class="isFocused">FOCUSED</div> <!-- prob can replace === with boolean comparison -->
+    <div>
+      <label for="startingPoint">Starting Point</label>
+      <input type="text" name="startingPoint" [(ngModel)]="startingPoint"> <!-- input but not saved anywhere (yet?)-->
+    </div>
+    <button type="button" (click)="setStartName()">SET</button>
   </div>
 
-  <input type="text" name="startingPoint" [(ngModel)]="startingPoint"> <!-- input but not saved anywhere (yet?)-->
 
-  Show Lat Lng?<input type="checkbox" [checked]="showStartLatLng" (change)="showStartLatLng = !showStartLatLng">
 
   <div *ngIf="showStartLatLng" class="wrapper">
     <div>
@@ -36,16 +38,16 @@
     </div>
   </div>
   
+  
+  <!-- <div *ngIf="isStartLatLngFocused === false" class="isFocused">FOCUSED</div> -->
   <div class="wrapper">
-    <img src="{{assetService.focusedEndMarkerFile}}" alt="FocusedEndMarker">
-    <h2><u>Destination</u></h2> <!-- put all stylings, e.g. underline to sass -->
-    <div *ngIf="isStartLatLngFocused === false" class="isFocused">FOCUSED</div>
+    <div>
+      <label for="destination">Destination</label>
+      <input type="text" name="destination" [(ngModel)]="destination"> <!-- input but not saved anywhere (yet?)-->
+    </div>
+    <button type="button" (click)="setEndName()">SET</button>
   </div>
 
-  <input type="text" name="destination" [(ngModel)]="destination"> <!-- input but not saved anywhere (yet?)-->
-
-  Show Lat Lng?<input type="checkbox" [checked]="showEndLatLng" (change)="showEndLatLng = !showEndLatLng">
-  
   <div *ngIf="showEndLatLng" class="wrapper">
     <div>
       <label for="endLat">Lattitude:</label>
@@ -56,6 +58,9 @@
       <input type="text" name="endLng" [(ngModel)]="endLng"><br/>
     </div>
   </div>
+
+  Show Start Lat Lng?<input type="checkbox" [checked]="showStartLatLng" (change)="showStartLatLng = !showStartLatLng">
+  Show End Lat Lng?<input type="checkbox" [checked]="showEndLatLng" (change)="showEndLatLng = !showEndLatLng">
 
   <input type="submit" value="SUBMIT">
 </form>

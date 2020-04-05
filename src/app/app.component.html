@@ -1,22 +1,24 @@
-<router-outlet></router-outlet> <!-- idk what this is -->
-<app-navbar (loginPressed)="login()" (logOutPressed)="logOut()"></app-navbar>
-
-<app-alert></app-alert>
-
-<input type="button" (click)="toot()">TMEP REEE<br>
-
-<div class="mainContainer">
-    <div class="wrapper">
-        <app-map (mapClicked)="updateLatLngInputValues($event)"></app-map>
-        <app-route-creation></app-route-creation>
-    </div>
+<div class="fullContainer">
+    <router-outlet></router-outlet> <!-- idk what this is -->
+    <app-navbar (loginPressed)="login()" (logOutPressed)="logOut()"></app-navbar>
     
-    <hr>
+    <app-alert></app-alert>
     
-    <app-modal></app-modal>
-    <app-login-modal></app-login-modal>
-
-    <div class="routeTable">
-        <app-route-data-table (SelectRowAction)="rowSelected($event)" (routeInfoButtonPressed)="routeInfoButtonPressed($event)"></app-route-data-table>
+    <input type="button" (click)="toot()">TMEP REEE<br>
+    
+    <div class="mainContainer">
+        <div class="wrapper">
+            <app-map (mapClicked)="updateLatLngInputValues($event)"></app-map>
+            <app-route-creation (settingLocationByName)="updateMapThroughLocationSetting($event)"></app-route-creation>
+        </div>
+        
+        <hr>
+        
+        <app-modal></app-modal>
+        <app-login-modal></app-login-modal>
+    
+        <div class="routeTable">
+            <app-route-data-table (SelectRowAction)="rowSelected($event)" (routeInfoButtonPressed)="routeInfoButtonPressed($event)"></app-route-data-table>
+        </div>
     </div>
 </div>

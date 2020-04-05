@@ -1,4 +1,21 @@
 export class TempRouteHelper {
+    public static getLatLngValue(address: string): Promise<google.maps.LatLng> {
+      let geocoder = new google.maps.Geocoder;
+
+      return new Promise(function(resolve, reject) {
+        geocoder.geocode( {address: address}, function (results) {
+          if (!results) {
+            return 'Geocoder passed but result null';
+          } else if (results[0]) {
+            resolve(new google.maps.LatLng(results[0].geometry.location.lat(), results[0].geometry.location.lng()));
+          } else {
+            console.log('Something errored when trying to get latlng from location name');
+            reject('Error!');
+          }
+        });
+      });
+    }
+
     public static getLocationName(latLng: google.maps.LatLng): Promise<string> {
         let geocoder = new google.maps.Geocoder;
     

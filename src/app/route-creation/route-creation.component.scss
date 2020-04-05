@@ -1,35 +1,107 @@
+$name-marker: '/assets/images/star.png';
+$travel-marker: '/assets/images/walking-person.png';
+$start-marker: 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png';
+$end-marker: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+
+h1 {
+    margin: auto;
+    text-align: center;
+    color: white;
+    margin-top: 10px;
+}
+
+hr {
+    width: 80%;
+    height: 2px;
+}
+
 h2 {
     margin: 0;
 }
+
+.wrapper {
+    margin-top: 20px;
+}
+
+.wrapper div {
+    width: 50%;
+
+    &:first-child {
+        padding-right: 10px;
+    }
+}
+
+form {
+    margin: 0 40px;
+}
+
+button {
+    height: 48px;
+    margin-top: 24px;
+    width: 200px;
+}
+
 
 .active {
     border: 1px solid green;
 }
 
-label {
-    display: block;
+h1, label {
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-.isFocused{
+label {
+    display: block;
+    margin: 0;
+}
+
+.isFocused {
     font-weight: bold;
     color: white;
     background-color: red;
     text-align: center;
     border-radius: 5px;
     width: 100px;
-    height: 20px;
+    height: 28px;
     padding-top: 2px;
-    margin-top: 3px;
+    margin-top: 8px;
     margin-left: 10px;
 }
 
+// .travelModeSection {
+//     margin-left: 20px;
+// }
+
 input[type=text], select {
-    width: auto;
+    min-width: 100%;
     padding: 12px 20px;
-    margin: 8px 0;
+    //margin: 8px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
+
+    background-color: white;
+    background-position: 10px;
+    background-repeat: no-repeat;
+    padding-left: 40px;
+    background-size: 24px;
+
+    &[name=name] {
+        background-image: url($name-marker);
+    }  
+
+    &[name=travelMode] {
+        background-image: url($travel-marker);
+    }   
+
+    &[name=startingPoint] {
+        background-image: url($start-marker);
+    }    
+
+    &[name=destination] {
+        background-image: url($end-marker);
+    }
 }
 
 input[type=submit] {

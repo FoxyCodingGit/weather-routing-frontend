@@ -1,20 +1,31 @@
 app-map {
-    width: 70%;
-    height: 450px;
+    width: 75%;
+}
+
+app-map, app-route-creation {
+    height: 600px;
+    border-radius: 5px 0 0 0;
 }
 
 app-route-creation {
-    padding-left: 20px;
-    width: 30%;
-    height: 450px;
+    width: 25%;
     background-color: lightgray;
+    border-radius: 0 5px 0 0;
 }
 
 .routeTable {
     margin-top: 20px; 
 }
 
+.fullContainer {
+    background-color: white;
+    min-height: 100vh;
+}
+
 .mainContainer {
     width: 98%;
+    min-height: 90vh;
     margin: 10px auto 0 auto;
+    background-color: wheat;
+    border-radius: 5px;
 }

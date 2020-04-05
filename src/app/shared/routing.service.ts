@@ -22,7 +22,7 @@ export class RoutingService {
 
   public static routeAndWeatherInformation: RouteAndWeatherInformation[] = []; // TODO: WHEN INVLAID ONE ADDED FOR BEING TOO LONG. ARRAY NOT UDPATED prop so get id match problems
   public static routeId = 0;
-  private readonly numberOfAltRoutes = 1;
+  private readonly numberOfAltRoutes = 0;
 
   private baseURL = 'https://localhost:44338/routing';
   private userDefinedBaseURL = 'https://localhost:44338/api/UserDefinedRoute'; // TODO: on backend need to change the url.
