@@ -71,19 +71,12 @@ export class AppComponent implements OnInit {
     this.routeTable.addRouteToTable(newestRoute.routeInformation, overallScores); // HOW IS THIS WORKING
   }
 
-  public updateMapThroughLocationSetting(latLng: google.maps.LatLng) { // copy of below. Can refactor!!!!
+  public placeMarker(latLng: google.maps.LatLng) {
     this.routeCreation.updateLatLngInputValues(latLng);
-    this.updateOrPlaceMapMarkerFORstartorEmndREEE(latLng);
-    this.map.focusOnPoint(latLng);
-  }
-
-  public updateLatLngInputValues(e: google.maps.MouseEvent) { // TODO: update so shows that map icon is also changed
-    this.routeCreation.updateLatLngInputValues(e.latLng);
-    this.updateOrPlaceMapMarkerFORstartorEmndREEE(e.latLng);
-  }
-
-  private updateOrPlaceMapMarkerFORstartorEmndREEE(latLng: google.maps.LatLng) {
+    this.routeCreation.updateLocationInputAdress();
     this.map.placeFocusedStartOrEndMarkers(latLng, this.routeCreation.isStartLatLngFocused);
+    this.map.focusOnPoint(latLng);
+    this.routeCreation.updateStartOrEndState();
   }
 
   public rowSelected(routeIdFocused: number): void {
@@ -112,5 +105,13 @@ export class AppComponent implements OnInit {
 
   public setMapClickableForMarkers(canClickMapForMarker: boolean) {
     this.map.canAssignMarkerByClick = canClickMapForMarker;
+  }
+
+  public searchForStart() {
+    this.map.focusOnPoint(new google.maps.LatLng(this.routeCreation.startLat, this.routeCreation.startLng) )
+  }
+
+  public searchForEnd() {
+    this.map.focusOnPoint(new google.maps.LatLng(this.routeCreation.endLat, this.routeCreation.endLng) )
   }
 }

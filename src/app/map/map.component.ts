@@ -130,7 +130,7 @@ export class MapComponent implements OnInit {
 
       this.focusedStartMarker = new google.maps.Marker({position: latLng, map: this.map, 
         icon: {
-        url: this.assetService.focusedEndMarkerFile
+        url: this.assetService.focusedStartMarkerFile
         }
       });
     } else {
@@ -140,7 +140,7 @@ export class MapComponent implements OnInit {
             
       this.focusedEndMarker = new google.maps.Marker({position: latLng, map: this.map, 
         icon: {
-        url:  this.assetService.focusedStartMarkerFile
+        url:  this.assetService.focusedEndMarkerFile
         }
       });
     }
@@ -164,11 +164,11 @@ export class MapComponent implements OnInit {
     this.map = new google.maps.Map(document.getElementById('map'), mapProperties);
 
     this.map.addListener('click', (e: google.maps.MouseEvent) => {
-      this.updateLatLngInputValues(e);
+      this.placeMarker(e);
     });
   }
 
-  private updateLatLngInputValues(e: google.maps.MouseEvent): void {
+  private placeMarker(e: google.maps.MouseEvent): void {
     if (this.canAssignMarkerByClick) this.mapClicked.emit(e);
   }
 

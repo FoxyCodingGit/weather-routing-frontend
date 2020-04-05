@@ -20,7 +20,7 @@
   <div class="wrapper">
     <div class="starting">
       <label for="startingPoint">Starting Point</label>
-      <input type="text" name="startingPoint" [(ngModel)]="startingPoint"> <!-- input but not saved anywhere (yet?)-->
+      <input type="text" name="startingPoint" [(ngModel)]="startingPoint" (focusout)="setStartName()"> <!-- input but not saved anywhere (yet?)-->
     </div>
     <button type="button" (click)="setStartName()"><i class="fas fa-search-location fa-lg"></i></button>
   </div>
@@ -43,7 +43,7 @@
   <div class="wrapper">
     <div class="ending">
       <label for="destination">Destination</label>
-      <input type="text" name="destination" [(ngModel)]="destination"> <!-- input but not saved anywhere (yet?)-->
+      <input type="text" name="destination" [(ngModel)]="destination" (focusout)="setEndName()"> <!-- input but not saved anywhere (yet?)-->
     </div>
     <button type="button" (click)="setEndName()"><i class="fas fa-search-location fa-lg"></i></button>
   </div>

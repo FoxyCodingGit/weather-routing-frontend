@@ -18,7 +18,7 @@ export class TempRouteHelper {
 
     public static getLocationName(latLng: google.maps.LatLng): Promise<string> {
         let geocoder = new google.maps.Geocoder;
-    
+        
         return new Promise(function(resolve, reject) {
           geocoder.geocode({ 'location': latLng }, function (results) {
             let addressOutput = '';
@@ -43,7 +43,6 @@ export class TempRouteHelper {
     
               resolve(addressOutput);
             } else {
-              console.log('No results found');
               reject('Error!');
             }
           });

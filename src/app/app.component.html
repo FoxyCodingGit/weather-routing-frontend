@@ -8,8 +8,9 @@
     
     <div class="mainContainer">
         <div class="wrapper">
-            <app-map (mapClicked)="updateLatLngInputValues($event)"></app-map>
-            <app-route-creation (settingLocationByName)="updateMapThroughLocationSetting($event)" (canAssignMarkersOnClick)="setMapClickableForMarkers($event)"></app-route-creation>
+            <app-map (mapClicked)="placeMarker($event)"></app-map>
+            <app-route-creation (settingLocationByName)="placeMarker($event)" (canAssignMarkersOnClick)="setMapClickableForMarkers($event)"
+            (searchForStart)="searchForStart()" (searchForEnd)="searchForEnd()"></app-route-creation>
         </div>
         
         <hr>
