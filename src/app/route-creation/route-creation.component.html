@@ -2,7 +2,7 @@
 <hr/>
 <form #RouteForm="ngForm" (ngSubmit)="onRoutingSubmit(RouteForm.value)">
   <div class="wrapper">
-    <div>    
+    <div class="firstColumn">    
       <label for="name">Name</label>
       <input type="text" name="name" [ngModel]="defaultRouteName"><br/>
     </div>
@@ -18,17 +18,17 @@
 
   <!--<div *ngIf="isStartLatLngFocused === true" class="isFocused">FOCUSED</div>  prob can replace === with boolean comparison -->
   <div class="wrapper">
-    <div>
+    <div class="starting">
       <label for="startingPoint">Starting Point</label>
       <input type="text" name="startingPoint" [(ngModel)]="startingPoint"> <!-- input but not saved anywhere (yet?)-->
     </div>
-    <button type="button" (click)="setStartName()">SET</button>
+    <button type="button" (click)="setStartName()"><i class="fas fa-search-location fa-lg"></i></button>
   </div>
 
 
 
   <div *ngIf="showStartLatLng" class="wrapper">
-    <div>
+    <div class="firstColumn">
       <label for="startLat">Lattitude:</label>
       <input type="text" name="startLat" [(ngModel)]="startLat">
     </div>
@@ -41,15 +41,15 @@
   
   <!-- <div *ngIf="isStartLatLngFocused === false" class="isFocused">FOCUSED</div> -->
   <div class="wrapper">
-    <div>
+    <div class="ending">
       <label for="destination">Destination</label>
       <input type="text" name="destination" [(ngModel)]="destination"> <!-- input but not saved anywhere (yet?)-->
     </div>
-    <button type="button" (click)="setEndName()">SET</button>
+    <button type="button" (click)="setEndName()"><i class="fas fa-search-location fa-lg"></i></button>
   </div>
 
   <div *ngIf="showEndLatLng" class="wrapper">
-    <div>
+    <div class="firstColumn">
       <label for="endLat">Lattitude:</label>
       <input type="text" name="endLat" [(ngModel)]="endLat">
     </div>

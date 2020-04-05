@@ -1,7 +1,7 @@
-$name-marker: '/assets/images/star.png';
-$travel-marker: '/assets/images/walking-person.png';
-$start-marker: 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png';
-$end-marker: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+$name-icon: '/assets/images/star.png';
+$travel-icon: '/assets/images/walking-person.png';
+$start-marker-icon: 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png';
+$end-marker-icon: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
 
 h1 {
     margin: auto;
@@ -23,24 +23,25 @@ h2 {
     margin-top: 20px;
 }
 
-.wrapper div {
-    width: 50%;
-
-    &:first-child {
-        padding-right: 10px;
-    }
-}
-
 form {
     margin: 0 40px;
+}
+
+.firstColumn {
+    margin-right: 10px;
 }
 
 button {
     height: 48px;
     margin-top: 24px;
     width: 200px;
+    border-radius: 0 20px 20px 0;
+    width: 60px;
+    position: relative;
+    top: 1px;
+    right: 3px;
+    background-color: darkgrey;
 }
-
 
 .active {
     border: 1px solid green;
@@ -69,9 +70,9 @@ label {
     margin-left: 10px;
 }
 
-// .travelModeSection {
-//     margin-left: 20px;
-// }
+.travelModeSection {
+    min-width: 50%;
+}
 
 input[type=text], select {
     min-width: 100%;
@@ -88,20 +89,25 @@ input[type=text], select {
     background-size: 24px;
 
     &[name=name] {
-        background-image: url($name-marker);
+        background-image: url($name-icon);
     }  
 
     &[name=travelMode] {
-        background-image: url($travel-marker);
+        background-image: url($travel-icon);
+        min-width: 100%;
     }   
 
     &[name=startingPoint] {
-        background-image: url($start-marker);
+        background-image: url($start-marker-icon);
     }    
 
     &[name=destination] {
-        background-image: url($end-marker);
+        background-image: url($end-marker-icon);
     }
+}
+
+.starting, .ending {
+    width: 100%;
 }
 
 input[type=submit] {
