@@ -77,6 +77,14 @@ export class AppComponent implements OnInit {
     this.routeCreation.updateLocationInputAdress(e.isStartMarker);
     this.map.placeFocusedStartOrEndMarkers(e.latLng, e.isStartMarker);
     this.map.focusOnPoint(e.latLng);
+    this.setClickableMarkerAssignmentStates();
+  }
+
+  private setClickableMarkerAssignmentStates(): void {
+    this.map.isStartHighlightedToBeClickable = false;
+    this.map.isDestinationHighlightedToBeClickable = false;
+    this.routeCreation.isStartingLocationClickableFocused = false;
+    this.routeCreation.isDestinationClickableFocused = false;
   }
 
   public rowSelected(routeIdFocused: number): void {
