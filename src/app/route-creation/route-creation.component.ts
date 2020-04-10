@@ -124,11 +124,11 @@ export class RouteCreationComponent implements OnInit {
 
   public startingLocationInClickableState() {
     if (this.isStartingLocationClickableFocused) {
-      this.toggle;
       this.isStartingLocationClickableFocused = false;
       this.updateLocationMarkerHighlightable.emit({location: LocationType.STARTING_LOCATION, isHighlighted: false});
     }
-    else {
+    else
+    {
       this.isStartingLocationClickableFocused = true;
       this.isDestinationClickableFocused = false;
       this.updateLocationMarkerHighlightable.emit({location: LocationType.STARTING_LOCATION, isHighlighted: true});
@@ -137,17 +137,14 @@ export class RouteCreationComponent implements OnInit {
 
   public destinationLocationInClickableState() {
     if (this.isDestinationClickableFocused) {
-      this.toggle;
       this.isDestinationClickableFocused = false;
       this.updateLocationMarkerHighlightable.emit({location: LocationType.DESTINATION, isHighlighted: false});
     }
-
-    this.isDestinationClickableFocused = true;
-    this.isStartingLocationClickableFocused = false;
-    this.updateLocationMarkerHighlightable.emit({location: LocationType.DESTINATION, isHighlighted: true});
-  }
-
-  private toggle(state: boolean): boolean {
-    return !state;
+    else
+    {
+      this.isDestinationClickableFocused = true;
+      this.isStartingLocationClickableFocused = false;
+      this.updateLocationMarkerHighlightable.emit({location: LocationType.DESTINATION, isHighlighted: true});
+    }
   }
 }
