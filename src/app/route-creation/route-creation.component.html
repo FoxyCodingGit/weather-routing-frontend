@@ -16,13 +16,13 @@
     </div>
   </div>
 
-  <!--<div *ngIf="isStartLatLngFocused === true" class="isFocused">FOCUSED</div>  prob can replace === with boolean comparison -->
   <div class="wrapper">
     <div class="starting">
       <label for="startingPoint">Starting Point</label>
       <input type="text" name="startingPoint" [(ngModel)]="startingPoint" (focusout)="setStartName()"> <!-- input but not saved anywhere (yet?)-->
     </div>
-    <button type="button" (click)="setStartName()"><i class="fas fa-search-location fa-lg"></i></button>
+    <button class="searchLocationButton" type="button" (click)="setStartName()"><i class="fas fa-search-location fa-lg"></i></button>
+    <button class="ClickToSetMarkerButton" type="button" [ngClass]="{'buttonIsClickableHighlighted': isStartingLocationClickableFocused}" (click)="startingLocationInClickableState()"><i class="fas fa-map-pin fa-lg"></i></button>
   </div>
 
 
@@ -38,14 +38,13 @@
     </div>
   </div>
   
-  
-  <!-- <div *ngIf="isStartLatLngFocused === false" class="isFocused">FOCUSED</div> -->
   <div class="wrapper">
     <div class="ending">
       <label for="destination">Destination</label>
       <input type="text" name="destination" [(ngModel)]="destination" (focusout)="setEndName()"> <!-- input but not saved anywhere (yet?)-->
     </div>
-    <button type="button" (click)="setEndName()"><i class="fas fa-search-location fa-lg"></i></button>
+    <button class="searchLocationButton" type="button" (click)="setEndName()"><i class="fas fa-search-location fa-lg"></i></button>
+    <button class="ClickToSetMarkerButton" type="button" [ngClass]="{'buttonIsClickableHighlighted': isDestinationClickableFocused}" (click)="destinationLocationInClickableState()"><i class="fas fa-map-pin fa-lg"></i></button>
   </div>
 
   <div *ngIf="showEndLatLng" class="wrapper">
@@ -61,7 +60,6 @@
 
   Show Start Lat Lng?<input type="checkbox" [checked]="showStartLatLng" (change)="showStartLatLng = !showStartLatLng">
   Show End Lat Lng?<input type="checkbox" [checked]="showEndLatLng" (change)="showEndLatLng = !showEndLatLng">
-  click on map to set location?<input type="checkbox" [(ngModel)]="canClickMapForMarker" (change)="setMapClickableState()" [ngModelOptions]="{standalone: true}">
 
   <input type="submit" value="SUBMIT">
 </form>

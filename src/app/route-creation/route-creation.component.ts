@@ -2,6 +2,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { RoutingService } from '../shared/routing.service';
 import { TempRouteHelper } from '../shared/tempRouteHelper';
 import { AlertService } from '../shared/alert.service';
+import { HighlightState, LocationType } from '../shared/Models/HighLightState';
 
 @Component({
   selector: 'app-route-creation',
@@ -9,8 +10,8 @@ import { AlertService } from '../shared/alert.service';
   styleUrls: ['./route-creation.component.scss']
 })
 export class RouteCreationComponent implements OnInit {
-  @Output() settingLocationByName: EventEmitter<google.maps.LatLng> = new EventEmitter();
-  @Output() canAssignMarkersOnClick: EventEmitter<boolean> = new EventEmitter();
+  @Output() settingLocationByName: EventEmitter<any> = new EventEmitter();
+  @Output() updateLocationMarkerHighlightable: EventEmitter<HighlightState> = new EventEmitter();
   @Output() searchForStart: EventEmitter<any> = new EventEmitter();
   @Output() searchForEnd: EventEmitter<any> = new EventEmitter();
 
@@ -35,7 +36,8 @@ export class RouteCreationComponent implements OnInit {
   public endLat = 55.575684;
   public endLng = -1.920110;
 
-  public isStartLatLngFocused = true; // this fiddled with in many places and is fragile.
+  public isStartingLocationClickableFocused = false;
+  public isDestinationClickableFocused = false;
 
   ngOnInit() {
   }
@@ -44,8 +46,8 @@ export class RouteCreationComponent implements OnInit {
     this.routingService.alalalal(null, false, data.name, data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng);
   }
 
-  public updateLatLngInputValues(latLng: google.maps.LatLng): void {
-    if (this.isStartLatLngFocused) {
+  public updateLatLngInputValues(latLng: google.maps.LatLng, isStartMarker: boolean): void {
+    if (isStartMarker) {
       this.startLat = +latLng.lat().toFixed(6);
       this.startLng = +latLng.lng().toFixed(6);
     } else {
@@ -54,8 +56,8 @@ export class RouteCreationComponent implements OnInit {
     }
   }
 
-  public async updateLocationInputAdress() {
-    if (this.isStartLatLngFocused) {
+  public async updateLocationInputAdress(isStartMarker: boolean) {
+    if (isStartMarker) {
       await TempRouteHelper.getLocationName(new google.maps.LatLng(this.startLat, this.startLng)).then(location => {
         this.startingPoint = location;
         this.calculatedStartLocation = location;
@@ -87,8 +89,7 @@ export class RouteCreationComponent implements OnInit {
     }
 
     await TempRouteHelper.getLatLngValue(this.startingPoint).then(latLng => {
-      this.isStartLatLngFocused = true; // if clicked on map this would then be wrong.
-      this.settingLocationByName.emit(latLng);
+      this.settingLocationByName.emit({latLng: latLng, isStartMarker: true});
       this.calculatedStartLocation = this.startingPoint
     },
       reason => { 
@@ -108,8 +109,7 @@ export class RouteCreationComponent implements OnInit {
     }
 
     await TempRouteHelper.getLatLngValue(this.destination).then(latLng => {
-      this.isStartLatLngFocused = false; // if clicked on map this would then be wrong.
-      this.settingLocationByName.emit(latLng);
+      this.settingLocationByName.emit({latLng: latLng, isStartMarker: false});
       this.calculatedEndLocation = this.destination;
     },
       reason => {
@@ -119,10 +119,35 @@ export class RouteCreationComponent implements OnInit {
   }
 
   public setMapClickableState() {
-    this.canAssignMarkersOnClick.emit(this.canClickMapForMarker);
+    
   }
 
-  public updateStartOrEndState() {
-    this.isStartLatLngFocused = !this.isStartLatLngFocused;
+  public startingLocationInClickableState() {
+    if (this.isStartingLocationClickableFocused) {
+      this.toggle;
+      this.isStartingLocationClickableFocused = false;
+      this.updateLocationMarkerHighlightable.emit({location: LocationType.STARTING_LOCATION, isHighlighted: false});
+    }
+    else {
+      this.isStartingLocationClickableFocused = true;
+      this.isDestinationClickableFocused = false;
+      this.updateLocationMarkerHighlightable.emit({location: LocationType.STARTING_LOCATION, isHighlighted: true});
+    }
+  }
+
+  public destinationLocationInClickableState() {
+    if (this.isDestinationClickableFocused) {
+      this.toggle;
+      this.isDestinationClickableFocused = false;
+      this.updateLocationMarkerHighlightable.emit({location: LocationType.DESTINATION, isHighlighted: false});
+    }
+
+    this.isDestinationClickableFocused = true;
+    this.isStartingLocationClickableFocused = false;
+    this.updateLocationMarkerHighlightable.emit({location: LocationType.DESTINATION, isHighlighted: true});
+  }
+
+  private toggle(state: boolean): boolean {
+    return !state;
   }
 }

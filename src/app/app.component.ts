@@ -9,6 +9,7 @@ import { LoginModalComponent } from './login/login-modal/login-modal.component';
 import { AuthenticationService } from './login/services/authentification.service';
 import { User } from './login/user';
 import { RoutingService } from './shared/routing.service';
+import { HighlightState, LocationType } from './shared/Models/HighLightState';
 
 @Component({
   selector: 'app-root',
@@ -71,12 +72,11 @@ export class AppComponent implements OnInit {
     this.routeTable.addRouteToTable(newestRoute.routeInformation, overallScores); // HOW IS THIS WORKING
   }
 
-  public placeMarker(latLng: google.maps.LatLng) {
-    this.routeCreation.updateLatLngInputValues(latLng);
-    this.routeCreation.updateLocationInputAdress();
-    this.map.placeFocusedStartOrEndMarkers(latLng, this.routeCreation.isStartLatLngFocused);
-    this.map.focusOnPoint(latLng);
-    this.routeCreation.updateStartOrEndState();
+  public placeMarker(e: any) {
+    this.routeCreation.updateLatLngInputValues(e.latLng, e.isStartMarker);
+    this.routeCreation.updateLocationInputAdress(e.isStartMarker);
+    this.map.placeFocusedStartOrEndMarkers(e.latLng, e.isStartMarker);
+    this.map.focusOnPoint(e.latLng);
   }
 
   public rowSelected(routeIdFocused: number): void {
@@ -103,15 +103,29 @@ export class AppComponent implements OnInit {
     this.authenticationService.logout();
   }
 
-  public setMapClickableForMarkers(canClickMapForMarker: boolean) {
-    this.map.canAssignMarkerByClick = canClickMapForMarker;
+  public updateLocationMarkerHighlightable(tt: HighlightState) {
+    if (!tt.isHighlighted) {
+      this.map.isStartHighlightedToBeClickable = false;
+      this.map.isDestinationHighlightedToBeClickable = false;
+      return;
+    }
+
+    if (tt.location == LocationType.STARTING_LOCATION) {
+      this.map.isStartHighlightedToBeClickable = true;
+      this.map.isDestinationHighlightedToBeClickable = false;
+      this.routeCreation.isDestinationClickableFocused = false;
+    } else {
+      this.map.isDestinationHighlightedToBeClickable = true;
+      this.map.isStartHighlightedToBeClickable = false;
+      this.routeCreation.isStartingLocationClickableFocused = false;
+    }
   }
 
   public searchForStart() {
-    this.map.focusOnPoint(new google.maps.LatLng(this.routeCreation.startLat, this.routeCreation.startLng) )
+    this.map.focusOnPoint(new google.maps.LatLng(this.routeCreation.startLat, this.routeCreation.startLng));
   }
 
   public searchForEnd() {
-    this.map.focusOnPoint(new google.maps.LatLng(this.routeCreation.endLat, this.routeCreation.endLng) )
+    this.map.focusOnPoint(new google.maps.LatLng(this.routeCreation.endLat, this.routeCreation.endLng));
   }
 }

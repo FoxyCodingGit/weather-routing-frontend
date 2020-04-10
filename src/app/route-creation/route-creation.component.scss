@@ -34,13 +34,25 @@ form {
 button {
     height: 48px;
     margin-top: 24px;
-    width: 200px;
+    background-color: darkgrey;
+}
+
+.searchLocationButton {
     border-radius: 0 20px 20px 0;
     width: 60px;
     position: relative;
     top: 1px;
     right: 3px;
-    background-color: darkgrey;
+}
+
+.ClickToSetMarkerButton {
+    width: 100px;
+    margin-left: 20px;
+    border-radius: 5px;
+}
+
+.buttonIsClickableHighlighted {
+    box-shadow: 0 0 20px rgba(255,0,0,0.5), inset 0 0 20px rgba(255,0,0,0.2);
 }
 
 .active {

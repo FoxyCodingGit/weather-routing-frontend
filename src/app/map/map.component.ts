@@ -17,8 +17,6 @@ import { AssetService } from 'src/assets/asset.service';
 export class MapComponent implements OnInit {
   @Output() mapClicked: EventEmitter<any> = new EventEmitter();
 
-  public canAssignMarkerByClick = false;
-
   private map: google.maps.Map;
   private userMarker: google.maps.Marker;
 
@@ -30,6 +28,9 @@ export class MapComponent implements OnInit {
 
   public isChecked1 = true;
   public isChecked2 = true;
+
+  public isStartHighlightedToBeClickable: boolean = false;
+  public isDestinationHighlightedToBeClickable: boolean = false;
 
   private currentlyFocusedRouteRainIndication: google.maps.Circle[] = [];
 
@@ -169,7 +170,11 @@ export class MapComponent implements OnInit {
   }
 
   private placeMarker(e: google.maps.MouseEvent): void {
-    if (this.canAssignMarkerByClick) this.mapClicked.emit(e);
+    if (!this.isStartHighlightedToBeClickable && !this.isDestinationHighlightedToBeClickable) {
+      return;
+    }
+
+    this.mapClicked.emit({latLng: e.latLng, isStartMarker: this.isStartHighlightedToBeClickable});
   }
 
   private placeStartEndMarkers(routePoints: google.maps.LatLng[]) {
