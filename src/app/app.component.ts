@@ -39,12 +39,6 @@ export class AppComponent implements OnInit {
 
   title = 'WeatherRoutingFrontend';
 
-  public async toot() {
-    await this.weatherService.GetCurrentForPoint(55.583156106988, -1.9225142006598617).then( result => {
-      console.log(result);
-    });
-  }
-
   constructor(private weatherService: WeatherService, private authenticationService: AuthenticationService, private routingService: RoutingService) {
                 this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
               }
