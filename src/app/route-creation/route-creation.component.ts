@@ -10,7 +10,7 @@ import { HighlightState, LocationType } from '../shared/Models/HighLightState';
   styleUrls: ['./route-creation.component.scss']
 })
 export class RouteCreationComponent implements OnInit {
-  @Output() settingLocationByName: EventEmitter<any> = new EventEmitter();
+  @Output() placeMarker: EventEmitter<any> = new EventEmitter();
   @Output() updateLocationMarkerHighlightable: EventEmitter<HighlightState> = new EventEmitter();
   @Output() searchForStart: EventEmitter<any> = new EventEmitter();
   @Output() searchForEnd: EventEmitter<any> = new EventEmitter();
@@ -32,9 +32,13 @@ export class RouteCreationComponent implements OnInit {
   public defaultTravelMode = 'pedestrian';
 
   public startLat = 55.583156;
+  public lastFocusedStartLat;
   public startLng = -1.922514;
+  public lastFocusedStartLng;
   public endLat = 55.575684;
+  public lastFocusedEndLat;
   public endLng = -1.920110;
+  public lastFocusedEndLng;
 
   public isStartingLocationClickableFocused = false;
   public isDestinationClickableFocused = false;
@@ -57,19 +61,36 @@ export class RouteCreationComponent implements OnInit {
   }
 
   public async updateLocationInputAdress(isStartMarker: boolean) {
-    if (isStartMarker) {
+    if (isStartMarker)
+    {
+      if (this.areAllLatLngValuesTheSame(this.startLat, this.lastFocusedStartLat, this.startLng, this.lastFocusedStartLng)) {
+        return;
+      }
+
       await TempRouteHelper.getLocationName(new google.maps.LatLng(this.startLat, this.startLng)).then(location => {
         this.startingPoint = location;
         this.calculatedStartLocation = location;
+
+        this.lastFocusedStartLat = this.startLat;
+        this.lastFocusedStartLng = this.startLng;
       },
       reason => {
         this.startingPoint = this.calculatedStartLocation;
         this.alertService.error(reason);
       });
-    } else {
+    }
+    else
+    {
+      if (this.areAllLatLngValuesTheSame(this.endLat, this.lastFocusedEndLat, this.endLng, this.lastFocusedEndLng)) {
+        return;
+      }
+
       await TempRouteHelper.getLocationName(new google.maps.LatLng(this.endLat, this.endLng)).then(location => {
         this.destination = location;
         this.calculatedEndLocation = location;
+
+        this.lastFocusedEndLat = this.endLat;
+        this.lastFocusedEndLng = this.endLng;
       },
       reason => {
         this.destination = this.calculatedEndLocation;
@@ -78,48 +99,50 @@ export class RouteCreationComponent implements OnInit {
     }
   }
 
-  public async setStartName() {
-    if (this.calculatedStartLocation == this.startingPoint) {
-      this.searchForStart.emit();
+  public pp(isStartMarker: boolean): void {
+    if (isStartMarker) {
+      if (this.areAllLatLngValuesTheSame(this.lastFocusedStartLat, this.startLat, this.lastFocusedStartLng, this.startLng)) {
+        this.searchForStart.emit();
+        return;
+      }
+
+      this.placeMarker.emit({latLng: new google.maps.LatLng(this.startLat, this.startLng), isStartMarker: true});
+    } else {
+      if (this.areAllLatLngValuesTheSame(this.lastFocusedEndLat, this.endLat, this.lastFocusedEndLng, this.endLng)) {
+        this.searchForEnd.emit();
+        return;
+      }
+
+      this.placeMarker.emit({latLng: new google.maps.LatLng(this.endLat, this.endLng), isStartMarker: false});
+    }
+  }
+
+  private areAllLatLngValuesTheSame(lastFocusedLat: number, newLat: number, lastFocusedLng: number, newLng: number,): boolean {
+    return lastFocusedLat == newLat  && lastFocusedLng == newLng;
+  }
+
+  public async setNewLocationByName(calculatedLocation: string, newLocation: string, searchEventEmitter: EventEmitter<any>, isStartLocation: boolean) {
+    if (this.isSameLocationBeingDisplayed(calculatedLocation, newLocation)) {
+      searchEventEmitter.emit();
       return;
     }
 
-    if (this.startingPoint == "") {
-      this.startingPoint = this.calculatedStartLocation;
+    if (newLocation == "") {
+      newLocation = calculatedLocation;
     }
 
-    await TempRouteHelper.getLatLngValue(this.startingPoint).then(latLng => {
-      this.settingLocationByName.emit({latLng: latLng, isStartMarker: true});
-      this.calculatedStartLocation = this.startingPoint
+    await TempRouteHelper.getLatLngValue(newLocation).then(latLng => {
+      this.placeMarker.emit({latLng: latLng, isStartMarker: isStartLocation});
+      calculatedLocation = newLocation;
     },
       reason => { 
-        this.startingPoint = this.calculatedStartLocation;
+        newLocation = calculatedLocation;
         this.alertService.error(reason);
     });
   }
 
-  public async setEndName() {
-    if (this.calculatedEndLocation == this.destination) {
-      this.searchForEnd.emit();
-      return;
-    }
-    
-    if (this.destination == "") {
-      this.destination = this.calculatedEndLocation;
-    }
-
-    await TempRouteHelper.getLatLngValue(this.destination).then(latLng => {
-      this.settingLocationByName.emit({latLng: latLng, isStartMarker: false});
-      this.calculatedEndLocation = this.destination;
-    },
-      reason => {
-        this.destination = this.calculatedEndLocation;
-        this.alertService.error(reason);
-    });
-  }
-
-  public setMapClickableState() {
-    
+  private isSameLocationBeingDisplayed(currentLocation: string, newLocation: string): boolean {
+    return currentLocation == newLocation;
   }
 
   public startingLocationInClickableState() {

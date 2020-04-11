@@ -9,7 +9,7 @@
     <div class="mainContainer">
         <div class="wrapper">
             <app-map (mapClicked)="placeMarker($event)"></app-map>
-            <app-route-creation (settingLocationByName)="placeMarker($event)" (updateLocationMarkerHighlightable)="updateLocationMarkerHighlightable($event)"
+            <app-route-creation (placeMarker)="placeMarker($event)" (updateLocationMarkerHighlightable)="updateLocationMarkerHighlightable($event)"
             (searchForStart)="searchForStart()" (searchForEnd)="searchForEnd()"></app-route-creation>
         </div>
         

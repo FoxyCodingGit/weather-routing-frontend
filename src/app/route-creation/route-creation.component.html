@@ -19,47 +19,60 @@
   <div class="wrapper">
     <div class="starting">
       <label for="startingPoint">Starting Point</label>
-      <input type="text" name="startingPoint" [(ngModel)]="startingPoint" (focusout)="setStartName()"> <!-- input but not saved anywhere (yet?)-->
+      <input type="text" name="startingPoint" [(ngModel)]="startingPoint"> <!-- input but not saved anywhere (yet?)-->
     </div>
-    <button class="searchLocationButton" type="button" (click)="setStartName()"><i class="fas fa-search-location fa-lg"></i></button>
+    <button class="searchLocationButton" type="button" (click)="setNewLocationByName(calculatedStartLocation, startingPoint, searchForStart, true)"><i class="fas fa-search-location fa-lg"></i></button>
     <button class="ClickToSetMarkerButton" type="button" [ngClass]="{'buttonIsClickableHighlighted': isStartingLocationClickableFocused}" (click)="startingLocationInClickableState()"><i class="fas fa-map-pin fa-lg"></i></button>
+  </div>
+  <div class="note">
+    <label for="startingPoint">Show Lat/Lng?</label>
+    <input name="showStartLatLng" type="checkbox" [checked]="showStartLatLng" (change)="showStartLatLng = !showStartLatLng">
   </div>
 
 
 
-  <div *ngIf="showStartLatLng" class="wrapper">
-    <div class="firstColumn">
-      <label for="startLat">Lattitude:</label>
-      <input type="text" name="startLat" [(ngModel)]="startLat">
+  <div *ngIf="showStartLatLng" >
+    <div class="wrapper">
+      <div class="firstColumn">
+        <label for="startLat">Lattitude:</label>
+        <input type="text" name="startLat" [(ngModel)]="startLat">
+      </div>
+      <div class="longitudeColumn">
+        <label for="startLng" >Longitude:</label>
+        <input type="text" name="startLng" [(ngModel)]="startLng">
+      </div>
+      <button class="ClickToSetMarkerButton" type="button" (click)="pp(true)"><i class="fas fa-search-location fa-lg"></i></button>
     </div>
-    <div>
-      <label for="startLng" >Longitude:</label>
-      <input type="text" name="startLng" [(ngModel)]="startLng">
-    </div>
+    <hr>
   </div>
   
   <div class="wrapper">
     <div class="ending">
       <label for="destination">Destination</label>
-      <input type="text" name="destination" [(ngModel)]="destination" (focusout)="setEndName()"> <!-- input but not saved anywhere (yet?)-->
+      <input type="text" name="destination" [(ngModel)]="destination"> <!-- input but not saved anywhere (yet?)-->
     </div>
-    <button class="searchLocationButton" type="button" (click)="setEndName()"><i class="fas fa-search-location fa-lg"></i></button>
+    <button class="searchLocationButton" type="button" (click)="setNewLocationByName(calculatedEndLocation, destination, searchForEnd, false)"><i class="fas fa-search-location fa-lg"></i></button>
     <button class="ClickToSetMarkerButton" type="button" [ngClass]="{'buttonIsClickableHighlighted': isDestinationClickableFocused}" (click)="destinationLocationInClickableState()"><i class="fas fa-map-pin fa-lg"></i></button>
   </div>
-
-  <div *ngIf="showEndLatLng" class="wrapper">
-    <div class="firstColumn">
-      <label for="endLat">Lattitude:</label>
-      <input type="text" name="endLat" [(ngModel)]="endLat">
-    </div>
-    <div>
-      <label for="endLng">Longitude:</label>
-      <input type="text" name="endLng" [(ngModel)]="endLng"><br/>
-    </div>
+  <div class="note">
+    <label for="showEndLatLng">Show Lat/Lng?</label>
+    <input name="showEndLatLng" type="checkbox" [checked]="showEndLatLng" (change)="showEndLatLng = !showEndLatLng">
   </div>
 
-  Show Start Lat Lng?<input type="checkbox" [checked]="showStartLatLng" (change)="showStartLatLng = !showStartLatLng">
-  Show End Lat Lng?<input type="checkbox" [checked]="showEndLatLng" (change)="showEndLatLng = !showEndLatLng">
+  <div *ngIf="showEndLatLng">
+    <div class="wrapper">
+      <div class="firstColumn">
+        <label for="endLat">Lattitude:</label>
+        <input type="text" name="endLat" [(ngModel)]="endLat">
+      </div>
+      <div class="longitudeColumn">
+        <label for="endLng">Longitude:</label>
+        <input type="text" name="endLng" [(ngModel)]="endLng"><br/>
+      </div>
+      <button class="ClickToSetMarkerButton" type="button" (click)="pp(false)"><i class="fas fa-search-location fa-lg"></i></button>
+    </div>
+    <hr>
+  </div>
 
   <input type="submit" value="SUBMIT">
 </form>
