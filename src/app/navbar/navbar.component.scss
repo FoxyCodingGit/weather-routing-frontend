@@ -1,3 +1,5 @@
+@import "src/assets/variables.scss";
+
 h1 {
     font-size: 32px;
     text-transform: uppercase;
@@ -21,11 +23,14 @@ a, h3 {
 .box {
     background-color: white;
     height: 50px;
-    border: 1px black solid;
     border-radius: 20px;
     margin-top: 1px;
     margin-right: 20px;
     padding: 8px 18px 0 18px;
+
+    i, h3 {
+        color: $navbar-color;
+    }
 }
 
 .wee {
@@ -35,7 +40,7 @@ a, h3 {
 a {
     color: white;
     margin-right: 20px;
-    padding-top: 5px;
+    padding-top: 3px;
     height: 50px;
 
     &:hover {
