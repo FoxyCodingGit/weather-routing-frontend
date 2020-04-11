@@ -1,13 +1,11 @@
 /// <reference types="@types/googlemaps" />
 
-import { Component, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
-import { WeatherService } from '../shared/weather.service';
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { RouteInformation } from './Model/RouteInformation';
 import { GraphComponent } from '../graph/graph.component';
-import { RouteDataTableComponent } from '../route-data-table/route-data-table.component';
 import { RouteAndWeatherInformation } from './Model/RouteAndWeatherInformation';
-import { RouteCreationComponent } from '../route-creation/route-creation.component';
 import { AssetService } from 'src/assets/asset.service';
+import { Visibility } from '../modal/CurrentWeatherHelper';
 
 @Component({
   selector: 'app-map',
@@ -26,13 +24,15 @@ export class MapComponent implements OnInit {
   private highlighedStrokeWeight = 8;
   private unhighlighedStrokeWeight = 2;
 
-  public isChecked1 = true;
-  public isChecked2 = true;
+  public weatherMarkerVisibilities = true;
+  public rainIndicatorVisibilities = true;
+
+  public weatherMarkers: google.maps.Marker[] = [];
 
   public isStartHighlightedToBeClickable: boolean = false;
   public isDestinationHighlightedToBeClickable: boolean = false;
 
-  private currentlyFocusedRouteRainIndication: google.maps.Circle[] = [];
+  private routeRainIndicators: google.maps.Circle[] = [];
 
   constructor(private assetService: AssetService) { }
 
@@ -43,15 +43,26 @@ export class MapComponent implements OnInit {
 
   public placeWeatherMarkers(thisRoute: RouteInformation) {
     for (let i = 1; i < thisRoute.weatherPoints.length - 1; i++) {
-      let weatherMarker = new google.maps.Marker({ // add marker to array that is currntly not being used.
-        map: this.map,
-        position: { lat: thisRoute.route.getPath().getArray()[thisRoute.weatherPoints[i].legNumberInRoute].lat(),
-          lng: thisRoute.route.getPath().getArray()[thisRoute.weatherPoints[i].legNumberInRoute].lng() },
-        icon: {
-          url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-        }
-      });
+      this.weatherMarkers.push(
+        new google.maps.Marker({
+          map: this.map,
+          position: { lat: thisRoute.route.getPath().getArray()[thisRoute.weatherPoints[i].legNumberInRoute].lat(),
+            lng: thisRoute.route.getPath().getArray()[thisRoute.weatherPoints[i].legNumberInRoute].lng() },
+          icon: {
+            url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+          },
+          visible: this.weatherMarkerVisibilities
+        })
+      );
     }
+  }
+  
+  public showWeatherMarkers(isVisible: boolean): void {
+    this.weatherMarkers.forEach(marker => {
+      marker.setVisible(isVisible);
+    });
+
+    this.weatherMarkerVisibilities = isVisible;
   }
 
   public placeRainIndicatorsAtWeatherPoints(thisRoute: RouteAndWeatherInformation) {
@@ -71,11 +82,20 @@ export class MapComponent implements OnInit {
           lat: thisRoute.routeInformation.route.getPath().getArray()[thisRoute.routeInformation.weatherPoints[i].legNumberInRoute].lat(),
           lng: thisRoute.routeInformation.route.getPath().getArray()[thisRoute.routeInformation.weatherPoints[i].legNumberInRoute].lng()
         },
-        radius: this.calculateQuickRainCircleColourRadius(focusedrainintensity)
+        radius: this.calculateQuickRainCircleColourRadius(focusedrainintensity),
+        visible: this.rainIndicatorVisibilities
       });
 
-      this.currentlyFocusedRouteRainIndication.push(cityCircle);
+      this.routeRainIndicators.push(cityCircle);
     }
+  }
+
+  public showRainIndicators(isVisible: boolean): void {
+    this.routeRainIndicators.forEach(indicator => {
+      indicator.setVisible(isVisible);
+    });
+
+    this.rainIndicatorVisibilities = isVisible;
   }
 
   private calculateQuickRainCircleColourRadius(intensity: number): number {
@@ -100,14 +120,8 @@ export class MapComponent implements OnInit {
   public addRouteToMap(route: RouteAndWeatherInformation) {
     this.placeStartEndMarkers(route.routeInformation.route.getPath().getArray());
     route.routeInformation.route.setMap(this.map);
-
-    if (this.isChecked1) {
-      this.placeWeatherMarkers(route.routeInformation);
-    }
-
-    if (this.isChecked2) {
-      this.placeRainIndicatorsAtWeatherPoints(route);
-    }
+    this.placeWeatherMarkers(route.routeInformation);
+    this.placeRainIndicatorsAtWeatherPoints(route);
   }
 
   public highlightSelectedRoute(routeId: any, routeInfo: RouteInformation) {
