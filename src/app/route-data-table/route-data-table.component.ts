@@ -69,7 +69,8 @@ export class RouteDataTableComponent implements OnInit {
         { title: 'Leave in 15 Mins', width: '12%' },
         { title: 'Leave in 20 Mins', width: '12%' },
         { title: 'SPECIAL' }
-       ]
+       ],
+       pageLength: 5
     };
 
     $('#table_id').DataTable(tableSettings);
