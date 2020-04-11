@@ -6,14 +6,12 @@
     <app-navbar (loginPressed)="login()" (logOutPressed)="logOut()"></app-navbar>
     <app-alert></app-alert>
 
-    <div class="mainContainer">
-        <div class="wrapper">
-            <app-map (mapClicked)="placeMarker($event)"></app-map>
-            <app-route-creation (placeMarker)="placeMarker($event)" (updateLocationMarkerHighlightable)="updateLocationMarkerHighlightable($event)"
-            (searchForStart)="searchForStart()" (searchForEnd)="searchForEnd()"></app-route-creation>
-        </div>    
-        <div class="routeTable">
-            <app-route-data-table (SelectRowAction)="rowSelected($event)" (routeInfoButtonPressed)="routeInfoButtonPressed($event)"></app-route-data-table>
-        </div>
+    <div class="wrapper">
+        <app-map (mapClicked)="placeMarker($event)"></app-map>
+        <app-route-creation (placeMarker)="placeMarker($event)" (updateLocationMarkerHighlightable)="updateLocationMarkerHighlightable($event)"
+        (searchForStart)="searchForStart()" (searchForEnd)="searchForEnd()"></app-route-creation>
+    </div>    
+    <div class="routeTable">
+        <app-route-data-table (SelectRowAction)="rowSelected($event)" (routeInfoButtonPressed)="routeInfoButtonPressed($event)"></app-route-data-table>
     </div>
 </div>

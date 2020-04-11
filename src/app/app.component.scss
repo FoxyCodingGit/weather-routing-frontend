@@ -18,16 +18,8 @@ app-route-creation {
 }
 
 .fullContainer {
-    background-color: white;
-    min-height: 100vh;
-}
-
-.mainContainer {
-    width: 98%;
-    min-height: 94vh;
-    margin: 10px auto 0 auto;
-    background-color: wheat;
-    border-radius: 5px;
+    width: 100%;
+    height: calc(100% - 600px);
 }
 
 .wrapper {
