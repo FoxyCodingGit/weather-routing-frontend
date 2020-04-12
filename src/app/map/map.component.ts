@@ -5,7 +5,9 @@ import { RouteInformation } from './Model/RouteInformation';
 import { GraphComponent } from '../graph/graph.component';
 import { RouteAndWeatherInformation } from './Model/RouteAndWeatherInformation';
 import { AssetService } from 'src/assets/asset.service';
-import { Visibility } from '../modal/CurrentWeatherHelper';
+import { RouteMarker } from './Model/RouteMarker';
+import { RoutRainIndicators } from './Model/RouteRainIndicators';
+import { RoutePolyline } from './Model/RoutePolyline';
 
 @Component({
   selector: 'app-map',
@@ -27,12 +29,13 @@ export class MapComponent implements OnInit {
   public weatherMarkerVisibilities = true;
   public rainIndicatorVisibilities = true;
 
-  public weatherMarkers: google.maps.Marker[] = [];
+  private routePolylines: RoutePolyline[] = []; 
+  private routeMarkers: RouteMarker[] = [];
+  private rainIndicators: RoutRainIndicators[] = [];
 
   public isStartHighlightedToBeClickable: boolean = false;
   public isDestinationHighlightedToBeClickable: boolean = false;
 
-  private routeRainIndicators: google.maps.Circle[] = [];
 
   constructor(private assetService: AssetService) { }
 
@@ -43,8 +46,9 @@ export class MapComponent implements OnInit {
 
   public placeWeatherMarkers(thisRoute: RouteInformation) {
     for (let i = 1; i < thisRoute.weatherPoints.length - 1; i++) {
-      this.weatherMarkers.push(
-        new google.maps.Marker({
+      this.routeMarkers.push({
+        routeId: thisRoute.id,
+        marker: new google.maps.Marker({
           map: this.map,
           position: { lat: thisRoute.route.getPath().getArray()[thisRoute.weatherPoints[i].legNumberInRoute].lat(),
             lng: thisRoute.route.getPath().getArray()[thisRoute.weatherPoints[i].legNumberInRoute].lng() },
@@ -53,13 +57,13 @@ export class MapComponent implements OnInit {
           },
           visible: this.weatherMarkerVisibilities
         })
-      );
+      });
     }
   }
   
   public showWeatherMarkers(isVisible: boolean): void {
-    this.weatherMarkers.forEach(marker => {
-      marker.setVisible(isVisible);
+    this.routeMarkers.forEach(routeMarker => {
+      routeMarker.marker.setVisible(isVisible);
     });
 
     this.weatherMarkerVisibilities = isVisible;
@@ -71,7 +75,7 @@ export class MapComponent implements OnInit {
     for (let i = 1; i < thisRoute.routeInformation.weatherPoints.length - 1; i++) {
       focusedrainintensity = thisRoute.rainIntensities[0][i];
 
-      var cityCircle = new google.maps.Circle({
+      var rainCircle = new google.maps.Circle({
         strokeColor: GraphComponent.getColourForRouteRainIntensity(focusedrainintensity),
         strokeOpacity: 0.2,
         strokeWeight: 2,
@@ -86,13 +90,13 @@ export class MapComponent implements OnInit {
         visible: this.rainIndicatorVisibilities
       });
 
-      this.routeRainIndicators.push(cityCircle);
+      this.rainIndicators.push({ routeId: thisRoute.routeInformation.id, rainIndicator: rainCircle });
     }
   }
 
   public showRainIndicators(isVisible: boolean): void {
-    this.routeRainIndicators.forEach(indicator => {
-      indicator.setVisible(isVisible);
+    this.rainIndicators.forEach(routeRainIndicator => {
+      routeRainIndicator.rainIndicator.setVisible(isVisible);
     });
 
     this.rainIndicatorVisibilities = isVisible;
@@ -118,8 +122,11 @@ export class MapComponent implements OnInit {
   }
 
   public addRouteToMap(route: RouteAndWeatherInformation) {
-    this.placeStartEndMarkers(route.routeInformation.route.getPath().getArray());
+    this.placeStartEndMarkers(route.routeInformation.id, route.routeInformation.route.getPath().getArray());
+    
+    this.routePolylines.push({ routeId: route.routeInformation.id, polyline: route.routeInformation.route });
     route.routeInformation.route.setMap(this.map);
+
     this.placeWeatherMarkers(route.routeInformation);
     this.placeRainIndicatorsAtWeatherPoints(route);
   }
@@ -161,6 +168,33 @@ export class MapComponent implements OnInit {
     }
   }
 
+  public removeRouteUI(routeId: number) {
+    this.removeRoutePolyline(routeId);
+    this.removeMarkers(routeId);
+    this.removeRainIndicators(routeId);
+  }
+
+  private removeMarkers(routeId: number) {
+    this.routeMarkers.forEach(weatherMarker => {
+      if (weatherMarker.routeId == routeId) weatherMarker.marker.setVisible(false);
+    });
+    this.routeMarkers = this.routeMarkers.filter(weatherMarker => weatherMarker.routeId != routeId);
+  }
+  private removeRainIndicators(routeId: number) {
+    this.rainIndicators.forEach(routeRainIndicator => {
+      if (routeRainIndicator.routeId == routeId) routeRainIndicator.rainIndicator.setVisible(false);
+    });
+    this.rainIndicators = this.rainIndicators.filter(routeRainIndicator => routeRainIndicator.routeId != routeId);
+  }
+
+  private removeRoutePolyline(routeId: number) {
+    debugger
+    this.routePolylines.forEach(RoutePolyline => {
+      if (RoutePolyline.routeId == routeId) RoutePolyline.polyline.setVisible(false);
+    });
+    this.routePolylines = this.routePolylines.filter(RoutePolyline => RoutePolyline.routeId != routeId);
+  }
+
   private deleteMarker(marker: google.maps.Marker) {
     marker.setMap(null);
     marker = null;
@@ -191,9 +225,12 @@ export class MapComponent implements OnInit {
     this.mapClicked.emit({latLng: e.latLng, isStartMarker: this.isStartHighlightedToBeClickable});
   }
 
-  private placeStartEndMarkers(routePoints: google.maps.LatLng[]) {
-    const startMarker = new google.maps.Marker({position: routePoints[0], map: this.map});
-    const endMarker = new google.maps.Marker({position: routePoints[routePoints.length - 1], map: this.map});
+  private placeStartEndMarkers(routeId: number, routePoints: google.maps.LatLng[]) {
+    var startMarker = new google.maps.Marker({position: routePoints[0], map: this.map});
+    var endMarker = new google.maps.Marker({position: routePoints[routePoints.length - 1], map: this.map});
+
+    this.routeMarkers.push({ routeId: routeId, marker: startMarker });
+    this.routeMarkers.push({ routeId: routeId, marker: endMarker });
   }
 
   private displayUserLocation(): void {

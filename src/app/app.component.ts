@@ -133,4 +133,8 @@ export class AppComponent implements OnInit {
   public routeCreationComplete() {
     this.routeCreation.routeCreationLoading = false;
   }
+
+  public routeDeleted(routeId: number) {
+    this.map.removeRouteUI(routeId);
+  }
 }

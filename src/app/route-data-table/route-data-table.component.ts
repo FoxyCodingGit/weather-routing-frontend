@@ -13,9 +13,10 @@ import { RoutingService } from '../shared/routing.service';
 export class RouteDataTableComponent implements OnInit {
   @Output() SelectRowAction: EventEmitter<number> = new EventEmitter();
   @Output() routeInfoButtonPressed: EventEmitter<number> = new EventEmitter();
-  @Output() routeCreationComplete: EventEmitter<void> = new EventEmitter();  
+  @Output() routeCreationComplete: EventEmitter<void> = new EventEmitter(); 
+  @Output() routeDeleted: EventEmitter<number> = new EventEmitter(); 
   
-  private favouritePressedSubject = new Subject<number>();
+  private favouritePressedSubject = new Subject<number>(); // This can be removed as there is no need for subject. Can just use code directly on favbuttonpressed
 
   constructor(private routingService: RoutingService) { }
 
@@ -27,32 +28,38 @@ export class RouteDataTableComponent implements OnInit {
     const table = $('#table_id').DataTable();
 
     if (RoutingService.routeAndWeatherInformation[routeId].routeInformation.isFavourite) {
-      table.cell({row: routeId, column: 11}).data('<button class="weatherInfo">CLICK ME!!!</button><i class="fas fa-star"></i>');
+      table.cell({row: routeId, column: 11}).data('<i class="fas fa-star"></i><i class="fas fa-trash"></i>');
     } else {
-      table.cell({row: routeId, column: 11}).data('<button class="weatherInfo">CLICK ME!!!</button><i class="far fa-star"></i>');
+      table.cell({row: routeId, column: 11}).data('<i class="far fa-star"></i><i class="fas fa-trash"></i>');
     }
 
     $('#table_id').DataTable().draw();
   }
 
+  private async deleteFromDB(routeId: number) {
+    this.routingService.deleteUserDefinedRouteOnDB(RoutingService.routeAndWeatherInformation[routeId].routeInformation.databaseRouteId).toPromise().then(
+      async (result) => {
+        RoutingService.routeAndWeatherInformation[routeId].routeInformation.isFavourite = false;
+        RoutingService.routeAndWeatherInformation[routeId].routeInformation.databaseRouteId = null;
+      }
+    );
+  }
+
+  private async addToDB(routeId: number) {
+    this.routingService.createUserDefinedRoute(RoutingService.routeAndWeatherInformation[routeId].routeInformation).toPromise().then(
+      async (result) => {
+        RoutingService.routeAndWeatherInformation[routeId].routeInformation.isFavourite = true;
+        RoutingService.routeAndWeatherInformation[routeId].routeInformation.databaseRouteId = result.routeId.toString();
+      }
+    );
+  }
+
   ngOnInit() {
     this.getFavouriteObserver().subscribe(
       async (routeId) => {
-      if (RoutingService.routeAndWeatherInformation[routeId].routeInformation.isFavourite) {
-        await this.routingService.deleteUserDefinedRoute(RoutingService.routeAndWeatherInformation[routeId].routeInformation.databaseRouteId).toPromise().then(
-          async (result) => {
-            RoutingService.routeAndWeatherInformation[routeId].routeInformation.isFavourite = false;
-            RoutingService.routeAndWeatherInformation[routeId].routeInformation.databaseRouteId = null;
-          }
-        );
-      } else {
-        await this.routingService.createUserDefinedRoute(RoutingService.routeAndWeatherInformation[routeId].routeInformation).toPromise().then(
-          async (result) => {
-            RoutingService.routeAndWeatherInformation[routeId].routeInformation.isFavourite = true;
-            RoutingService.routeAndWeatherInformation[routeId].routeInformation.databaseRouteId = result.routeId.toString();
-          }
-        );
-      }
+      if (RoutingService.routeAndWeatherInformation[routeId].routeInformation.isFavourite) await this.deleteFromDB(routeId);
+      else await this.addToDB(routeId);
+
       this.changeFavouriteStatus(routeId);
     });
 
@@ -69,7 +76,8 @@ export class RouteDataTableComponent implements OnInit {
         { title: 'Leave in 10 Mins', width: '12%' },
         { title: 'Leave in 15 Mins', width: '12%' },
         { title: 'Leave in 20 Mins', width: '12%' },
-        { title: 'SPECIAL' }
+        { title: '' },
+        { title: '' }
        ],
        pageLength: 5
     };
@@ -93,8 +101,6 @@ export class RouteDataTableComponent implements OnInit {
       }
 
       componentScope.SelectRowAction.emit(table.row(this).data()[0]);
-
-      // TODO: hiddencolumForIdPosition is hacky. Tried placing id at start and hiding but would hide name column
     };
 
     that = this;
@@ -109,7 +115,24 @@ export class RouteDataTableComponent implements OnInit {
       that.favouriteClicked(data[0]);
     });
 
+    $('#table_id tbody').on( 'click', 'i.fa-trash', function () {
+      var data = table.row($(this).parents('tr')).data();
+      that.removeRouteEntirely(data[0]);
+      
+      table.row($(this).parents('tr')).remove();
+      $('#table_id').DataTable().draw();
+    });
+
     $('#table_id').on('click', 'tr', selectRowFunc);
+  }
+
+  private removeRouteEntirely(routeId: number): void {
+    this.deleteFromDB(routeId);
+
+    // !!! as RoutingService.routeAndWeatherInformation[x] is performed to get route, when deleting this will mess all of this up.
+    RoutingService.routeAndWeatherInformation = RoutingService.routeAndWeatherInformation.filter(item => !(item.routeInformation.id == routeId));
+
+    this.routeDeleted.emit(routeId);
   }
 
   public addRouteToTable(routeInformation: RouteInformation, overallScores: string[]) {
@@ -134,7 +157,8 @@ export class RouteDataTableComponent implements OnInit {
       overallScores[2] + scoreComparisonIcons[1],
       overallScores[3] + scoreComparisonIcons[2],
       overallScores[4] + scoreComparisonIcons[3],
-      '<button class="weatherInfo">CLICK ME!!!</button><i class="' + starIconType + ' fa-star"></i>' // TODO: button no work. do on select row for dev.
+      '<i class="' + starIconType + ' fa-star"></i><i class="fas fa-trash"></i>', // TODO: button no work. do on select row for dev.
+      '<button class="weatherInfo">Current Weather</button>'
     ]).draw();
 
     this.routeCreationComplete.emit();

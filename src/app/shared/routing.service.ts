@@ -79,7 +79,7 @@ export class RoutingService {
     return this.http.get<UserDefinedRoute>(url, requestOptions);
   }
 
-  public deleteUserDefinedRoute(databaseRouteId: string): Observable<UserDefinedRoute> { // harcoding pedestrian in the stor proc executing code.
+  public deleteUserDefinedRouteOnDB(databaseRouteId: string): Observable<UserDefinedRoute> { // harcoding pedestrian in the stor proc executing code.
     const url = `${this.userDefinedBaseURL}/delete/${databaseRouteId}`;
 
     const currentUser: User = JSON.parse(localStorage.getItem('currentUser'));
