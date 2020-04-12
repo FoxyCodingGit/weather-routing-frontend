@@ -44,7 +44,6 @@ export class AppComponent implements OnInit {
               }
 
   public processNewRoutes(newRoutes: RouteAndWeatherInformation[]): void {
-    //this.alertService.error("This is an error :o");
     newRoutes.forEach(route => {
       this.map.addRouteToMap(route);
 

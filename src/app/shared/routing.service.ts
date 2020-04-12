@@ -16,9 +16,14 @@ import { AlertService } from './alert.service';
 })
 export class RoutingService {
   private newRoutesSubject = new Subject<RouteAndWeatherInformation[]>();
+  private routeCreationOnError = new Subject<void>();
 
   public getNewRoutes(): Observable<RouteAndWeatherInformation[]> {
     return this.newRoutesSubject.asObservable();
+  }
+
+  public getRouteCreationOnError(): Subject<void> {
+    return this.routeCreationOnError;
   }
 
   public static routeAndWeatherInformation: RouteAndWeatherInformation[] = []; // TODO: WHEN INVLAID ONE ADDED FOR BEING TOO LONG. ARRAY NOT UDPATED prop so get id match problems
@@ -108,15 +113,20 @@ export class RoutingService {
       async (routes: RouteFromAPI[]) => {
 
         let newRoutesFormat: RouteIWant[] = this.RouteFromAPIToRouteIWant(routes);
+        
         newRoutesFormat.forEach(async routeInformation => {
-
           let newRoutes: RouteAndWeatherInformation[] = [];
 
-          await this.createRouteWithWeatherInfo(databaseRouteId, isFavourite, routeInformation, routeName).then(route => {
-            newRoutes.push(route);
-          });
+          if (this.isRouteOverFourtyMinutes(routeInformation.travelTimeInSeconds)) {
+            this.alertService.warning("Can't add route that takes longer than 40 minutes.")
+            this.routeCreationOnError.next();
+          } else {
+            await this.createRouteWithWeatherInfo(databaseRouteId, isFavourite, routeInformation, routeName).then(route => {
+              newRoutes.push(route);
+            });
 
-          this.newRoutesSubject.next(newRoutes);
+            this.newRoutesSubject.next(newRoutes); // needs to be here so async. Doesnt matter that multiple routes will call this one at a time.
+          }
         });
       },
       (error) => {
@@ -154,5 +164,9 @@ export class RoutingService {
     RoutingService.routeId++;
 
     return await this.weatherService.addWeatherInformationToRoute(thisRoute);
+  }
+
+  private isRouteOverFourtyMinutes(durationInSeconds: number): boolean {
+    return (durationInSeconds / 60) > 40;
   }
 }

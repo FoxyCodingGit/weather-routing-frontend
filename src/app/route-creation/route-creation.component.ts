@@ -9,13 +9,17 @@ import { HighlightState, LocationType } from '../shared/Models/HighLightState';
   templateUrl: './route-creation.component.html',
   styleUrls: ['./route-creation.component.scss']
 })
-export class RouteCreationComponent {
+export class RouteCreationComponent implements OnInit {
   @Output() placeMarker: EventEmitter<any> = new EventEmitter();
   @Output() updateLocationMarkerHighlightable: EventEmitter<HighlightState> = new EventEmitter();
   @Output() searchForStart: EventEmitter<any> = new EventEmitter();
   @Output() searchForEnd: EventEmitter<any> = new EventEmitter();
 
   constructor(private routingService: RoutingService, private alertService: AlertService) { }
+  
+  ngOnInit(): void {
+    this.routingService.getRouteCreationOnError().subscribe(() => {this.routeCreationLoading = false});
+  }
 
   public canClickMapForMarker: boolean = false;
 
