@@ -9,15 +9,16 @@ import { UserDefinedRoute } from './Models/UserDefinedRoute';
 import { RouteIWant } from '../map/Model/RouteIWant';
 import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformation';
 import { WeatherService } from './weather.service';
+import { AlertService } from './alert.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoutingService {
-  private subject = new Subject<RouteAndWeatherInformation[]>(); // why private subject etc.
+  private newRoutesSubject = new Subject<RouteAndWeatherInformation[]>();
 
   public getNewRoutes(): Observable<RouteAndWeatherInformation[]> {
-    return this.subject.asObservable();
+    return this.newRoutesSubject.asObservable();
   }
 
   public static routeAndWeatherInformation: RouteAndWeatherInformation[] = []; // TODO: WHEN INVLAID ONE ADDED FOR BEING TOO LONG. ARRAY NOT UDPATED prop so get id match problems
@@ -27,7 +28,7 @@ export class RoutingService {
   private baseURL = 'https://localhost:44338/routing';
   private userDefinedBaseURL = 'https://localhost:44338/api/UserDefinedRoute'; // TODO: on backend need to change the url.
 
-  constructor(private http: HttpClient, private weatherService: WeatherService) { }
+  constructor(private http: HttpClient, private weatherService: WeatherService, private alertService: AlertService) { }
 
   public GetRoutes(travelMode: string, startLat: number, startLng: number,
                    endLat: number, endLng: number, numberofAlternates: number = 0): Observable<RouteFromAPI[]> {
@@ -115,8 +116,11 @@ export class RoutingService {
             newRoutes.push(route);
           });
 
-          this.subject.next(newRoutes);
+          this.newRoutesSubject.next(newRoutes);
         });
+      },
+      (error) => {
+        this.alertService.error("Creation of routes was unsuccessful. " + error)
       }
     );
   }
@@ -151,14 +155,4 @@ export class RoutingService {
 
     return await this.weatherService.addWeatherInformationToRoute(thisRoute);
   }
-
-
-
-
-
-
-
-
-
-
 }

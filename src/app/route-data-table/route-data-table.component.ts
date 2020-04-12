@@ -13,7 +13,8 @@ import { RoutingService } from '../shared/routing.service';
 export class RouteDataTableComponent implements OnInit {
   @Output() SelectRowAction: EventEmitter<number> = new EventEmitter();
   @Output() routeInfoButtonPressed: EventEmitter<number> = new EventEmitter();
-
+  @Output() routeCreationComplete: EventEmitter<void> = new EventEmitter();  
+  
   private favouritePressedSubject = new Subject<number>();
 
   constructor(private routingService: RoutingService) { }
@@ -135,6 +136,8 @@ export class RouteDataTableComponent implements OnInit {
       overallScores[4] + scoreComparisonIcons[3],
       '<button class="weatherInfo">CLICK ME!!!</button><i class="' + starIconType + ' fa-star"></i>' // TODO: button no work. do on select row for dev.
     ]).draw();
+
+    this.routeCreationComplete.emit();
   }
 
   public sendRouteInfoButtonPressedOutput(routeId: number): void {

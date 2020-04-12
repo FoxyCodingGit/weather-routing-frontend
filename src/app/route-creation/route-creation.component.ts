@@ -9,7 +9,7 @@ import { HighlightState, LocationType } from '../shared/Models/HighLightState';
   templateUrl: './route-creation.component.html',
   styleUrls: ['./route-creation.component.scss']
 })
-export class RouteCreationComponent implements OnInit {
+export class RouteCreationComponent {
   @Output() placeMarker: EventEmitter<any> = new EventEmitter();
   @Output() updateLocationMarkerHighlightable: EventEmitter<HighlightState> = new EventEmitter();
   @Output() searchForStart: EventEmitter<any> = new EventEmitter();
@@ -43,10 +43,11 @@ export class RouteCreationComponent implements OnInit {
   public isStartingLocationClickableFocused = false;
   public isDestinationClickableFocused = false;
 
-  ngOnInit() {
-  }
+  public routeCreationLoading = false;
 
   public onRoutingSubmit(data: any) {
+    this.routeCreationLoading = true;
+
     this.routingService.alalalal(null, false, data.name, data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng);
   }
 

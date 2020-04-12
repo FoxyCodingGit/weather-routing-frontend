@@ -130,4 +130,8 @@ export class AppComponent implements OnInit {
   public searchForEnd() {
     this.map.focusOnPoint(new google.maps.LatLng(this.routeCreation.endLat, this.routeCreation.endLng));
   }
+
+  public routeCreationComplete() {
+    this.routeCreation.routeCreationLoading = false;
+  }
 }

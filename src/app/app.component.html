@@ -12,6 +12,6 @@
         (searchForStart)="searchForStart()" (searchForEnd)="searchForEnd()"></app-route-creation>
     </div>    
     <div class="routeTable">
-        <app-route-data-table (SelectRowAction)="rowSelected($event)" (routeInfoButtonPressed)="routeInfoButtonPressed($event)"></app-route-data-table>
+        <app-route-data-table (SelectRowAction)="rowSelected($event)" (routeInfoButtonPressed)="routeInfoButtonPressed($event)" (routeCreationComplete)="routeCreationComplete()"></app-route-data-table>
     </div>
 </div>

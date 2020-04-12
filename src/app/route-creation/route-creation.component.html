@@ -74,5 +74,12 @@
     <hr>
   </div>
 
-  <input type="submit" value="SUBMIT">
+  
+  <input *ngIf="!routeCreationLoading; else loading" type="submit" value="SUBMIT">
+  <ng-template #loading>
+    <button type="button" class="loadingSubmit" *ngIf="currentUsername == null; else logout">
+      <div class=loadingSpinner></div>
+  </button>
+  </ng-template>
+
 </form>
