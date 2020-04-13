@@ -49,7 +49,7 @@ export class RoutingService {
     if (routeInfo != null) {
       return routeInfo;
     }
-    
+
     this.alertService.error("Cant find route of id " + routeId + ". Returning first route in list.")
     return this.routeAndWeatherInformation[0];
   }
@@ -63,7 +63,6 @@ export class RoutingService {
   }
 
   public getLastRoute(): RouteAndWeatherInformation {
-    debugger;
     return this.getRouteAndWeatherInformationById(RoutingService.routeId - 1);
   }
   
