@@ -26,7 +26,7 @@ export class RoutingService {
     return this.routeCreationOnError;
   }
 
-  public static routeAndWeatherInformation: RouteAndWeatherInformation[] = []; // TODO: WHEN INVLAID ONE ADDED FOR BEING TOO LONG. ARRAY NOT UDPATED prop so get id match problems
+  private routeAndWeatherInformation: RouteAndWeatherInformation[] = [];
   public static routeId = 0;
   private readonly numberOfAltRoutes = 0;
 
@@ -35,6 +35,38 @@ export class RoutingService {
 
   constructor(private http: HttpClient, private weatherService: WeatherService, private alertService: AlertService) { }
 
+  public getRouteAndWeatherInformation(): RouteAndWeatherInformation[] {
+    return this.routeAndWeatherInformation;
+  }
+
+  public getRouteAndWeatherInformationById(routeId: number): RouteAndWeatherInformation {
+    let routeInfo: RouteAndWeatherInformation;
+
+    this.routeAndWeatherInformation.forEach(element => {
+      if (element.routeInformation.id == routeId) routeInfo = element;
+    });
+
+    if (routeInfo != null) {
+      return routeInfo;
+    }
+    
+    this.alertService.error("Cant find route of id " + routeId + ". Returning first route in list.")
+    return this.routeAndWeatherInformation[0];
+  }
+
+  public pushToRouteAndWeatherInformation(routeAndWeatherInformation: RouteAndWeatherInformation) {
+    this.routeAndWeatherInformation.push(routeAndWeatherInformation);
+  }
+
+  public removeRouteAndWeatherInformationOfrouteId(routeId: number): void {
+    this.routeAndWeatherInformation.filter(item => !(item.routeInformation.id == routeId));
+  }
+
+  public getLastRoute(): RouteAndWeatherInformation {
+    debugger;
+    return this.getRouteAndWeatherInformationById(RoutingService.routeId - 1);
+  }
+  
   public GetRoutes(travelMode: string, startLat: number, startLng: number,
                    endLat: number, endLng: number, numberofAlternates: number = 0): Observable<RouteFromAPI[]> {
 

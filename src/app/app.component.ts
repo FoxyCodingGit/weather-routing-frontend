@@ -50,10 +50,10 @@ export class AppComponent implements OnInit {
         this.routeTable.selectRowByRouteId(route.routeInformation.id);
       });
 
-      RoutingService.routeAndWeatherInformation.push(route);
+      this.routingService.pushToRouteAndWeatherInformation(route);
     });
 
-    let newestRoute = RoutingService.routeAndWeatherInformation[RoutingService.routeAndWeatherInformation.length - 1];
+    let newestRoute = this.routingService.getLastRoute();
     this.map.focusOnRoute(newestRoute.routeInformation);
 
     let overallScores: string[] = [];
@@ -79,13 +79,13 @@ export class AppComponent implements OnInit {
   }
 
   public rowSelected(routeIdFocused: number): void {
-    RoutingService.routeAndWeatherInformation.forEach(routeAndWeatherInfo => {
+    this.routingService.getRouteAndWeatherInformation().forEach(routeAndWeatherInfo => {
       this.map.highlightSelectedRoute(routeIdFocused, routeAndWeatherInfo.routeInformation);
     });
   }
 
   public routeInfoButtonPressed(routeId: number): void {
-    this.modal.open(RoutingService.routeAndWeatherInformation, routeId);
+    this.modal.open(this.routingService.getRouteAndWeatherInformation(), routeId);
   }
 
   public login(): void { // again, do funcs that only are used in html have to be public??

@@ -27,7 +27,7 @@ export class RouteDataTableComponent implements OnInit {
   private changeFavouriteStatus(routeId: number) {
     const table = $('#table_id').DataTable();
 
-    if (RoutingService.routeAndWeatherInformation[routeId].routeInformation.isFavourite) {
+    if (this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.isFavourite) {
       table.cell({row: routeId, column: 11}).data('<i class="fas fa-star"></i><i class="fas fa-trash"></i>');
     } else {
       table.cell({row: routeId, column: 11}).data('<i class="far fa-star"></i><i class="fas fa-trash"></i>');
@@ -37,19 +37,19 @@ export class RouteDataTableComponent implements OnInit {
   }
 
   private async deleteFromDB(routeId: number) {
-    this.routingService.deleteUserDefinedRouteOnDB(RoutingService.routeAndWeatherInformation[routeId].routeInformation.databaseRouteId).toPromise().then(
+    this.routingService.deleteUserDefinedRouteOnDB(this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.databaseRouteId).toPromise().then(
       async (result) => {
-        RoutingService.routeAndWeatherInformation[routeId].routeInformation.isFavourite = false;
-        RoutingService.routeAndWeatherInformation[routeId].routeInformation.databaseRouteId = null;
+        this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.isFavourite = false;
+        this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.databaseRouteId = null;
       }
     );
   }
 
   private async addToDB(routeId: number) {
-    this.routingService.createUserDefinedRoute(RoutingService.routeAndWeatherInformation[routeId].routeInformation).toPromise().then(
+    this.routingService.createUserDefinedRoute(this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation).toPromise().then(
       async (result) => {
-        RoutingService.routeAndWeatherInformation[routeId].routeInformation.isFavourite = true;
-        RoutingService.routeAndWeatherInformation[routeId].routeInformation.databaseRouteId = result.routeId.toString();
+        this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.isFavourite = true;
+        this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.databaseRouteId = result.routeId.toString();
       }
     );
   }
@@ -57,7 +57,7 @@ export class RouteDataTableComponent implements OnInit {
   ngOnInit() {
     this.getFavouriteObserver().subscribe(
       async (routeId) => {
-      if (RoutingService.routeAndWeatherInformation[routeId].routeInformation.isFavourite) await this.deleteFromDB(routeId);
+      if (this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.isFavourite) await this.deleteFromDB(routeId);
       else await this.addToDB(routeId);
 
       this.changeFavouriteStatus(routeId);
@@ -128,10 +128,7 @@ export class RouteDataTableComponent implements OnInit {
 
   private removeRouteEntirely(routeId: number): void {
     this.deleteFromDB(routeId);
-
-    // !!! as RoutingService.routeAndWeatherInformation[x] is performed to get route, when deleting this will mess all of this up.
-    RoutingService.routeAndWeatherInformation = RoutingService.routeAndWeatherInformation.filter(item => !(item.routeInformation.id == routeId));
-
+    this.routingService.removeRouteAndWeatherInformationOfrouteId(routeId);
     this.routeDeleted.emit(routeId);
   }
 
