@@ -3,6 +3,7 @@ import { RoutingService } from '../shared/routing.service';
 import { TempRouteHelper } from '../shared/tempRouteHelper';
 import { AlertService } from '../shared/alert.service';
 import { HighlightState, LocationType } from '../shared/Models/HighLightState';
+import { Location } from '../shared/Models/Elevation/Location';
 
 @Component({
   selector: 'app-route-creation',
@@ -102,6 +103,16 @@ export class RouteCreationComponent implements OnInit {
         this.alertService.error(reason);
       });
     }
+  }
+
+  public getElevation() {
+    debugger;
+    let locations: Location[] = [{lat: "51.5074", lng: "0.1278"}, {lat: "40.7128", lng: "74.0060"}];
+
+    let temp = this.routingService.getElevation(locations).subscribe((latLngThing) => {
+      debugger;
+      let adam = latLngThing;
+    });
   }
 
   public pp(isStartMarker: boolean): void {

@@ -11,6 +11,8 @@ import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformat
 import { WeatherService } from './weather.service';
 import { AlertService } from './alert.service';
 import { TravelMode } from './Models/travelMode';
+import { ElevationResult } from './Models/Elevation/ElevationResult';
+import { Location } from '../shared/Models/Elevation/Location';
 
 @Injectable({
   providedIn: 'root'
@@ -165,6 +167,17 @@ export class RoutingService {
         this.alertService.error("Creation of routes was unsuccessful. " + error)
       }
     );
+  }
+
+  public getElevation(locations: Location[]): Observable<ElevationResult> {
+    const requestOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+
+    debugger;
+    return this.http.post<ElevationResult>(`${this.baseURL}/elevation`, locations, requestOptions);
   }
 
   
