@@ -8,12 +8,14 @@ import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformat
 import { WeatherPoint } from '../map/Model/weatherPoint';
 import { ProbsAndIntensitiesPerWeatherPointPerDepartureTime } from './Models/ProbsAndIntensitiesPerWeatherPointPerDepartureTime';
 import { Currently } from './Models/Currently';
+import { TravelMode } from './Models/travelMode';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WeatherService {
-  public static averageWalkingDistanceMetersPerSecond = 1.4;
+  public static averageWalkingSpeedMetersPerSecond = 1.4;
+  public static averageCyclingSpeedMetersPerSecond = 6.0;
 
   private baseURL = 'https://localhost:44338/weather';
   private howManyWeatherMarkerChecks = 6;
@@ -183,7 +185,7 @@ export class WeatherService {
       const routePath = thisRoute.route.getPath().getArray();
 
       for (let i = 0; i < thisRoute.weatherPoints.length; i++) {
-          const minuteneedToSearchFor = this.WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath, thisRoute.weatherPoints[i].legNumberInRoute); // working out same value multiple times.
+          const minuteneedToSearchFor = this.WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath, thisRoute.weatherPoints[i].legNumberInRoute, thisRoute.travelMode); // working out same value multiple times.
           const timeWithStartTimeTakenIntoAccount = minuteneedToSearchFor + focusedTime;
 
           console.log("intensity of rain at weather marker " + i + " at " + timeWithStartTimeTakenIntoAccount + " mins is: " + MinutelyDatForThisWeatherMarkers[i][timeWithStartTimeTakenIntoAccount].precipIntensity);
@@ -203,12 +205,19 @@ export class WeatherService {
     return rainDataForEachInterval;
   }
 
-  private WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath: google.maps.LatLng[], weatherPointLocationInArray: number): number {
+  private WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath: google.maps.LatLng[], weatherPointLocationInArray: number, travelMode: TravelMode): number {
     let distanceToNextPoint = 0;
     for (let i = 0; i < weatherPointLocationInArray; i++) { // do if at start or finish give back quick value. currently going to one less than the full distanceToNextPoint.
       distanceToNextPoint += this.distanceToNextLatLngValue(routePath, i);
     }
-    return Math.round((distanceToNextPoint / WeatherService.averageWalkingDistanceMetersPerSecond) / 60);
+
+    if (travelMode == TravelMode.PEDESTRIAN) {
+      return Math.round((distanceToNextPoint / WeatherService.averageWalkingSpeedMetersPerSecond) / 60);
+    } else if (travelMode == TravelMode.BICYCLE) {
+      return Math.round((distanceToNextPoint / WeatherService.averageCyclingSpeedMetersPerSecond) / 60);
+    } else {
+      // CAR
+    }
   }
 
   public calculateTotalExpectedRainYouAreGoingToHitBasedOnTimeTOTakeRoute(route: RouteAndWeatherInformation, departureTime: number = 0): number { // TODO: covnersion aint right!
@@ -223,7 +232,18 @@ export class WeatherService {
       console.log("distanceToNext" + distanceToNext);
 
       const secondToHourConverstionRatio = 1 / 3600;
-      const timeOfLeginhours = (distanceToNext / WeatherService.averageWalkingDistanceMetersPerSecond) * secondToHourConverstionRatio;
+
+      var timeOfLeginhours: number;
+
+      if (route.routeInformation.travelMode == TravelMode.PEDESTRIAN) {
+        timeOfLeginhours = (distanceToNext / WeatherService.averageWalkingSpeedMetersPerSecond) * secondToHourConverstionRatio;
+      } else if (route.routeInformation.travelMode == TravelMode.BICYCLE) {
+        timeOfLeginhours = (distanceToNext / WeatherService.averageCyclingSpeedMetersPerSecond) * secondToHourConverstionRatio;
+      } else {
+        // car
+      }
+
+     
 
       const expectedRainForleginMM = route.rainIntensities[departureTime / 5][focusedWeatherStation] * route.rainProbabilities[departureTime / 5][focusedWeatherStation];
 

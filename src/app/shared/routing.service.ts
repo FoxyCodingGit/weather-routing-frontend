@@ -10,6 +10,7 @@ import { RouteIWant } from '../map/Model/RouteIWant';
 import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformation';
 import { WeatherService } from './weather.service';
 import { AlertService } from './alert.service';
+import { TravelMode } from './Models/travelMode';
 
 @Injectable({
   providedIn: 'root'
@@ -152,7 +153,7 @@ export class RoutingService {
             this.alertService.warning("Can't add route that takes longer than 40 minutes.")
             this.routeCreationOnError.next();
           } else {
-            await this.createRouteWithWeatherInfo(databaseRouteId, isFavourite, routeInformation, routeName).then(route => {
+            await this.createRouteWithWeatherInfo(databaseRouteId, isFavourite, routeInformation, routeName, travelMode).then(route => {
               newRoutes.push(route);
             });
 
@@ -182,7 +183,7 @@ export class RoutingService {
     return newRouteIWantFormat;
   }
 
-  private async createRouteWithWeatherInfo(databaseRouteId: string, isFavourite: boolean, routeInformation: RouteIWant, routeName: string): Promise<RouteAndWeatherInformation> {
+  private async createRouteWithWeatherInfo(databaseRouteId: string, isFavourite: boolean, routeInformation: RouteIWant, routeName: string, travelMode: string): Promise<RouteAndWeatherInformation> {
     let mapRoute = new google.maps.Polyline({
       path: routeInformation.points,
       geodesic: true,
@@ -191,10 +192,16 @@ export class RoutingService {
       strokeWeight: 2
     });
 
-    let thisRoute = new RouteInformation(RoutingService.routeId, mapRoute, routeInformation.travelTimeInSeconds, routeName, routeInformation.colour, routeInformation.distance, isFavourite, databaseRouteId);
+    let thisRoute = new RouteInformation(RoutingService.routeId, mapRoute, routeInformation.travelTimeInSeconds, routeName, routeInformation.colour, routeInformation.distance, isFavourite, databaseRouteId, this.stringToTravelType(travelMode));
     RoutingService.routeId++;
 
     return await this.weatherService.addWeatherInformationToRoute(thisRoute);
+  }
+
+  private stringToTravelType(value: string): TravelMode {
+    if (value == "pedestrian") return TravelMode.PEDESTRIAN;
+    if (value == "bicycle") return TravelMode.BICYCLE;
+    if (value == "car") return TravelMode.CAR;
   }
 
   private isRouteOverFourtyMinutes(durationInSeconds: number): boolean {
