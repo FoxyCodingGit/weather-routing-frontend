@@ -34,7 +34,6 @@ export class AppComponent implements OnInit {
   @ViewChild(ModalComponent, {static: false}) modal: ModalComponent;
   @ViewChild(LoginModalComponent, {static: false} ) loginModal: LoginModalComponent;
 
-  private focusedRouteId: number;
   private currentUser: User;
 
   title = 'WeatherRoutingFrontend';
@@ -56,7 +55,6 @@ export class AppComponent implements OnInit {
 
     let newestRoute = RoutingService.routeAndWeatherInformation[RoutingService.routeAndWeatherInformation.length - 1];
     this.map.focusOnRoute(newestRoute.routeInformation);
-    this.focusedRouteId = newestRoute.routeInformation.id;
 
     let overallScores: string[] = [];
     for (let departureTime = 0; departureTime <= 20; departureTime += 5) {
@@ -81,19 +79,13 @@ export class AppComponent implements OnInit {
   }
 
   public rowSelected(routeIdFocused: number): void {
-    this.focusedRouteId = routeIdFocused; // move focused id to service??
     RoutingService.routeAndWeatherInformation.forEach(routeAndWeatherInfo => {
       this.map.highlightSelectedRoute(routeIdFocused, routeAndWeatherInfo.routeInformation);
     });
   }
 
-  public routeInfoButtonPressed(): void {
-    this.openModal();
-  }
-
-  private openModal(): void {
-    console.log(this.focusedRouteId);
-    this.modal.doThing(RoutingService.routeAndWeatherInformation, this.focusedRouteId);
+  public routeInfoButtonPressed(routeId: number): void {
+    this.modal.open(RoutingService.routeAndWeatherInformation, routeId);
   }
 
   public login(): void { // again, do funcs that only are used in html have to be public??

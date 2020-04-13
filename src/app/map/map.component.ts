@@ -188,7 +188,6 @@ export class MapComponent implements OnInit {
   }
 
   private removeRoutePolyline(routeId: number) {
-    debugger
     this.routePolylines.forEach(RoutePolyline => {
       if (RoutePolyline.routeId == routeId) RoutePolyline.polyline.setVisible(false);
     });

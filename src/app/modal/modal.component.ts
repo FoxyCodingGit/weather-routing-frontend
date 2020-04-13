@@ -24,7 +24,7 @@ export class ModalComponent implements OnInit {
 
   ngOnInit() { }
 
-  public doThing(routes: RouteAndWeatherInformation[], focusedRouteId: number): void {
+  public open(routes: RouteAndWeatherInformation[], focusedRouteId: number): void {
     this.assignCurrentWeatherInfo(routes[focusedRouteId].currentWeather);
 
     $('#exampleModal').modal();
