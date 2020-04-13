@@ -1,5 +1,7 @@
 $name-icon: '/assets/images/star.png';
-$travel-icon: '/assets/images/walking-person.png';
+$travel-pedestrian-icon: '/assets/images/walking-person.png';
+$travel-bike-icon: '/assets/images/bike.png';
+$travel-car-icon: '/assets/images/car.png';
 $world-icon: '/assets/images/world.png';
 $start-marker-icon: 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png';
 $end-marker-icon: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
@@ -134,8 +136,19 @@ input[type=text], select {
     }  
 
     &[name=travelMode] {
-        background-image: url($travel-icon);
         min-width: 100%;
+
+        &.ped {
+            background-image: url($travel-pedestrian-icon);
+        }
+
+        &.bike {
+            background-image: url($travel-bike-icon);
+        }
+
+        &.car {
+            background-image: url($travel-car-icon);
+        }
     }   
 
     &[name=startingPoint] {

@@ -33,7 +33,7 @@ export class RouteCreationComponent implements OnInit {
   public destination: string;
 
   public defaultRouteName = 'My Route';
-  public defaultTravelMode = 'pedestrian';
+  public selectedTravelMode = 'pedestrian';
 
   public startLat = 55.583156;
   public lastFocusedStartLat;
