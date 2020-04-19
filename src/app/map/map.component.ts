@@ -205,17 +205,17 @@ export class MapComponent implements OnInit {
 
   private createElevationIndicatorElement(routeLegIndex: number, routeInfo: RouteAndWeatherInformation): google.maps.Circle {
     return new google.maps.Circle({
-      strokeColor: "rgb(255, 0, 0)",
-      strokeOpacity: 0.2,
+      strokeColor: "rgb(0, 188, 0)",
+      strokeOpacity: 0.6,
       strokeWeight: 2,
-      fillColor: "rgb(0, 0, 255)",
-      fillOpacity: 0.35,
+      fillColor: "rgb(0, 255, 0)",
+      fillOpacity: 0.2,
       map: this.map,
       center: {
         lat: routeInfo.routeInformation.route.getPath().getArray()[routeLegIndex].lat(),
         lng: routeInfo.routeInformation.route.getPath().getArray()[routeLegIndex].lng()
       },
-      radius: 20,
+      radius: 40,
       visible: this.rainIndicatorVisibilities
     });
   }
