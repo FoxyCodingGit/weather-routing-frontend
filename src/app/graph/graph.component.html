@@ -1,10 +1,11 @@
 <div class="wrapper" *ngIf="chartData">
-    <canvas 
+    <canvas
         baseChart
         [chartType]="mainChartType"
         [datasets]="chartData"
         [labels]="chartLabels"
         [options]="chartOptions"
-        [colors]="chartColours">
+        [colors]="chartColours"
+        (chartHover)="onChartHover($event)">
     </canvas>
 </div>

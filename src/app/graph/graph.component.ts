@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { RouteInformation } from '../map/Model/RouteInformation';
 import { ChartDataSets, ChartOptions, ChartType, ChartColor } from 'chart.js';
 import { myChartOptions } from './model/myChartOptions';
 import { WeatherService } from '../shared/weather.service';
 import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformation';
 import { Color } from 'ng2-charts';
+import { ElevationResult } from '../shared/Models/Elevation/ElevationResult';
 // ng2-charts is needed to allow canvas to be used to show the graph. Removed @types/chart.js as i dont think this added anything.
 
 @Component({
@@ -12,6 +13,8 @@ import { Color } from 'ng2-charts';
   templateUrl: './graph.component.html'
 })
 export class GraphComponent {
+  @Output() graphHoveredOn: EventEmitter<number> = new EventEmitter();
+
   public chartData: ChartDataSets[];
   public chartLabels: string[];
   public chartColours: Color[];
@@ -52,6 +55,37 @@ export class GraphComponent {
     this.generateLabelsForRoutes(routeWeatherInfo);
 
     this.displayTotalRainPerRoute(routeWeatherInfo, departureTime, focusedRouteId);
+  }
+
+  public graphElevation(elevations: ElevationResult[]) {
+    this.chartData = [];
+    this.chartColours = [];
+    this.mainChartType = "line";
+    this.chartOptions = myChartOptions.elevationOptions;
+
+    var elevationResult: number[] = [];
+    elevations.forEach(elevation => {
+      elevationResult.push(elevation.elevation);
+    });
+
+    this.chartLabels = [];
+    for (let i = 0; i < elevationResult.length; i++) {
+      this.chartLabels.push((i).toString());
+    }
+
+    this.chartData.push({
+      data: elevationResult,
+      type: 'line'
+    });
+    
+    const green = 'rgba(102, 255, 153, 0.2)';
+    this.chartColours.push({backgroundColor: green});
+
+  }
+
+  public onChartHover(event: any) {
+    let focusedLegIndex = event.active[0]._index;
+    this.graphHoveredOn.emit(focusedLegIndex);
   }
 
   private generateLabelsForDepartureTimes() { // make dynamic

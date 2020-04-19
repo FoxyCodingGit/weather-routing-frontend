@@ -16,6 +16,41 @@ export class myChartOptions {
         }
     };
 
+    public static elevationOptions: ChartOptions = {
+        responsive: true,
+        scales: {
+            yAxes: [{
+            scaleLabel: {
+                display: true,
+                labelString: 'Elevation (meters)'
+            },
+            }],
+            xAxes: [{
+                display: false,
+                ticks: {
+                    autoSkip: true,
+                    maxTicksLimit: 2
+                }
+            }]
+        },
+        legend: {
+            display: false
+        },
+        hover: {
+            mode: 'index',
+            intersect: false
+        },
+        tooltips: {
+            mode: 'index',
+            intersect: false,
+            callbacks: {
+                label: function(tooltipItems, data) {
+                    return Number.parseFloat(tooltipItems.yLabel as string).toFixed(2);
+                }
+            }
+         }        
+    };
+
     public static upToHundred: ChartOptions = {
         responsive: true,
         scales: {

@@ -10,3 +10,4 @@
         <input name="rainIndicatorCheckbox" type="checkbox" [checked]="rainIndicatorVisibilities" (change)="showRainIndicators($event.path[0].checked)">
     </div>
 </div>
+<app-graph #elevation (graphHoveredOn)="mapFocusedElevation($event)"></app-graph>

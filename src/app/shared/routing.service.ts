@@ -11,8 +11,8 @@ import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformat
 import { WeatherService } from './weather.service';
 import { AlertService } from './alert.service';
 import { TravelMode } from './Models/travelMode';
-import { ElevationResult } from './Models/Elevation/ElevationResult';
 import { Location } from '../shared/Models/Elevation/Location';
+import { ElevationResponse } from './Models/Elevation/ElevationResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -164,20 +164,19 @@ export class RoutingService {
         });
       },
       (error) => {
-        this.alertService.error("Creation of routes was unsuccessful. " + error)
+        this.alertService.error("Creation of routes was unsuccessful. " + error.toString())
       }
     );
   }
 
-  public getElevation(locations: Location[]): Observable<ElevationResult> {
+  public getElevation(locations: Location[]): Observable<ElevationResponse> {
     const requestOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
       })
     };
-
-    debugger;
-    return this.http.post<ElevationResult>(`${this.baseURL}/elevation`, locations, requestOptions);
+    
+    return this.http.post<ElevationResponse>(`${this.baseURL}/elevation`, locations, requestOptions);
   }
 
   
@@ -205,7 +204,7 @@ export class RoutingService {
       strokeWeight: 2
     });
 
-    let thisRoute = new RouteInformation(RoutingService.routeId, mapRoute, routeInformation.travelTimeInSeconds, routeName, routeInformation.colour, routeInformation.distance, isFavourite, databaseRouteId, this.stringToTravelType(travelMode));
+    let thisRoute = new RouteInformation(this, RoutingService.routeId, mapRoute, routeInformation.travelTimeInSeconds, routeName, routeInformation.colour, routeInformation.distance, isFavourite, databaseRouteId, this.stringToTravelType(travelMode));
     RoutingService.routeId++;
 
     return await this.weatherService.addWeatherInformationToRoute(thisRoute);

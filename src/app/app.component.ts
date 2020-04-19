@@ -79,8 +79,14 @@ export class AppComponent implements OnInit {
   }
 
   public rowSelected(routeIdFocused: number): void {
+    this.map.currentlyFocusedRouteId = routeIdFocused;
+    
     this.routingService.getRouteAndWeatherInformation().forEach(routeAndWeatherInfo => {
       this.map.highlightSelectedRoute(routeIdFocused, routeAndWeatherInfo.routeInformation);
+
+      if (routeAndWeatherInfo.routeInformation.id == routeIdFocused) {
+        this.map.displayElevation(routeAndWeatherInfo.routeInformation.elevation);
+      }
     });
   }
 

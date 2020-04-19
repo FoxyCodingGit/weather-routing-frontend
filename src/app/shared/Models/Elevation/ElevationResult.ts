@@ -1,5 +1,5 @@
 export class ElevationResult {
-    public evaluation: number;
+    public elevation: number;
     public location: Location;
     public resolution: number;
 }

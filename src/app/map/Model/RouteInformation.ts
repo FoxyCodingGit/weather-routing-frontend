@@ -1,9 +1,12 @@
 import { WeatherPoint } from './weatherPoint';
 import { TempRouteHelper } from 'src/app/shared/tempRouteHelper';
 import { TravelMode } from 'src/app/shared/Models/travelMode';
+import { ElevationResult } from 'src/app/shared/Models/Elevation/ElevationResult';
+import { Location } from 'src/app/shared/Models/Elevation/Location';
+import { RoutingService } from 'src/app/shared/routing.service';
 
 export class RouteInformation {
-    public constructor(id: number, route: google.maps.Polyline, travelTimeInSeconds: number, name: string, color: string, distance: number, isFavourite: boolean, databaseRouteId: string, travelMode: TravelMode) {
+    public constructor(private routingService: RoutingService, id: number, route: google.maps.Polyline, travelTimeInSeconds: number, name: string, color: string, distance: number, isFavourite: boolean, databaseRouteId: string, travelMode: TravelMode) {
         this.id = id;
         this.route = route;
         this.travelTimeInSeconds = travelTimeInSeconds;
@@ -16,6 +19,7 @@ export class RouteInformation {
         this.databaseRouteId = databaseRouteId;
         this.getStartEndLocationName();
         this.travelMode = travelMode;
+        this.applyElevationToRoute();
     }
 
     public id: number;
@@ -32,11 +36,12 @@ export class RouteInformation {
     public isFavourite: boolean;
     public databaseRouteId: string;
     public travelMode: TravelMode;
+    public elevation: ElevationResult[];
 
     private createBoundForPolygon(latLngs: google.maps.LatLng[]): google.maps.LatLngBounds {
         const bounds = new google.maps.LatLngBounds();
 
-        for (const latLng of latLngs)  {
+        for (const latLng of latLngs) {
             bounds.extend(latLng);
         }
 
@@ -53,7 +58,7 @@ export class RouteInformation {
         } else {
             return 'rgb(255, 255, 255)';
         }
-      }
+    }
 
     private async getStartEndLocationName() {
         const startLat = this.route.getPath().getArray()[0].lat();
@@ -64,11 +69,23 @@ export class RouteInformation {
         const endLng = this.route.getPath().getArray()[lestLatLngIndex].lng();
 
         await TempRouteHelper.getLocationName(new google.maps.LatLng(startLat, startLng)).then(result => {
-        this.startLocation = result;
+            this.startLocation = result;
         });
 
         await TempRouteHelper.getLocationName(new google.maps.LatLng(endLat, endLng)).then(result => {
-        this.endLocation = result;
+            this.endLocation = result;
+        });
+    }
+
+    private applyElevationToRoute() {
+        let locations: Location[] = [];
+
+        this.route.getPath().getArray().forEach(latLngValue => {
+            locations.push({ lat: latLngValue.lat().toString(), lng: latLngValue.lng().toString() })
+        });
+
+        this.routingService.getElevation(locations).subscribe((elevations) => {
+            this.elevation = elevations.results;
         });
     }
 }

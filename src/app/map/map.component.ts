@@ -1,6 +1,6 @@
 /// <reference types="@types/googlemaps" />
 
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild } from '@angular/core';
 import { RouteInformation } from './Model/RouteInformation';
 import { GraphComponent } from '../graph/graph.component';
 import { RouteAndWeatherInformation } from './Model/RouteAndWeatherInformation';
@@ -8,6 +8,8 @@ import { AssetService } from 'src/assets/asset.service';
 import { RouteMarker } from './Model/RouteMarker';
 import { RoutRainIndicators } from './Model/RouteRainIndicators';
 import { RoutePolyline } from './Model/RoutePolyline';
+import { ElevationResult } from '../shared/Models/Elevation/ElevationResult';
+import { RoutingService } from '../shared/routing.service';
 
 @Component({
   selector: 'app-map',
@@ -15,6 +17,8 @@ import { RoutePolyline } from './Model/RoutePolyline';
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit {
+  @ViewChild('elevation', {static: false}) elevationGraph: GraphComponent;
+  
   @Output() mapClicked: EventEmitter<any> = new EventEmitter();
 
   private map: google.maps.Map;
@@ -36,12 +40,20 @@ export class MapComponent implements OnInit {
   public isStartHighlightedToBeClickable: boolean = false;
   public isDestinationHighlightedToBeClickable: boolean = false;
 
+  private focusedElevationElement: google.maps.Circle;
+  private currentlyFocusedLegElevationIndex: number;  
+  public currentlyFocusedRouteId: number; 
 
-  constructor(private assetService: AssetService) { }
+
+  constructor(private assetService: AssetService, private routingService: RoutingService) { }
 
   ngOnInit(): void {
     this.generateMap();
     this.displayUserLocation();
+  }
+
+  public displayElevation(elevationResult: ElevationResult[]): void {
+    this.elevationGraph.graphElevation(elevationResult);
   }
 
   public placeWeatherMarkers(thisRoute: RouteInformation) {
@@ -70,26 +82,8 @@ export class MapComponent implements OnInit {
   }
 
   public placeRainIndicatorsAtWeatherPoints(thisRoute: RouteAndWeatherInformation) {
-    let focusedrainintensity: number;
-
     for (let i = 1; i < thisRoute.routeInformation.weatherPoints.length - 1; i++) {
-      focusedrainintensity = thisRoute.rainIntensities[0][i];
-
-      var rainCircle = new google.maps.Circle({
-        strokeColor: GraphComponent.getColourForRouteRainIntensity(focusedrainintensity),
-        strokeOpacity: 0.2,
-        strokeWeight: 2,
-        fillColor: GraphComponent.getColourForRouteRainIntensity(focusedrainintensity),
-        fillOpacity: 0.35,
-        map: this.map,
-        center: {
-          lat: thisRoute.routeInformation.route.getPath().getArray()[thisRoute.routeInformation.weatherPoints[i].legNumberInRoute].lat(),
-          lng: thisRoute.routeInformation.route.getPath().getArray()[thisRoute.routeInformation.weatherPoints[i].legNumberInRoute].lng()
-        },
-        radius: this.calculateQuickRainCircleColourRadius(focusedrainintensity),
-        visible: this.rainIndicatorVisibilities
-      });
-
+      var rainCircle = this.createRainIndicatorElement(thisRoute, i, thisRoute.rainIntensities[0][i]);
       this.rainIndicators.push({ routeId: thisRoute.routeInformation.id, rainIndicator: rainCircle });
     }
   }
@@ -172,6 +166,58 @@ export class MapComponent implements OnInit {
     this.removeRoutePolyline(routeId);
     this.removeMarkers(routeId);
     this.removeRainIndicators(routeId);
+  }
+
+  public mapFocusedElevation(routeLegIndex: number) {
+    if (this.isElevationAlreadyHighlighted(routeLegIndex)) {
+      return;
+    }
+
+    this.currentlyFocusedLegElevationIndex = routeLegIndex;
+    this.hideCurrentElevationHiglight();
+    this.focusedElevationElement = this.createElevationIndicatorElement(routeLegIndex, this.routingService.getRouteAndWeatherInformationById(this.currentlyFocusedRouteId));
+  } 
+
+  private hideCurrentElevationHiglight(): void {
+    if (this.focusedElevationElement != null) this.focusedElevationElement.setVisible(false);
+  }
+
+  private isElevationAlreadyHighlighted(routeLegIndex: number) {
+    return this.currentlyFocusedLegElevationIndex != null && this.currentlyFocusedLegElevationIndex == routeLegIndex;
+  }
+
+  private createRainIndicatorElement(thisRoute: RouteAndWeatherInformation, weatherPointIndex: number, focusedrainintensity: number) {
+    return new google.maps.Circle({
+      strokeColor: GraphComponent.getColourForRouteRainIntensity(focusedrainintensity),
+      strokeOpacity: 0.2,
+      strokeWeight: 2,
+      fillColor: GraphComponent.getColourForRouteRainIntensity(focusedrainintensity),
+      fillOpacity: 0.35,
+      map: this.map,
+      center: {
+        lat: thisRoute.routeInformation.route.getPath().getArray()[thisRoute.routeInformation.weatherPoints[weatherPointIndex].legNumberInRoute].lat(),
+        lng: thisRoute.routeInformation.route.getPath().getArray()[thisRoute.routeInformation.weatherPoints[weatherPointIndex].legNumberInRoute].lng()
+      },
+      radius: this.calculateQuickRainCircleColourRadius(focusedrainintensity),
+      visible: this.rainIndicatorVisibilities
+    });
+  }
+
+  private createElevationIndicatorElement(routeLegIndex: number, routeInfo: RouteAndWeatherInformation): google.maps.Circle {
+    return new google.maps.Circle({
+      strokeColor: "rgb(255, 0, 0)",
+      strokeOpacity: 0.2,
+      strokeWeight: 2,
+      fillColor: "rgb(0, 0, 255)",
+      fillOpacity: 0.35,
+      map: this.map,
+      center: {
+        lat: routeInfo.routeInformation.route.getPath().getArray()[routeLegIndex].lat(),
+        lng: routeInfo.routeInformation.route.getPath().getArray()[routeLegIndex].lng()
+      },
+      radius: 20,
+      visible: this.rainIndicatorVisibilities
+    });
   }
 
   private removeMarkers(routeId: number) {
