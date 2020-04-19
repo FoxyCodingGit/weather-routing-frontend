@@ -20,16 +20,19 @@ export class myChartOptions {
         responsive: true,
         scales: {
             yAxes: [{
-            scaleLabel: {
-                display: true,
-                labelString: 'Elevation (meters)'
-            },
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Elevation (meters)'
+                }
             }],
             xAxes: [{
-                display: false,
+                scaleLabel: {
+                    display: true,
+                    labelString: 'Distance (meters)'
+                },
                 ticks: {
                     autoSkip: true,
-                    maxTicksLimit: 2
+                    maxTicksLimit: 4
                 }
             }]
         },

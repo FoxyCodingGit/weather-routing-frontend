@@ -5,7 +5,6 @@ import { myChartOptions } from './model/myChartOptions';
 import { WeatherService } from '../shared/weather.service';
 import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformation';
 import { Color } from 'ng2-charts';
-import { ElevationResult } from '../shared/Models/Elevation/ElevationResult';
 // ng2-charts is needed to allow canvas to be used to show the graph. Removed @types/chart.js as i dont think this added anything.
 
 @Component({
@@ -20,6 +19,8 @@ export class GraphComponent {
   public chartColours: Color[];
   public mainChartType: ChartType;
   public chartOptions: ChartOptions;
+
+  private elevationGraphDistanceIntervalInMeters = 20;
 
   constructor(private weatherService: WeatherService) { }
 
@@ -57,24 +58,24 @@ export class GraphComponent {
     this.displayTotalRainPerRoute(routeWeatherInfo, departureTime, focusedRouteId);
   }
 
-  public graphElevation(elevations: ElevationResult[]) {
+  public graphElevation(routeInfo: RouteInformation) {
     this.chartData = [];
     this.chartColours = [];
     this.mainChartType = "line";
     this.chartOptions = myChartOptions.elevationOptions;
 
     var elevationResult: number[] = [];
-    elevations.forEach(elevation => {
+    routeInfo.elevation.forEach(elevation => {
       elevationResult.push(elevation.elevation);
     });
 
     this.chartLabels = [];
-    for (let i = 0; i < elevationResult.length; i++) {
+    for (let i = 0; i < routeInfo.distance; i += this.elevationGraphDistanceIntervalInMeters) {
       this.chartLabels.push((i).toString());
     }
 
     this.chartData.push({
-      data: elevationResult,
+      data: this.generateElevationData(routeInfo),
       type: 'line'
     });
     
@@ -85,7 +86,53 @@ export class GraphComponent {
 
   public onChartHover(event: any) {
     let focusedLegIndex = event.active[0]._index;
-    this.graphHoveredOn.emit(focusedLegIndex);
+    this.graphHoveredOn.emit(focusedLegIndex * this.elevationGraphDistanceIntervalInMeters);
+  }
+
+  private generateElevationData(routeInfo: RouteInformation): number[] {
+    let elevationData: number[] = [];
+
+    for (let currentDistance = 0; currentDistance < routeInfo.distance; currentDistance += this.elevationGraphDistanceIntervalInMeters) { // will miss last part if ont multiple of elevationGraphDistanceIntervalInMeters.
+      if (currentDistance == 0) {
+        elevationData.push(routeInfo.elevation[0].elevation);
+        continue;
+      }
+
+      let indexofNextRecordedElevation: number = this.findindexofNextRecordedElevation(currentDistance, routeInfo.cumulativeDistances);
+      let percentageOfCurrentLocationFromPreviousRecordedDistance = this.getPercentageOfCurrentDistanceFromPrevDistanceToNextDistance(currentDistance, indexofNextRecordedElevation, routeInfo);
+      let whatElevationWouldBeAtThisPercentage = this.calculateWhatElevationValueWouldBeAtThisDistance(percentageOfCurrentLocationFromPreviousRecordedDistance, indexofNextRecordedElevation, routeInfo)
+      elevationData.push(whatElevationWouldBeAtThisPercentage);
+    }
+    return elevationData;
+  }
+
+  private getPercentageOfCurrentDistanceFromPrevDistanceToNextDistance(currentDistance: number, indexofNextRecordedElevation: number, routeInfo: RouteInformation): number {
+    let previousRecordedDistance = routeInfo.cumulativeDistances[indexofNextRecordedElevation - 1];
+    let nextRecordedElevationDistance: number = routeInfo.cumulativeDistances[indexofNextRecordedElevation];
+    let distanceBetweenRecordedDistances = nextRecordedElevationDistance - previousRecordedDistance;
+    return (currentDistance - previousRecordedDistance) / distanceBetweenRecordedDistances;
+  }
+
+  private calculateWhatElevationValueWouldBeAtThisDistance(percentageOfCurrentLocationFromPreviousRecordedDistance: number, indexofNextRecordedElevation: number, routeInfo: RouteInformation): number {
+    let previousRecordedElevationValue: number = routeInfo.elevation[indexofNextRecordedElevation - 1].elevation;
+    let nextRecordedElevationValue: number = routeInfo.elevation[indexofNextRecordedElevation].elevation;
+    let valueDifferenceBetweenRecordedValues = nextRecordedElevationValue - previousRecordedElevationValue;
+    return previousRecordedElevationValue + (valueDifferenceBetweenRecordedValues * percentageOfCurrentLocationFromPreviousRecordedDistance); 
+  }
+
+  private findindexofNextRecordedElevation(currentDistance: number, elevationDistances: number[]): number {
+    for (let i = 0; i < elevationDistances.length; i++) {
+      if (elevationDistances[i] >= currentDistance) {
+        return i;
+      }
+    }
+
+    elevationDistances.forEach(elevationDistance => {
+      if (elevationDistance >= currentDistance) {
+        return elevationDistance;
+      }
+    });
+    return
   }
 
   private generateLabelsForDepartureTimes() { // make dynamic

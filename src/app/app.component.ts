@@ -85,7 +85,7 @@ export class AppComponent implements OnInit {
       this.map.highlightSelectedRoute(routeIdFocused, routeAndWeatherInfo.routeInformation);
 
       if (routeAndWeatherInfo.routeInformation.id == routeIdFocused) {
-        this.map.displayElevation(routeAndWeatherInfo.routeInformation.elevation);
+        this.map.displayElevation(routeAndWeatherInfo.routeInformation);
       }
     });
   }

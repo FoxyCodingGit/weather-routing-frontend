@@ -20,6 +20,7 @@ export class RouteInformation {
         this.getStartEndLocationName();
         this.travelMode = travelMode;
         this.applyElevationToRoute();
+        this.setRouteCumulativeDistances();
     }
 
     public id: number;
@@ -37,6 +38,18 @@ export class RouteInformation {
     public databaseRouteId: string;
     public travelMode: TravelMode;
     public elevation: ElevationResult[];
+    public cumulativeDistances: number[] = [];
+    
+    public setRouteCumulativeDistances() {
+        let route = this.route.getPath().getArray();
+        let cumulativeDistance = 0;
+        this.cumulativeDistances.push(0);
+
+        for(let i = 0; i < route.length - 1; i++) {
+            cumulativeDistance += this.routingService.distanceToNextLatLngValue(this.route.getPath().getArray(), i);
+            this.cumulativeDistances.push(cumulativeDistance);
+        }
+    }
 
     private createBoundForPolygon(latLngs: google.maps.LatLng[]): google.maps.LatLngBounds {
         const bounds = new google.maps.LatLngBounds();

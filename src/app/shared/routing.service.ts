@@ -13,6 +13,7 @@ import { AlertService } from './alert.service';
 import { TravelMode } from './Models/travelMode';
 import { Location } from '../shared/Models/Elevation/Location';
 import { ElevationResponse } from './Models/Elevation/ElevationResponse';
+import { WeatherPoint } from '../map/Model/weatherPoint';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +33,7 @@ export class RoutingService {
   private routeAndWeatherInformation: RouteAndWeatherInformation[] = [];
   public static routeId = 0;
   private readonly numberOfAltRoutes = 0;
+  private howManyWeatherMarkerChecks = 6;
 
   private baseURL = 'https://localhost:44338/routing';
   private userDefinedBaseURL = 'https://localhost:44338/api/UserDefinedRoute'; // TODO: on backend need to change the url.
@@ -179,6 +181,128 @@ export class RoutingService {
     return this.http.post<ElevationResponse>(`${this.baseURL}/elevation`, locations, requestOptions);
   }
 
+  private setWeatherLegsEqualDistanceApart(thisRoute: RouteInformation): void {
+    for (let i = 0; i < this.howManyWeatherMarkerChecks; i++) {
+      const distancePercentageAlongRoute = i * (1 / (this.howManyWeatherMarkerChecks - 1));  // if four for example -> 0 33 66 100 the middle two are 1/3 and 2/3. top begins at one and below is one less that howmanyweathermarkers
+      this.calculateWithLegIsClosestToDistance(thisRoute, thisRoute.distance * distancePercentageAlongRoute);
+    }
+    console.log(thisRoute.weatherPoints);
+  }
+
+  private calculateWithLegIsClosestToDistance(thisRoute: RouteInformation, idealDistance: number): void { // make sure value not off by one!!
+    const route = thisRoute.route;
+    const totalDistance = thisRoute.distance;
+    
+    if (idealDistance === 0) {
+      this.addToWeatherPointSetAndBeUniqueByLegNum(thisRoute, 0, 0);
+    } else if (totalDistance === idealDistance) { // both -1 at end of lines are so it can match the array number that starts from zero.
+      this.addToWeatherPointSetAndBeUniqueByLegNum(thisRoute, route.getPath().getArray().length - 1, totalDistance);
+    } else {
+      let toNextWeatherPointDistance = 0;
+      let accumulatedDistance: number;
+      
+      for (let i = 0; i < route.getPath().getArray().length - 1; i++) { // do if at start or finish give back quick value. currently going to one less than the full distanceToNextPoint.
+        accumulatedDistance = toNextWeatherPointDistance;
+
+        toNextWeatherPointDistance += this.distanceToNextLatLngValue(route.getPath().getArray(), i);
+        
+        if (toNextWeatherPointDistance >= idealDistance) { // its gone over
+
+          const distanceOverIdealDistance = toNextWeatherPointDistance - idealDistance;
+          const distanceUnderIdealDistance = idealDistance - accumulatedDistance
+
+          if (distanceOverIdealDistance < distanceUnderIdealDistance) { // if gap of station over
+            this.addToWeatherPointSetAndBeUniqueByLegNum(thisRoute, i + 1, toNextWeatherPointDistance);
+            break;
+          } else {
+            this.addToWeatherPointSetAndBeUniqueByLegNum(thisRoute, i, toNextWeatherPointDistance);
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  private addToWeatherPointSetAndBeUniqueByLegNum(thisRoute: RouteInformation, legNumberInRoute: number, distance: number): void {
+    const newWeatherPoint: WeatherPoint = {
+      legNumberInRoute: legNumberInRoute,
+      distance: Math.abs(distance)
+    } 
+
+    const LegNums = [];
+
+    thisRoute.weatherPoints.forEach(weatherPoint => {
+      if (!LegNums.includes(weatherPoint.legNumberInRoute)) {
+        LegNums.push(weatherPoint.legNumberInRoute);
+      }
+    });
+
+    if (!LegNums.includes(legNumberInRoute)) thisRoute.weatherPoints.push(newWeatherPoint);
+  }
+
+  public getLatLngFromDistance(distance: number, routeInfo: RouteAndWeatherInformation): google.maps.LatLng {
+    if (distance == 0) {
+      return routeInfo.routeInformation.route.getPath().getArray()[0];
+    }
+
+    let lastLegIndex = this.getLastPastLegIndex(distance, routeInfo.routeInformation);
+    let percentageOfCurrentDistancePastLastLegToNextOne = this.getPercentageOfCurrentDistancePastLastLegToNextOne(distance, routeInfo, lastLegIndex);
+    return this.getLatLngAtProposedDistance(percentageOfCurrentDistancePastLastLegToNextOne, routeInfo, lastLegIndex);
+  }
+
+  private getLastPastLegIndex(distance: number, routeInfo: RouteInformation): number {
+    for(let i = 0; i < routeInfo.cumulativeDistances.length; i++) {
+      if (distance < routeInfo.cumulativeDistances[i]) {
+        return i - 1;
+      }
+    }
+  }
+
+  private getPercentageOfCurrentDistancePastLastLegToNextOne(distance: number, routeInfo: RouteAndWeatherInformation, lastLegIndex: number, ) {
+    let distanceFromPrevToCurrentDistance = distance - routeInfo.routeInformation.cumulativeDistances[lastLegIndex];
+    let distanceBetweenTwoNearestLegs = this.distanceToNextLatLngValue(routeInfo.routeInformation.route.getPath().getArray(), lastLegIndex);
+    return distanceFromPrevToCurrentDistance / distanceBetweenTwoNearestLegs;
+  }
+
+  private getLatLngAtProposedDistance(percentageOfCurrentDistancePastLastLegToNextOne: number, routeInfo: RouteAndWeatherInformation, lastLegIndex: number): google.maps.LatLng {
+    let lastLegValue = routeInfo.routeInformation.route.getPath().getArray()[lastLegIndex];
+    let nextLegValue = routeInfo.routeInformation.route.getPath().getArray()[lastLegIndex + 1];
+
+    let latDiff = nextLegValue.lat() - lastLegValue.lat();
+    let lngDiff = nextLegValue.lng() - lastLegValue.lng();
+
+    let newLat = lastLegValue.lat() + (latDiff * percentageOfCurrentDistancePastLastLegToNextOne); 
+    let newLng = lastLegValue.lng() + (lngDiff * percentageOfCurrentDistancePastLastLegToNextOne); 
+
+    return new google.maps.LatLng(newLat, newLng);
+  }
+
+ //////// THESE THREE FUNCTIONS COPIED INTO WEATHER SERVICE TO AVOID CIRCULAR DEP. EASY FIX TO CREATE NEW SERVICE.
+
+  public distanceToNextLatLngValue(routePath: google.maps.LatLng[], i: number): number {
+    return Math.abs(this.HaversineFormula(routePath[i].lat(), routePath[i].lng(), routePath[i+1].lat(), routePath[i+1].lng())); // I DONT THINK MATH ABS IS NOW NEEDED?!
+  }
+
+  private HaversineFormula(lat1: number, lng1: number, lat2: number, lng2: number) {
+    const R = 6371; // radius of Earth in km
+    const dLat = this.degreeToRadian(lat2 - lat1);
+    const dLng = this.degreeToRadian(lng2 - lng1);
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.degreeToRadian(lat1)) * Math.cos(this.degreeToRadian(lat2)) *
+      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c; // Distance in km
+    return d * 1000;
+  }
+  
+  private degreeToRadian(deg) {
+    return deg * (Math.PI / 180);
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
   
   private RouteFromAPIToRouteIWant(routes: RouteFromAPI[]): RouteIWant[] { // move to service or someytinh
     let newRouteIWantFormat: RouteIWant[] = [];
@@ -205,6 +329,8 @@ export class RoutingService {
     });
 
     let thisRoute = new RouteInformation(this, RoutingService.routeId, mapRoute, routeInformation.travelTimeInSeconds, routeName, routeInformation.colour, routeInformation.distance, isFavourite, databaseRouteId, this.stringToTravelType(travelMode));
+    this.setWeatherLegsEqualDistanceApart(thisRoute);
+    
     RoutingService.routeId++;
 
     return await this.weatherService.addWeatherInformationToRoute(thisRoute);
