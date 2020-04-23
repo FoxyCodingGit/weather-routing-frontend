@@ -20,7 +20,7 @@ export class GraphComponent {
   public mainChartType: ChartType;
   public chartOptions: ChartOptions;
 
-  private elevationGraphDistanceIntervalInMeters = 20;
+  public static elevationGraphDistanceIntervalInMeters = 20; // move all this values to config file or something to have all in one place?
 
   constructor(private weatherService: WeatherService) { }
 
@@ -65,12 +65,12 @@ export class GraphComponent {
     this.chartOptions = myChartOptions.elevationOptions;
 
     var elevationResult: number[] = [];
-    routeInfo.elevation.forEach(elevation => {
+    routeInfo.elevationInfo.elevations.forEach(elevation => {
       elevationResult.push(elevation.elevation);
     });
 
     this.chartLabels = [];
-    for (let i = 0; i < routeInfo.distance; i += this.elevationGraphDistanceIntervalInMeters) {
+    for (let i = 0; i < routeInfo.distance; i += GraphComponent.elevationGraphDistanceIntervalInMeters) {
       this.chartLabels.push((i).toString());
     }
 
@@ -86,15 +86,15 @@ export class GraphComponent {
 
   public onChartHover(event: any) {
     let focusedLegIndex = event.active[0]._index;
-    this.graphHoveredOn.emit(focusedLegIndex * this.elevationGraphDistanceIntervalInMeters);
+    this.graphHoveredOn.emit(focusedLegIndex * GraphComponent.elevationGraphDistanceIntervalInMeters);
   }
 
   private generateElevationData(routeInfo: RouteInformation): number[] {
     let elevationData: number[] = [];
 
-    for (let currentDistance = 0; currentDistance < routeInfo.distance; currentDistance += this.elevationGraphDistanceIntervalInMeters) { // will miss last part if ont multiple of elevationGraphDistanceIntervalInMeters.
+    for (let currentDistance = 0; currentDistance < routeInfo.distance; currentDistance += GraphComponent.elevationGraphDistanceIntervalInMeters) { // will miss last part if ont multiple of elevationGraphDistanceIntervalInMeters.
       if (currentDistance == 0) {
-        elevationData.push(routeInfo.elevation[0].elevation);
+        elevationData.push(routeInfo.elevationInfo.elevations[0].elevation);
         continue;
       }
 
@@ -114,8 +114,8 @@ export class GraphComponent {
   }
 
   private calculateWhatElevationValueWouldBeAtThisDistance(percentageOfCurrentLocationFromPreviousRecordedDistance: number, indexofNextRecordedElevation: number, routeInfo: RouteInformation): number {
-    let previousRecordedElevationValue: number = routeInfo.elevation[indexofNextRecordedElevation - 1].elevation;
-    let nextRecordedElevationValue: number = routeInfo.elevation[indexofNextRecordedElevation].elevation;
+    let previousRecordedElevationValue: number = routeInfo.elevationInfo.elevations[indexofNextRecordedElevation - 1].elevation;
+    let nextRecordedElevationValue: number = routeInfo.elevationInfo.elevations[indexofNextRecordedElevation].elevation;
     let valueDifferenceBetweenRecordedValues = nextRecordedElevationValue - previousRecordedElevationValue;
     return previousRecordedElevationValue + (valueDifferenceBetweenRecordedValues * percentageOfCurrentLocationFromPreviousRecordedDistance); 
   }

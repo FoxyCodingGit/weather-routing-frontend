@@ -8,8 +8,8 @@ import { AssetService } from 'src/assets/asset.service';
 import { RouteMarker } from './Model/RouteMarker';
 import { RoutRainIndicators } from './Model/RouteRainIndicators';
 import { RoutePolyline } from './Model/RoutePolyline';
-import { ElevationResult } from '../shared/Models/Elevation/ElevationResult';
 import { RoutingService } from '../shared/routing.service';
+import { ElevationInfoComponent } from '../elevation-info/elevation-info.component';
 
 @Component({
   selector: 'app-map',
@@ -17,6 +17,7 @@ import { RoutingService } from '../shared/routing.service';
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit {
+  @ViewChild(ElevationInfoComponent, {static: false}) elevationInfo: ElevationInfoComponent;
   @ViewChild('elevation', {static: false}) elevationGraph: GraphComponent;
   
   @Output() mapClicked: EventEmitter<any> = new EventEmitter();
@@ -40,10 +41,13 @@ export class MapComponent implements OnInit {
   public isStartHighlightedToBeClickable: boolean = false;
   public isDestinationHighlightedToBeClickable: boolean = false;
 
-  private focusedElevationElement: google.maps.Polyline;
+  private focusedElevationPointIndicator: google.maps.Polyline;
   private currentlyFocusedDistanceOfHighlightedElevation: number;  
   public currentlyFocusedRouteId: number; 
 
+  private elevationInclineOrDeclinePolylines: google.maps.Polyline[] = [];
+  private greatestInclinePolyline: google.maps.Polyline;
+  private greatestInclineOverDistancePolyline: google.maps.Polyline;
 
   constructor(private assetService: AssetService, private routingService: RoutingService) { }
 
@@ -54,6 +58,7 @@ export class MapComponent implements OnInit {
 
   public displayElevation(routeInfo: RouteInformation): void {
     this.elevationGraph.graphElevation(routeInfo);
+    this.elevationInfo.populateData(routeInfo.elevationInfo, routeInfo.distance, routeInfo.travelMode);
   }
 
   public placeWeatherMarkers(thisRoute: RouteInformation) {
@@ -175,11 +180,107 @@ export class MapComponent implements OnInit {
 
     this.currentlyFocusedDistanceOfHighlightedElevation = distanceOfHighlightedElevation;
     this.hideCurrentElevationHiglight();
-    this.focusedElevationElement = this.createElevationIndicatorElement(distanceOfHighlightedElevation, this.routingService.getRouteAndWeatherInformationById(this.currentlyFocusedRouteId));
-  } 
+    this.focusedElevationPointIndicator = this.createElevationIndicatorElement(distanceOfHighlightedElevation, this.routingService.getRouteAndWeatherInformationById(this.currentlyFocusedRouteId));
+  }
 
+  public onElevationChangeChecked(inclinesOrDeclines: boolean[]) {
+    let subRoutes: google.maps.Polyline[] = [] 
+    let isSubRouteIncline = inclinesOrDeclines[0];
+
+    let focusedRoutePath: google.maps.LatLng[] = this.routingService.getRouteAndWeatherInformationById(this.currentlyFocusedRouteId).routeInformation.route.getPath().getArray();
+    let currentSubPoute: google.maps.LatLng[] = [focusedRoutePath[0]];
+
+    for (let i = 1; i < focusedRoutePath.length; i++) {
+      if (inclinesOrDeclines[i - 1] == isSubRouteIncline) {
+        currentSubPoute.push(focusedRoutePath[i])
+      } else {
+        subRoutes.push(this.createInclineDeclinePolyline(currentSubPoute, isSubRouteIncline));
+        currentSubPoute = [focusedRoutePath[i - 1], focusedRoutePath[i]];
+        isSubRouteIncline = !isSubRouteIncline;
+      }
+    }
+
+    if (subRoutes != null) {
+      subRoutes.push(this.createInclineDeclinePolyline(currentSubPoute, isSubRouteIncline));
+    }
+
+    this.elevationInclineOrDeclinePolylines = subRoutes;
+  }
+
+  public onMaxInclineChecked(greatestInclineStartingIndex: number) {
+    let focusedRoutePath: google.maps.LatLng[] = this.routingService.getRouteAndWeatherInformationById(this.currentlyFocusedRouteId).routeInformation.route.getPath().getArray();
+
+    let path: google.maps.LatLng[] = [];
+    path.push(focusedRoutePath[greatestInclineStartingIndex]);
+    path.push(focusedRoutePath[greatestInclineStartingIndex + 1]);
+
+    this.greatestInclinePolyline = this.createInclinePolyline(path);
+  }
+
+  public onMaxInclineOverDistanceChecked(thing: any) {
+    let focusedRoutePath: google.maps.LatLng[] = this.routingService.getRouteAndWeatherInformationById(this.currentlyFocusedRouteId).routeInformation.route.getPath().getArray();
+    
+    let path: google.maps.LatLng[] = [];
+    for (let i = thing.startIndex; i <= thing.endIndex; i++) {
+      path.push(focusedRoutePath[i]);
+    }
+
+    this.greatestInclineOverDistancePolyline = this.createInclinePolyline(path);
+  }
+
+  public removeElevationInclineOrDeclinePolylines() {
+    if (this.elevationInclineOrDeclinePolylines.length == 0) {
+      return;
+    }
+
+    this.elevationInclineOrDeclinePolylines.forEach(polyine => {
+      polyine.setVisible(false);
+    });
+    this.elevationInclineOrDeclinePolylines = [];
+  }
+
+  public removeMaxInclinePolyline() {
+    if (this.greatestInclinePolyline == null) {
+      return;
+    }
+
+    this.greatestInclinePolyline.setVisible(false);
+    this.greatestInclinePolyline = null;
+  }
+
+  public removeInclineOverDistancePolyline() {
+    if (this.greatestInclineOverDistancePolyline == null) {
+      return;
+    }
+
+    this.greatestInclineOverDistancePolyline.setVisible(false);
+    this.greatestInclineOverDistancePolyline = null;
+  }
+  
+  private createInclineDeclinePolyline(path: google.maps.LatLng[], isIncline: boolean): google.maps.Polyline {
+    return new google.maps.Polyline({
+      path: path,
+      geodesic: true,
+      strokeColor: (isIncline) ? "rgb(255,0,0)" : "rgb(0,255,0)",
+      strokeOpacity: 1.0,
+      strokeWeight: 15,
+      map: this.map
+    });
+  }
+
+  private createInclinePolyline(path: google.maps.LatLng[]) {
+    return new google.maps.Polyline({
+      path: path,
+      geodesic: true,
+      strokeColor: "rgb(0,0,0)",
+      strokeOpacity: 1.0,
+      strokeWeight: 15,
+      map: this.map
+    });
+  }
+  
   private hideCurrentElevationHiglight(): void {
-    if (this.focusedElevationElement != null) this.focusedElevationElement.setVisible(false);
+    if (this.focusedElevationPointIndicator != null) this.focusedElevationPointIndicator.setVisible(false);
   }
 
   private isElevationAlreadyHighlighted(distanceOfHighlightedElevation: number) {

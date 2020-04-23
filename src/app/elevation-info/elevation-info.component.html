@@ -1,0 +1,36 @@
+<div class="container" *ngIf="elevationInfo != null">
+    <h2>{{getDescription()}}</h2>
+    <div class="descriptionIcon"></div>
+    <hr>
+
+    <div class="wrapper">
+        <label>Elevation Change</label>
+        <input name="elevationChangeCheckbox" type="checkbox" [(ngModel)]="elevationChangeCheckboxValue"
+            (change)="onElevationChangeChecked($event.path[0].checked)">
+    </div>
+
+    <div class="wrapper">
+        <div class="totalElevationChangeIcon"></div>
+        <p>{{elevationInfo.totalElevationChange.toFixed(1)}}m / {{elevationInfo.totalInclineElevationGain.toFixed(1)}}m
+        </p>
+        <div class="totalInclineIcon"></div>
+    </div>
+
+    <div *ngIf="elevationInfo.greatestIncline != 0;">
+        <div  class="wrapper">
+            <label>Max Incline</label>
+            <input name="maxInclineCheckbox" type="checkbox" [(ngModel)]="maxInclineCheckboxValue"
+                (change)="onMaxInclineChecked($event.path[0].checked)">
+        </div>
+        <p>{{elevationInfo.greatestIncline.toFixed(1)}}&deg;</p>
+
+        <div class="wrapper">
+            <label>Max Incline over Distance</label>
+            <input name="maxInclineOverDistanceCheckbox" type="checkbox"
+                [(ngModel)]="maxInclineOverDistanceCheckboxValue"
+                (change)="onMaxInclineOverDistanceChecked($event.path[0].checked)">
+        </div>
+        <p>{{elevationInfo.greatestInclineAngleOverDistance.toFixed(1)}}&deg; over
+            {{elevationInfo.greatestInclineDistanceOverDistance.toFixed(1)}}m</p>
+    </div>
+</div>

@@ -1,9 +1,8 @@
 import { WeatherPoint } from './weatherPoint';
 import { TempRouteHelper } from 'src/app/shared/tempRouteHelper';
 import { TravelMode } from 'src/app/shared/Models/travelMode';
-import { ElevationResult } from 'src/app/shared/Models/Elevation/ElevationResult';
-import { Location } from 'src/app/shared/Models/Elevation/Location';
 import { RoutingService } from 'src/app/shared/routing.service';
+import { ElevationInfo } from 'src/app/elevation-info/Model/ElevationInfo';
 
 export class RouteInformation {
     public constructor(private routingService: RoutingService, id: number, route: google.maps.Polyline, travelTimeInSeconds: number, name: string, color: string, distance: number, isFavourite: boolean, databaseRouteId: string, travelMode: TravelMode) {
@@ -19,8 +18,10 @@ export class RouteInformation {
         this.databaseRouteId = databaseRouteId;
         this.getStartEndLocationName();
         this.travelMode = travelMode;
-        this.applyElevationToRoute();
         this.setRouteCumulativeDistances();
+        
+        this.elevationInfo = new ElevationInfo(routingService);
+        this.elevationInfo.setValues(this.route, this.cumulativeDistances);
     }
 
     public id: number;
@@ -37,8 +38,8 @@ export class RouteInformation {
     public isFavourite: boolean;
     public databaseRouteId: string;
     public travelMode: TravelMode;
-    public elevation: ElevationResult[];
     public cumulativeDistances: number[] = [];
+    public elevationInfo: ElevationInfo;
     
     public setRouteCumulativeDistances() {
         let route = this.route.getPath().getArray();
@@ -87,18 +88,6 @@ export class RouteInformation {
 
         await TempRouteHelper.getLocationName(new google.maps.LatLng(endLat, endLng)).then(result => {
             this.endLocation = result;
-        });
-    }
-
-    private applyElevationToRoute() {
-        let locations: Location[] = [];
-
-        this.route.getPath().getArray().forEach(latLngValue => {
-            locations.push({ lat: latLngValue.lat().toString(), lng: latLngValue.lng().toString() })
-        });
-
-        this.routingService.getElevation(locations).subscribe((elevations) => {
-            this.elevation = elevations.results;
         });
     }
 }

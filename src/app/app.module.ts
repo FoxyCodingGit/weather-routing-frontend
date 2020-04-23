@@ -15,6 +15,7 @@ import { ModalComponent } from './modal/modal.component';
 import { AlertComponent } from './alert/alert.component';
 import { IconTextComponent } from './icon-text/icon-text.component';
 import { LoginModalComponent } from './login/login-modal/login-modal.component';
+import { ElevationInfoComponent } from './elevation-info/elevation-info.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { LoginModalComponent } from './login/login-modal/login-modal.component';
     ModalComponent,
     AlertComponent,
     IconTextComponent,
-    LoginModalComponent
+    LoginModalComponent,
+    ElevationInfoComponent
   ],
   imports: [
     BrowserModule,

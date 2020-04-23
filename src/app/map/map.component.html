@@ -10,4 +10,12 @@
         <input name="rainIndicatorCheckbox" type="checkbox" [checked]="rainIndicatorVisibilities" (change)="showRainIndicators($event.path[0].checked)">
     </div>
 </div>
+<app-elevation-info
+    (elevationChangeChecked)="onElevationChangeChecked($event)"
+    (elevationChangeUnchecked)="removeElevationInclineOrDeclinePolylines()"
+    (maxInclineChecked)="onMaxInclineChecked($event)"
+    (maxInclineUnchecked)="removeMaxInclinePolyline()"
+    (maxInclineOverDistanceChecked)="onMaxInclineOverDistanceChecked($event)"
+    (maxInclineOverDistanceUnchecked)="removeInclineOverDistancePolyline()">
+</app-elevation-info>
 <app-graph #elevation (graphHoveredOn)="mapFocusedElevation($event)"></app-graph>

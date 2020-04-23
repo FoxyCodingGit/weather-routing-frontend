@@ -1,0 +1,80 @@
+$travel-car-icon: '/assets/images/car.png';
+$total-elevation-change-icon: '/assets/images/elevation/upDown.png';
+$total-incline-icon: '/assets/images/elevation/up.png';
+
+h2, p {
+    text-align: center;
+}
+
+label, p {
+    font-size: 12px;
+}
+
+p {
+    margin-bottom: 8px;
+}
+
+hr {
+    margin: 10px 0;
+}
+
+label {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: grey;
+    text-decoration: underline;
+}
+
+.descriptionIcon {
+    background-color: white;
+    background-repeat: no-repeat;
+    padding: 10px;
+    background-size: 60px;
+    width: 60px;
+    height: 60px;
+    border-radius: 5px;
+    margin: 15px auto;
+
+    background-image: url($travel-car-icon); 
+}
+
+.totalElevationChangeIcon {
+    background-size: 12px;
+    width: 12px;
+    height: 12px;
+
+    background-image: url($total-elevation-change-icon);
+}
+
+.totalElevationChangeIcon, .totalInclineIcon {
+    background-size: 16px;
+    width: 16px;
+    height: 16px;
+
+    background-image: url($total-elevation-change-icon);
+}
+
+.totalElevationChangeIcon {
+    background-image: url($total-elevation-change-icon);
+    margin-left: auto;
+}
+
+.totalInclineIcon {
+    background-image: url($total-incline-icon);
+    margin-right: auto;
+}
+
+.wrapper {
+    margin: auto;
+    p {
+        padding: 0 5px;
+    }
+}
+
+.container {
+    padding: 10px;
+}
+
+input {
+    margin: 4px 0 0 10px;
+}
