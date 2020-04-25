@@ -55,7 +55,7 @@ export class RoutingService {
       return routeInfo;
     }
 
-    this.alertService.error("Cant find route of id " + routeId + ". Returning first route in list.")
+    this.alertService.error("Can't find route of id " + routeId + ". Returning first route in list.")
     return this.routeAndWeatherInformation[0];
   }
 
@@ -139,36 +139,30 @@ export class RoutingService {
       userSavedRoutes = result;
     });
 
-    userSavedRoutes.forEach(route => {
-      this.alalalal(route.readableRouteId.toString(), true, route.routeName, route.modeOfTransport, route.startLat, route.startLng, route.endLat, route.endLng);
-    });
+    for (let i = 0; i < userSavedRoutes.length; i++) {
+      await this.alalalal(userSavedRoutes[i].readableRouteId.toString(), true, userSavedRoutes[i].routeName, userSavedRoutes[i].modeOfTransport, userSavedRoutes[i].startLat, userSavedRoutes[i].startLng, userSavedRoutes[i].endLat, userSavedRoutes[i].endLng);
+    }
   }
 
-  public alalalal(databaseRouteId: string, isFavourite: boolean, routeName: string, travelMode: string, startLat: number, startLng: number, endLat: number, endLng: number) {
-    this.GetRoutes(travelMode, startLat, startLng, endLat, endLng, this.numberOfAltRoutes).subscribe(
-      async (routes: RouteFromAPI[]) => {
+  public async alalalal(databaseRouteId: string, isFavourite: boolean, routeName: string, travelMode: string, startLat: number, startLng: number, endLat: number, endLng: number) {
+    await this.GetRoutes(travelMode, startLat, startLng, endLat, endLng, this.numberOfAltRoutes).toPromise().then(async (routes: RouteFromAPI[]) => {
+      let newRoutesFormat: RouteIWant[] = this.RouteFromAPIToRouteIWant(routes);
 
-        let newRoutesFormat: RouteIWant[] = this.RouteFromAPIToRouteIWant(routes);
-        
-        newRoutesFormat.forEach(async routeInformation => {
-          let newRoutes: RouteAndWeatherInformation[] = [];
-
-          if (this.isRouteOverFourtyMinutes(routeInformation.travelTimeInSeconds)) {
-            this.alertService.warning("Can't add route that takes longer than 40 minutes.")
-            this.routeCreationOnError.next();
-          } else {
-            await this.createRouteWithWeatherInfo(databaseRouteId, isFavourite, routeInformation, routeName, travelMode).then(route => {
-              newRoutes.push(route);
-            });
-
-            this.newRoutesSubject.next(newRoutes); // needs to be here so async. Doesnt matter that multiple routes will call this one at a time.
-          }
-        });
-      },
-      (error) => {
-        this.alertService.error("Creation of routes was unsuccessful. " + error.toString())
+      for (let i = 0; i < newRoutesFormat.length; i++) {
+        let newRoutes: RouteAndWeatherInformation[] = [];
+        if (this.isRouteOverFourtyMinutes(newRoutesFormat[i].travelTimeInSeconds)) {
+          this.alertService.warning("Can't add route that takes longer than 40 minutes.");
+          this.routeCreationOnError.next();
+        } else {
+          await this.createRouteWithWeatherInfo(databaseRouteId, isFavourite, newRoutesFormat[i], routeName, travelMode).then(route => {
+            newRoutes.push(route);
+          });
+          this.newRoutesSubject.next(newRoutes); // needs to be here so async. Doesnt matter that multiple routes will call this one at a time.
+        }
       }
-    );
+    }, (error) => {
+      this.alertService.error("Creation of routes was unsuccessful. " + error.toString());
+    });
   }
 
   public getElevation(locations: Location[]): Observable<ElevationResponse> {
@@ -329,8 +323,9 @@ export class RoutingService {
     });
 
     let thisRoute = new RouteInformation(this, RoutingService.routeId, mapRoute, routeInformation.travelTimeInSeconds, routeName, routeInformation.colour, routeInformation.distance, isFavourite, databaseRouteId, this.stringToTravelType(travelMode));
+    await thisRoute.getStartEndLocationNameAsync();
     this.setWeatherLegsEqualDistanceApart(thisRoute);
-    
+
     RoutingService.routeId++;
 
     return await this.weatherService.addWeatherInformationToRoute(thisRoute);

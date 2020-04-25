@@ -37,7 +37,7 @@ export class RouteDataTableComponent implements OnInit {
   }
 
   private async deleteFromDB(routeId: number) {
-    this.routingService.deleteUserDefinedRouteOnDB(this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.databaseRouteId).toPromise().then(
+    await this.routingService.deleteUserDefinedRouteOnDB(this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.databaseRouteId).toPromise().then(
       async (result) => {
         this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.isFavourite = false;
         this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.databaseRouteId = null;
@@ -46,7 +46,7 @@ export class RouteDataTableComponent implements OnInit {
   }
 
   private async addToDB(routeId: number) {
-    this.routingService.createUserDefinedRoute(this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation).toPromise().then(
+    await this.routingService.createUserDefinedRoute(this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation).toPromise().then(
       async (result) => {
         this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.isFavourite = true;
         this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.databaseRouteId = result.routeId.toString();
@@ -57,10 +57,10 @@ export class RouteDataTableComponent implements OnInit {
   ngOnInit() {
     this.getFavouriteObserver().subscribe(
       async (routeId) => {
-      if (this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.isFavourite) await this.deleteFromDB(routeId);
-      else await this.addToDB(routeId);
-
-      this.changeFavouriteStatus(routeId);
+        if (this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.isFavourite) await this.deleteFromDB(routeId);
+        else await this.addToDB(routeId);
+        
+        this.changeFavouriteStatus(routeId);
     });
 
     const tableSettings: DataTables.Settings = {

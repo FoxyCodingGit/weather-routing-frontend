@@ -16,10 +16,8 @@ export class RouteInformation {
         this.bounds = this.createBoundForPolygon(route.getPath().getArray());
         this.isFavourite = isFavourite;
         this.databaseRouteId = databaseRouteId;
-        this.getStartEndLocationName();
         this.travelMode = travelMode;
         this.setRouteCumulativeDistances();
-        
         this.elevationInfo = new ElevationInfo(routingService);
         this.elevationInfo.setValues(this.route, this.cumulativeDistances);
     }
@@ -74,7 +72,7 @@ export class RouteInformation {
         }
     }
 
-    private async getStartEndLocationName() {
+    public async getStartEndLocationNameAsync() { // took out of constructor as can't await on that. When loading user defined routes this would not laoad in time.
         const startLat = this.route.getPath().getArray()[0].lat();
         const startLng = this.route.getPath().getArray()[0].lng();
 
