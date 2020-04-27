@@ -60,7 +60,7 @@ export class LoginModalComponent implements OnInit {
             this.loginPerformed();
           },
           (error) => {
-            this.alertService.error(error);
+            this.alertService.error(error.error);
             this.loading = false;
           }
         );
@@ -73,7 +73,7 @@ export class LoginModalComponent implements OnInit {
             this.loginPerformed();
           },
           (error) => {
-            this.alertService.error(error);
+            this.alertService.error(error.error);
             this.loading = false;
           }
         );
@@ -100,7 +100,7 @@ export class LoginModalComponent implements OnInit {
     this.registerUserOnSubmit = false;
 
     for (let name of Object.keys(this.loginForm.controls)) {
-        this.formControls[name].setErrors(null);
+        this.formControls[name].setErrors({incorrect: true});
     }
   }
 
