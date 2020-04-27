@@ -13,6 +13,11 @@ app-route-creation {
     overflow-y: scroll;
 }
 
+app-alert {
+    position: fixed;
+    z-index: 100;
+}
+
 .routeTable {
     margin: 20px 20px 0 20px;
 }

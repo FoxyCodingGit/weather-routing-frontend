@@ -8,7 +8,6 @@ import {
 } from "@angular/forms";
 import { first } from "rxjs/operators";
 import { AuthenticationService } from "../services/authentification.service";
-import { AlertService } from "src/app/shared/alert.service";
 import { RoutingService } from "src/app/shared/routing.service";
 
 @Component({
@@ -22,12 +21,13 @@ export class LoginModalComponent implements OnInit {
   submitted = false;
   returnUrl: string;
 
+  public loginError: string;
+
   public registerUserOnSubmit = false;
 
   constructor(
     private formBuilder: FormBuilder,
     private authenticationService: AuthenticationService,
-    private alertService: AlertService,
     private routingService: RoutingService
   ) { }
 
@@ -60,7 +60,7 @@ export class LoginModalComponent implements OnInit {
             this.loginPerformed();
           },
           (error) => {
-            this.alertService.error(error.error);
+            this.loginError = error.error;
             this.loading = false;
           }
         );
@@ -73,7 +73,7 @@ export class LoginModalComponent implements OnInit {
             this.loginPerformed();
           },
           (error) => {
-            this.alertService.error(error.error);
+            this.loginError = error.error;
             this.loading = false;
           }
         );
@@ -98,6 +98,7 @@ export class LoginModalComponent implements OnInit {
     this.loginForm.reset();
     this.submitted = false;
     this.registerUserOnSubmit = false;
+    this.loginError = null;
 
     for (let name of Object.keys(this.loginForm.controls)) {
         this.formControls[name].setErrors({incorrect: true});

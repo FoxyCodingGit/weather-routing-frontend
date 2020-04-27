@@ -61,7 +61,9 @@
               ></span>
               Login
             </button>
-            Register? <input type="checkbox" [(ngModel)]="registerUserOnSubmit" class="btn btn-link" [ngModelOptions]="{standalone: true}">
+            <div>Register?</div>
+            <input type="checkbox" [(ngModel)]="registerUserOnSubmit" class="btn btn-link" [ngModelOptions]="{standalone: true}">
+            <div class="error" *ngIf="loginError != null">{{loginError}}</div>
           </div>
         </form>
       </div>
