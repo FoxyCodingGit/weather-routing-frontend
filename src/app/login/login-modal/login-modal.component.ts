@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { AuthenticationService } from '../services/authentification.service';
 import { AlertService } from 'src/app/shared/alert.service';
@@ -34,7 +34,7 @@ export class LoginModalComponent implements OnInit {
   ngOnInit() {
       this.loginForm = this.formBuilder.group({
           username: ['', Validators.required],
-          password: ['', Validators.required]
+          password: ['', [Validators.required, Validators.minLength(8), this.passwordHasAtLeastOneNumber]]
       });
 
       // get return url from route parameters or default to '/'
@@ -70,6 +70,13 @@ export class LoginModalComponent implements OnInit {
                   this.loading = false;
               });
   }
+
+  passwordHasAtLeastOneNumber(control: AbstractControl) { // here we have the 'passwords' group
+  let atLeastOneNum = new RegExp('.*[0-9].*');
+  let password = control.value;
+
+  return atLeastOneNum.test(password) ? null : { notAtLeastOneNumber: true };
+}
 
   start() {
     $('#loginModal').modal();
