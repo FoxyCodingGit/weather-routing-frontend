@@ -19,7 +19,7 @@ export class NavbarComponent implements OnInit {
       if (currentUser == null) {
         this.currentUsername = null;
       } else {
-        this.currentUsername = currentUser.username;
+        this.currentUsername = currentUser.userId;
       }
     });
   }

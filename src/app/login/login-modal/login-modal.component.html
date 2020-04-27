@@ -20,7 +20,6 @@
         </button>
       </div>
       <div class="modal-body">
-        <h2>Login</h2>
         <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
           <div class="form-group">
             <label for="username">Username</label>
@@ -28,13 +27,13 @@
               type="text"
               formControlName="username"
               class="form-control"
-              [ngClass]="{ 'is-invalid': submitted && f.username.errors }"
+              [ngClass]="{ 'is-invalid': submitted && formControls.username.errors }"
             />
             <div
-              *ngIf="submitted && f.username.errors"
+              *ngIf="submitted && formControls.username.errors"
               class="invalid-feedback"
             >
-              <div *ngIf="f.username.errors.required">Username is required</div>
+              <div *ngIf="formControls.username.errors.required">Username is required</div>
             </div>
           </div>
           <div class="form-group">
@@ -43,26 +42,26 @@
               type="password"
               formControlName="password"
               class="form-control"
-              [ngClass]="{ 'is-invalid': submitted && f.password.errors }"
+              [ngClass]="{ 'is-invalid': submitted && formControls.password.errors }"
             />
             <div
-              *ngIf="submitted && f.password.errors"
+              *ngIf="submitted && formControls.password.errors"
               class="invalid-feedback"
             >
-              <div *ngIf="f.password.errors.required">Password is required</div>
-              <div *ngIf="f.password.errors.minlength">Password has to be at least 8 characters long</div>
-              <div *ngIf="f.password.errors.notAtLeastOneNumber">Password needs at least one number</div>
+              <div *ngIf="formControls.password.errors.required">Password is required</div>
+              <div *ngIf="formControls.password.errors.minlength">Password has to be at least 8 characters long</div>
+              <div *ngIf="formControls.password.errors.notAtLeastOneNumber">Password needs at least one number</div>
             </div>
           </div>
-          <div class="form-group">
-            <button [disabled]="loading" class="btn btn-primary">
+          <div class="form-group submitButtonPlacement">
+            <button type="submit" [disabled]="loading" class="btn btn-primary">
               <span
                 *ngIf="loading"
                 class="spinner-border spinner-border-sm mr-1"
               ></span>
               Login
             </button>
-            <a routerLink="/register" class="btn btn-link">Register</a>
+            Register? <input type="checkbox" [(ngModel)]="registerUserOnSubmit" class="btn btn-link" [ngModelOptions]="{standalone: true}">
           </div>
         </form>
       </div>

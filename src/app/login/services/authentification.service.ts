@@ -1,41 +1,60 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { User } from '../user';
+import { UserToken } from 'src/app/shared/Models/UserToken';
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService {
 
   private baseURL = 'https://localhost:44338/user'; // move this to confgi
-
-    private currentUserSubject: BehaviorSubject<User>;
-    public currentUser: Observable<User>;
+    private currentUserSubject: BehaviorSubject<UserToken>;
+    public currentUser: Observable<UserToken>;
 
     constructor(private http: HttpClient) {
-        this.currentUserSubject = new BehaviorSubject<User>(JSON.parse(localStorage.getItem('currentUser')));
+        this.currentUserSubject = new BehaviorSubject<UserToken>(JSON.parse(localStorage.getItem('currentUser')));
         this.currentUser = this.currentUserSubject.asObservable();
     }
 
-    public get currentUserValue(): User {
+    public getAuthorisedRequestOptions() {
+        const currentUser: UserToken = JSON.parse(localStorage.getItem('currentUser'));
+        return {
+          headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Authorization': `Bearer ${currentUser.token}`
+          })
+        };
+      }
+
+    public get currentUserValue(): UserToken {
         return this.currentUserSubject.value;
     }
 
-    login(username: string, password: string): Observable<User> {
-        return this.http.post<string>(`${this.baseURL}/login`, { UserId: username, password })
+    public login(userId: string, password: string): Observable<UserToken> {
+        return this.getUsertoken('login', userId, password);
+    }
+
+    public logout() {
+        localStorage.removeItem('currentUser');
+        this.currentUserSubject.next(null);
+    }
+
+    public register(userId: string, password: string) {
+        return this.getUsertoken('register', userId, password);
+    }
+
+    public getUsertoken(urlAddition: string, userId: string, password: string): Observable<UserToken> {
+        return this.http.post<string>(`${this.baseURL}/${urlAddition}`, {userId, password })
             .pipe(map(token => {
-                const user: User = {
-                    username,
+                const user: UserToken = {
+                    userId,
                     token
                 };
                 localStorage.setItem('currentUser', JSON.stringify(user));
                 this.currentUserSubject.next(user);
                 return user;
             }));
-    }
-
-    logout() {
-        localStorage.removeItem('currentUser');
-        this.currentUserSubject.next(null);
     }
 }

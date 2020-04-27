@@ -1,15 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { first } from 'rxjs/operators';
-import { AuthenticationService } from '../services/authentification.service';
-import { AlertService } from 'src/app/shared/alert.service';
-import { RoutingService } from 'src/app/shared/routing.service';
+import { Component, OnInit } from "@angular/core";
+import { Router, ActivatedRoute } from "@angular/router";
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  AbstractControl,
+} from "@angular/forms";
+import { first } from "rxjs/operators";
+import { AuthenticationService } from "../services/authentification.service";
+import { AlertService } from "src/app/shared/alert.service";
+import { RoutingService } from "src/app/shared/routing.service";
 
 @Component({
-  selector: 'app-login-modal',
-  templateUrl: './login-modal.component.html',
-  styleUrls: ['./login-modal.component.scss']
+  selector: "app-login-modal",
+  templateUrl: "./login-modal.component.html",
+  styleUrls: ["./login-modal.component.scss"],
 })
 export class LoginModalComponent implements OnInit {
   loginForm: FormGroup;
@@ -17,66 +22,87 @@ export class LoginModalComponent implements OnInit {
   submitted = false;
   returnUrl: string;
 
+  public registerUserOnSubmit = false;
+
   constructor(
-      private formBuilder: FormBuilder,
-      private route: ActivatedRoute,
-      private router: Router,
-      private authenticationService: AuthenticationService,
-      private alertService: AlertService,
-      private routingService: RoutingService
-  ) {
-      // redirect to home if already logged in
-      if (this.authenticationService.currentUserValue) {
-          this.router.navigate(['/']);
-      }
-  }
+    private formBuilder: FormBuilder,
+    private authenticationService: AuthenticationService,
+    private alertService: AlertService,
+    private routingService: RoutingService
+  ) { }
 
   ngOnInit() {
-      this.loginForm = this.formBuilder.group({
-          username: ['', Validators.required],
-          password: ['', [Validators.required, Validators.minLength(8), this.passwordHasAtLeastOneNumber]]
-      });
-
-      // get return url from route parameters or default to '/'
-      this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    this.loginForm = this.formBuilder.group({
+      username: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(8), this.passwordHasAtLeastOneNumber]],
+    });
   }
 
-  // convenience getter for easy access to form fields
-  get f() { return this.loginForm.controls; }
+  get formControls() {
+    return this.loginForm.controls;
+  }
 
   onSubmit() {
-      this.submitted = true;
+    this.submitted = true;
 
-      // reset alerts on submit
-      //this.alertService.clear();
+    if (this.loginForm.invalid) {
+      return;
+    }
 
-      // stop here if form is invalid
-      if (this.loginForm.invalid) {
-          return;
-      }
+    this.loading = true;
 
-      this.loading = true;
-      this.authenticationService.login(this.f.username.value, this.f.password.value)
-          .pipe(first())
-          .subscribe(
-              data => {
-                  //this.router.navigate([this.returnUrl]);
-                  this.loading = false;
-                  $('#loginModal').modal('hide');
-                  this.routingService.applyUserDefinedRoutes();
-              },
-              error => {
-                  this.alertService.error(error);
-                  this.loading = false;
-              });
+    if (this.registerUserOnSubmit) {
+      this.authenticationService
+        .register(this.formControls.username.value, this.formControls.password.value)
+        .pipe(first())
+        .subscribe(
+          (data) => {
+            this.loginPerformed();
+          },
+          (error) => {
+            this.alertService.error(error);
+            this.loading = false;
+          }
+        );
+    } else {
+      this.authenticationService
+        .login(this.formControls.username.value, this.formControls.password.value)
+        .pipe(first())
+        .subscribe(
+          (data) => {
+            this.loginPerformed();
+          },
+          (error) => {
+            this.alertService.error(error);
+            this.loading = false;
+          }
+        );
+    }
   }
 
-  passwordHasAtLeastOneNumber(control: AbstractControl) { // here we have the 'passwords' group
-  let atLeastOneNum = new RegExp('.*[0-9].*');
-  let password = control.value;
+  public passwordHasAtLeastOneNumber(control: AbstractControl) {
+    let atLeastOneNum = new RegExp('.*[0-9].*');
+    let password = control.value;
 
-  return atLeastOneNum.test(password) ? null : { notAtLeastOneNumber: true };
-}
+    return atLeastOneNum.test(password) ? null : { notAtLeastOneNumber: true };
+  }
+
+  private loginPerformed() {
+    $('#loginModal').modal('hide');
+    this.routingService.applyUserDefinedRoutes();
+    this.loading = false;
+    this.clearModal();
+  }
+
+  private clearModal() {
+    this.loginForm.reset();
+    this.submitted = false;
+    this.registerUserOnSubmit = false;
+
+    for (let name of Object.keys(this.loginForm.controls)) {
+        this.formControls[name].setErrors(null);
+    }
+  }
 
   start() {
     $('#loginModal').modal();

@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { RouteFromAPI } from '../map/Model/RouteFromAPI';
-import { User } from '../login/user';
 import { ReadableUserDefinedRoute } from './Models/ReadableUserDefinedRoute';
 import { RouteInformation } from '../map/Model/RouteInformation';
 import { UserDefinedRoute } from './Models/UserDefinedRoute';
@@ -14,6 +13,7 @@ import { TravelMode } from './Models/travelMode';
 import { Location } from '../shared/Models/Elevation/Location';
 import { ElevationResponse } from './Models/Elevation/ElevationResponse';
 import { WeatherPoint } from '../map/Model/weatherPoint';
+import { AuthenticationService } from '../login/services/authentification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +38,7 @@ export class RoutingService {
   private baseURL = 'https://localhost:44338/routing';
   private userDefinedBaseURL = 'https://localhost:44338/api/UserDefinedRoute'; // TODO: on backend need to change the url.
 
-  constructor(private http: HttpClient, private weatherService: WeatherService, private alertService: AlertService) { }
+  constructor(private http: HttpClient, private weatherService: WeatherService, private alertService: AlertService, private authenticationService: AuthenticationService) { }
 
   public getRouteAndWeatherInformation(): RouteAndWeatherInformation[] {
     return this.routeAndWeatherInformation;
@@ -80,56 +80,20 @@ export class RoutingService {
 
   public GetReadableUserDefinedRoutes(): Observable<ReadableUserDefinedRoute[]> {
     const url = `${this.userDefinedBaseURL}/get/readable`;
-
-    const currentUser: User = JSON.parse(localStorage.getItem('currentUser'));
-
-    const requestOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Authorization': `Bearer ${currentUser.token}`
-      })
-    };
-
-    return this.http.get<ReadableUserDefinedRoute[]>(url, requestOptions);
+    return this.http.get<ReadableUserDefinedRoute[]>(url, this.authenticationService.getAuthorisedRequestOptions());
   }
 
   public createUserDefinedRoute(routeInformation: RouteInformation): Observable<UserDefinedRoute> { // harcoding pedestrian in the stor proc executing code.
     const startCoords = routeInformation.route.getPath().getArray()[0];
     const endCoords = routeInformation.route.getPath().getArray()[routeInformation.route.getPath().getArray().length - 1];
 
-    const url = `${this.userDefinedBaseURL}/create/${routeInformation.name}/Pedestrian/${startCoords.lat()}/${startCoords.lng()}/${endCoords.lat()}/${endCoords.lng()}`;
-
-    const currentUser: User = JSON.parse(localStorage.getItem('currentUser'));
-
-    const requestOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Authorization': `Bearer ${currentUser.token}`
-      })
-    };
-
-    return this.http.get<UserDefinedRoute>(url, requestOptions);
+    const url = `${this.userDefinedBaseURL}/create/${routeInformation.name}/${routeInformation.travelMode}/${startCoords.lat()}/${startCoords.lng()}/${endCoords.lat()}/${endCoords.lng()}`;
+    return this.http.get<UserDefinedRoute>(url, this.authenticationService.getAuthorisedRequestOptions());
   }
 
   public deleteUserDefinedRouteOnDB(databaseRouteId: string): Observable<UserDefinedRoute> { // harcoding pedestrian in the stor proc executing code.
     const url = `${this.userDefinedBaseURL}/delete/${databaseRouteId}`;
-
-    const currentUser: User = JSON.parse(localStorage.getItem('currentUser'));
-
-    const requestOptions = {
-      headers: new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Authorization': `Bearer ${currentUser.token}`
-      })
-    };
-
-    return this.http.get<UserDefinedRoute>(url, requestOptions);
+    return this.http.get<UserDefinedRoute>(url, this.authenticationService.getAuthorisedRequestOptions());
   }
 
   public async applyUserDefinedRoutes() {

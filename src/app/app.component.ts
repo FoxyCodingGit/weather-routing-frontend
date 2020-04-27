@@ -7,9 +7,9 @@ import { WeatherService } from './shared/weather.service';
 import { ModalComponent } from './modal/modal.component';
 import { LoginModalComponent } from './login/login-modal/login-modal.component';
 import { AuthenticationService } from './login/services/authentification.service';
-import { User } from './login/user';
 import { RoutingService } from './shared/routing.service';
 import { HighlightState, LocationType } from './shared/Models/HighLightState';
+import { UserToken } from './shared/Models/UserToken';
 
 @Component({
   selector: 'app-root',
@@ -34,7 +34,7 @@ export class AppComponent implements OnInit {
   @ViewChild(ModalComponent, {static: false}) modal: ModalComponent;
   @ViewChild(LoginModalComponent, {static: false} ) loginModal: LoginModalComponent;
 
-  private currentUser: User;
+  private currentUser: UserToken;
 
   title = 'WeatherRoutingFrontend';
 
@@ -109,7 +109,7 @@ export class AppComponent implements OnInit {
       return;
     }
 
-    if (tt.location == LocationType.STARTING_LOCATION) {
+    if (tt.location === LocationType.STARTING_LOCATION) {
       this.map.isStartHighlightedToBeClickable = true;
       this.map.isDestinationHighlightedToBeClickable = false;
       this.routeCreation.isDestinationClickableFocused = false;
