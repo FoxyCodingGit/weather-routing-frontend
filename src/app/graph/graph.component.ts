@@ -126,13 +126,7 @@ export class GraphComponent {
         return i;
       }
     }
-
-    elevationDistances.forEach(elevationDistance => {
-      if (elevationDistance >= currentDistance) {
-        return elevationDistance;
-      }
-    });
-    return
+    return elevationDistances.length - 1; // this means distance does not match up and current distance is past last elevation recorded distance. stil works as later percentage greater than 1 so no worries as there is no "next" one.
   }
 
   private generateLabelsForDepartureTimes() { // make dynamic
