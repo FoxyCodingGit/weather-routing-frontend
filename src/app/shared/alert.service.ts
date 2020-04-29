@@ -6,23 +6,23 @@ import { Alert, AlertType } from './Models/alert';
   providedIn: 'root'
 })
 export class AlertService {
-  private subject = new Subject<Alert>(); // type??
+  private alertSubject = new Subject<Alert>();
 
   constructor() { }
 
-  getAlert(): Observable<Alert> {
-    return this.subject.asObservable();
+  getAlertObservable(): Observable<Alert> {
+    return this.alertSubject.asObservable();
   }
 
   success(header: string, message: string) {
-    this.subject.next({ type: AlertType.SUCCESS, header, message });
+    this.alertSubject.next({ type: AlertType.SUCCESS, header, message, cssClass: 'alert alert-success alert-dismissible fade show' });
   }
 
   warning(header: string, message: string) {
-    this.subject.next({ type: AlertType.WARNING, header, message });
+    this.alertSubject.next({ type: AlertType.WARNING, header, message, cssClass: 'alert alert-warning alert-dismissible fade show' });
   }
 
   error(header: string, message: string) {
-    this.subject.next({ type: AlertType.ERROR, header, message });
+    this.alertSubject.next({ type: AlertType.ERROR, header, message, cssClass: 'alert alert-danger alert-dismissible fade show' });
   }
 }
