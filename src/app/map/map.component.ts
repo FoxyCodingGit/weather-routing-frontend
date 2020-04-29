@@ -407,11 +407,6 @@ export class MapComponent implements OnInit {
     marker = null;
   }
 
-  private isCurrentlyHighlighted(hello: google.maps.Polyline): boolean {
-    if (hello.get('strokeWeight') === this.highlighedStrokeWeight) { return true; }
-    return false;
-  }
-
   private generateMap() {
     const mapProperties = {
       center: new google.maps.LatLng(55.586698, -1.909815),
