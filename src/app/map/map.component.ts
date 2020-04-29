@@ -17,6 +17,8 @@ import { ElevationInfoComponent } from '../elevation-info/elevation-info.compone
   styleUrls: ['./map.component.scss']
 })
 export class MapComponent implements OnInit {
+
+  constructor(private assetService: AssetService, private routingService: RoutingService) { }
   @ViewChild(ElevationInfoComponent, {static: false}) elevationInfo: ElevationInfoComponent;
   @ViewChild('elevation', {static: false}) elevationGraph: GraphComponent;
 
@@ -51,11 +53,12 @@ export class MapComponent implements OnInit {
 
   public showElevation = false;
 
-  constructor(private assetService: AssetService, private routingService: RoutingService) { }
+  private readonly defaultMapCenter = {lat: 52.372501, lng: -1.224401};
+  private userLocation: { lat: any; lng: any; };
 
   ngOnInit(): void {
     this.generateMap();
-    this.displayUserLocation();
+    this.focusOnUserLocation();
   }
 
   public displayElevation(routeInfo: RouteInformation): void {
@@ -409,8 +412,10 @@ export class MapComponent implements OnInit {
 
   private generateMap() {
     const mapProperties = {
-      center: new google.maps.LatLng(55.586698, -1.909815),
-      zoom: 15
+      center: (this.userLocation == null)
+        ? new google.maps.LatLng(this.defaultMapCenter.lat, this.defaultMapCenter.lng)
+        : new google.maps.LatLng(this.userLocation.lat, this.userLocation.lng),
+      zoom: 8
     };
     this.map = new google.maps.Map(document.getElementById('map'), mapProperties);
 
@@ -435,24 +440,27 @@ export class MapComponent implements OnInit {
     this.routeMarkers.push({ routeId: routeId, marker: endMarker });
   }
 
-  private displayUserLocation(): void {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        var pos = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        };
-        this.userMarker = new google.maps.Marker({
-          map: this.map,
-          position: { lat: pos.lat, lng: pos.lng },
-          icon: {
-            url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png"
-          }
-        });
-      });
-    } else {
-      alert('Permission of location has not been granted.');
-    }
+  private async focusOnUserLocation() {
+    navigator.geolocation.getCurrentPosition((position) => {
+      this.userLocation = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+
+      this.map.setCenter(new google.maps.LatLng({lat: this.userLocation.lat, lng: this.userLocation.lng}));
+      this.map.setZoom(16);
+      this.addUserMarker(this.userLocation);
+    });
+  }
+
+  private addUserMarker(userLocation: any) {
+    this.userMarker = new google.maps.Marker({
+      map: this.map,
+      position: { lat: userLocation.lat, lng: userLocation.lng },
+      icon: {
+        url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png"
+      }
+    });
   }
 
   private removeAllRouteInformationGUI() { // TODO: Test maybe?
