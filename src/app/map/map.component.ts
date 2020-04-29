@@ -19,7 +19,7 @@ import { ElevationInfoComponent } from '../elevation-info/elevation-info.compone
 export class MapComponent implements OnInit {
   @ViewChild(ElevationInfoComponent, {static: false}) elevationInfo: ElevationInfoComponent;
   @ViewChild('elevation', {static: false}) elevationGraph: GraphComponent;
-  
+
   @Output() mapClicked: EventEmitter<any> = new EventEmitter();
 
   private map: google.maps.Map;
@@ -34,20 +34,22 @@ export class MapComponent implements OnInit {
   public weatherMarkerVisibilities = true;
   public rainIndicatorVisibilities = true;
 
-  private routePolylines: RoutePolyline[] = []; 
+  private routePolylines: RoutePolyline[] = [];
   private routeMarkers: RouteMarker[] = [];
   private rainIndicators: RoutRainIndicators[] = [];
 
   public isStartHighlightedToBeClickable: boolean = false;
   public isDestinationHighlightedToBeClickable: boolean = false;
 
-  private focusedElevationPointIndicator: google.maps.Polyline;
-  private currentlyFocusedDistanceOfHighlightedElevation: number;  
-  public currentlyFocusedRouteId: number; 
+  public currentlyFocusedRouteId: number;
 
+  private focusedElevationPointIndicator: google.maps.Polyline;
+  private focusedElevationPointIndicatorDistance: number;
   private elevationInclineOrDeclinePolylines: google.maps.Polyline[] = [];
   private greatestInclinePolyline: google.maps.Polyline;
   private greatestInclineOverDistancePolyline: google.maps.Polyline;
+
+  public showElevation = false;
 
   constructor(private assetService: AssetService, private routingService: RoutingService) { }
 
@@ -57,6 +59,7 @@ export class MapComponent implements OnInit {
   }
 
   public displayElevation(routeInfo: RouteInformation): void {
+    this.showElevation = true;
     this.elevationGraph.graphElevation(routeInfo);
     this.elevationInfo.populateData(routeInfo.elevationInfo, routeInfo.distance, routeInfo.travelMode);
   }
@@ -102,13 +105,13 @@ export class MapComponent implements OnInit {
   }
 
   private calculateQuickRainCircleColourRadius(intensity: number): number {
-    let baseSize = 50;
-    let lowestRainIntensity = 0.01;
+    const baseSize = 50;
+    const lowestRainIntensity = 0.01;
 
     if (intensity < lowestRainIntensity) {
       return 0;
     } else {
-      return baseSize + (intensity * (150 / 8))  // if biggest 8 want size of 150 so max radiusn is 200 
+      return baseSize + (intensity * (150 / 8)); // if biggest 8 want size of 150 so max radiusn is 200 
     }
   }
 
@@ -122,7 +125,7 @@ export class MapComponent implements OnInit {
 
   public addRouteToMap(route: RouteAndWeatherInformation) {
     this.placeStartEndMarkers(route.routeInformation.id, route.routeInformation.route.getPath().getArray());
-    
+
     this.routePolylines.push({ routeId: route.routeInformation.id, polyline: route.routeInformation.route });
     route.routeInformation.route.setMap(this.map);
 
@@ -130,24 +133,30 @@ export class MapComponent implements OnInit {
     this.placeRainIndicatorsAtWeatherPoints(route);
   }
 
-  public highlightSelectedRoute(routeId: any, routeInfo: RouteInformation) {
-    if (routeId === routeInfo.id) {
-      if (this.isCurrentlyHighlighted(routeInfo.route)) {
-        routeInfo.route.setOptions({ strokeWeight: this.unhighlighedStrokeWeight });
-      } else {
-        routeInfo.route.setOptions({ strokeWeight: this.highlighedStrokeWeight });
-        this.map.fitBounds(routeInfo.bounds);
-      }
-    } else {
-      routeInfo.route.setOptions({ strokeWeight: this.unhighlighedStrokeWeight });
+  public setHighlightStateOfAllRoutes(focusedRouteId: number, isHighlighting: boolean): void {
+    const routes = this.routingService.getRouteInformation();
+
+    if (!isHighlighting) {
+      this.unhighlightAllRoutes(routes);
+      this.removeAllElevationGUIElements();
+      return;
     }
+
+    routes.forEach(route => {
+      if (focusedRouteId === route.id) {
+        route.route.setOptions({ strokeWeight: this.highlighedStrokeWeight });
+        this.map.fitBounds(route.bounds);
+      } else {
+        route.route.setOptions({ strokeWeight: this.unhighlighedStrokeWeight });
+      }
+    });
   }
 
   public placeFocusedStartOrEndMarkers(latLng: google.maps.LatLng, isStartFocused: boolean) {
     if (isStartFocused) {
       if (this.focusedStartMarker !== undefined) {
         this.deleteMarker(this.focusedStartMarker);
-      }      
+      }
 
       this.focusedStartMarker = new google.maps.Marker({position: latLng, map: this.map, 
         icon: {
@@ -158,7 +167,7 @@ export class MapComponent implements OnInit {
       if (this.focusedEndMarker !== undefined) {
         this.deleteMarker(this.focusedEndMarker);
       }
-            
+
       this.focusedEndMarker = new google.maps.Marker({position: latLng, map: this.map, 
         icon: {
         url:  this.assetService.focusedEndMarkerFile
@@ -171,6 +180,13 @@ export class MapComponent implements OnInit {
     this.removeRoutePolyline(routeId);
     this.removeMarkers(routeId);
     this.removeRainIndicators(routeId);
+    this.removeElevationInfo(routeId);
+    this.showElevation = false;
+  }
+
+  public removeAllRouteUI() {
+    this.removeAllRouteInformationGUI();
+    this.removeAllElevationGUIElements();
   }
 
   public mapFocusedElevation(distanceOfHighlightedElevation: number) {
@@ -178,8 +194,8 @@ export class MapComponent implements OnInit {
       return;
     }
 
-    this.currentlyFocusedDistanceOfHighlightedElevation = distanceOfHighlightedElevation;
-    this.hideCurrentElevationHiglight();
+    this.focusedElevationPointIndicatorDistance = distanceOfHighlightedElevation;
+    this.removeCurrentElevationPointIndictor();
     this.focusedElevationPointIndicator = this.createElevationIndicatorElement(distanceOfHighlightedElevation, this.routingService.getRouteAndWeatherInformationById(this.currentlyFocusedRouteId));
   }
 
@@ -228,8 +244,16 @@ export class MapComponent implements OnInit {
     this.greatestInclineOverDistancePolyline = this.createInclinePolyline(path);
   }
 
+  private removeAllElevationGUIElements() {
+    this.removeElevationInclineOrDeclinePolylines();
+    this.removeMaxInclinePolyline();
+    this.removeInclineOverDistancePolyline();
+    this.removeCurrentElevationPointIndictor();
+    this.showElevation = false;
+  }
+
   public removeElevationInclineOrDeclinePolylines() {
-    if (this.elevationInclineOrDeclinePolylines.length == 0) {
+    if (this.elevationInclineOrDeclinePolylines.length === 0) {
       return;
     }
 
@@ -256,10 +280,10 @@ export class MapComponent implements OnInit {
     this.greatestInclineOverDistancePolyline.setVisible(false);
     this.greatestInclineOverDistancePolyline = null;
   }
-  
+
   private createInclineDeclinePolyline(path: google.maps.LatLng[], isIncline: boolean): google.maps.Polyline {
     return new google.maps.Polyline({
-      path: path,
+      path,
       geodesic: true,
       strokeColor: (isIncline) ? "rgb(255,0,0)" : "rgb(0,255,0)",
       strokeOpacity: 1.0,
@@ -270,7 +294,7 @@ export class MapComponent implements OnInit {
 
   private createInclinePolyline(path: google.maps.LatLng[]) {
     return new google.maps.Polyline({
-      path: path,
+      path,
       geodesic: true,
       strokeColor: "rgb(0,0,0)",
       strokeOpacity: 1.0,
@@ -278,13 +302,54 @@ export class MapComponent implements OnInit {
       map: this.map
     });
   }
-  
-  private hideCurrentElevationHiglight(): void {
-    if (this.focusedElevationPointIndicator != null) this.focusedElevationPointIndicator.setVisible(false);
+
+  private removeElevationInfo(routeId: number) {
+    if (this.currentlyFocusedRouteId === routeId) {
+
+      if (this.focusedElevationPointIndicator != null) {
+        this.focusedElevationPointIndicator.setVisible(false);
+        this.focusedElevationPointIndicator = null;
+      }
+
+      this.focusedElevationPointIndicatorDistance = null;
+
+      if (this.elevationInclineOrDeclinePolylines != null) {
+        this.elevationInclineOrDeclinePolylines.forEach(polyline => {
+          polyline.setVisible(false);
+        });
+        this.elevationInclineOrDeclinePolylines = [];
+      }
+
+
+      if (this.greatestInclinePolyline != null) {
+        this.greatestInclinePolyline.setVisible(false);
+        this.greatestInclinePolyline = null;
+      }
+
+      if (this.greatestInclineOverDistancePolyline != null) {
+        this.greatestInclineOverDistancePolyline.setVisible(false);
+        this.greatestInclineOverDistancePolyline = null;
+      }
+    }
+  }
+
+  private unhighlightAllRoutes(routes: RouteInformation[]) {
+    routes.forEach(route => {
+      route.route.setOptions({ strokeWeight: this.unhighlighedStrokeWeight });
+    });
+  }
+
+  private removeCurrentElevationPointIndictor(): void {
+    if (this.focusedElevationPointIndicator == null) {
+      return;
+    }
+
+    this.focusedElevationPointIndicator.setVisible(false);
+    this.focusedElevationPointIndicatorDistance = null;
   }
 
   private isElevationAlreadyHighlighted(distanceOfHighlightedElevation: number) {
-    return this.currentlyFocusedDistanceOfHighlightedElevation != null && this.currentlyFocusedDistanceOfHighlightedElevation == distanceOfHighlightedElevation;
+    return this.focusedElevationPointIndicatorDistance != null && this.focusedElevationPointIndicatorDistance == distanceOfHighlightedElevation;
   }
 
   private createRainIndicatorElement(thisRoute: RouteAndWeatherInformation, weatherPointIndex: number, focusedrainintensity: number) {
@@ -392,6 +457,31 @@ export class MapComponent implements OnInit {
       });
     } else {
       alert('Permission of location has not been granted.');
+    }
+  }
+
+  private removeAllRouteInformationGUI() { // TODO: Test maybe?
+    this.routePolylines.forEach(element => {
+      element.polyline.setVisible(false);
+    });
+    this.routePolylines = [];
+
+    this.routeMarkers.forEach(element => {
+      element.marker.setVisible(false);
+    });
+    this.routeMarkers = [];
+
+    this.rainIndicators.forEach(element => {
+      element.rainIndicator.setVisible(false);
+    });
+    this.rainIndicators = [];
+
+    if (this.focusedStartMarker != null) {
+      this.deleteMarker(this.focusedStartMarker);
+    }
+
+    if (this.focusedEndMarker != null) {
+      this.deleteMarker(this.focusedEndMarker);
     }
   }
 }

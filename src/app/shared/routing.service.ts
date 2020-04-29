@@ -44,6 +44,21 @@ export class RoutingService {
     return this.routeAndWeatherInformation;
   }
 
+  public getRouteInformation(): RouteInformation[] {
+    let routeInformation: RouteInformation[] = [];
+
+    this.routeAndWeatherInformation.forEach(element => {
+      routeInformation.push(element.routeInformation);
+    });
+
+    return routeInformation;
+  }
+
+  public clearAllSavedRouteAndWeatherInformation(): void {
+    this.routeAndWeatherInformation = [];
+    RoutingService.routeId = 0;
+  }
+
   public getRouteAndWeatherInformationById(routeId: number): RouteAndWeatherInformation {
     let routeInfo: RouteAndWeatherInformation;
 

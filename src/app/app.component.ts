@@ -10,6 +10,7 @@ import { AuthenticationService } from './login/services/authentification.service
 import { RoutingService } from './shared/routing.service';
 import { HighlightState, LocationType } from './shared/Models/HighLightState';
 import { UserToken } from './shared/Models/UserToken';
+import { RouteSelectedState } from './shared/Models/RouteSelectedState';
 
 @Component({
   selector: 'app-root',
@@ -78,16 +79,14 @@ export class AppComponent implements OnInit {
     this.routeCreation.isDestinationClickableFocused = false;
   }
 
-  public rowSelected(routeIdFocused: number): void {
-    this.map.currentlyFocusedRouteId = routeIdFocused;
-    
-    this.routingService.getRouteAndWeatherInformation().forEach(routeAndWeatherInfo => {
-      this.map.highlightSelectedRoute(routeIdFocused, routeAndWeatherInfo.routeInformation);
+  public rowSelected(routeSelectedState: RouteSelectedState): void {
+    this.map.currentlyFocusedRouteId = (routeSelectedState.isHighlightedRow) ? routeSelectedState.focusedRouteId : null;
+    this.map.setHighlightStateOfAllRoutes(routeSelectedState.focusedRouteId, routeSelectedState.isHighlightedRow);
 
-      if (routeAndWeatherInfo.routeInformation.id == routeIdFocused) {
-        this.map.displayElevation(routeAndWeatherInfo.routeInformation);
-      }
-    });
+    this.map.showElevation = routeSelectedState.isHighlightedRow;
+    if (routeSelectedState.isHighlightedRow) {
+      this.map.displayElevation(this.routingService.getRouteAndWeatherInformationById(routeSelectedState.focusedRouteId).routeInformation);
+    }
   }
 
   public routeInfoButtonPressed(routeId: number): void {
@@ -100,6 +99,9 @@ export class AppComponent implements OnInit {
 
   public logOut(): void {
     this.authenticationService.logout();
+    this.map.removeAllRouteUI();
+    this.routeTable.clearTable();
+    this.routingService.clearAllSavedRouteAndWeatherInformation();
   }
 
   public updateLocationMarkerHighlightable(tt: HighlightState) {

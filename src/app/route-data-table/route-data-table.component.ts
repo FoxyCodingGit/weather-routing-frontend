@@ -4,6 +4,7 @@ import 'datatables.net';
 import { RouteInformation } from '../map/Model/RouteInformation';
 import { Subject, Observable } from 'rxjs';
 import { RoutingService } from '../shared/routing.service';
+import { RouteSelectedState } from '../shared/Models/RouteSelectedState';
 
 @Component({
   selector: 'app-route-data-table',
@@ -11,11 +12,11 @@ import { RoutingService } from '../shared/routing.service';
   styleUrls: ['./route-data-table.component.scss']
 })
 export class RouteDataTableComponent implements OnInit {
-  @Output() SelectRowAction: EventEmitter<number> = new EventEmitter();
+  @Output() SelectRowAction: EventEmitter<RouteSelectedState> = new EventEmitter();
   @Output() routeInfoButtonPressed: EventEmitter<number> = new EventEmitter();
-  @Output() routeCreationComplete: EventEmitter<void> = new EventEmitter(); 
-  @Output() routeDeleted: EventEmitter<number> = new EventEmitter(); 
-  
+  @Output() routeCreationComplete: EventEmitter<void> = new EventEmitter();
+  @Output() routeDeleted: EventEmitter<number> = new EventEmitter();
+
   private favouritePressedSubject = new Subject<number>(); // This can be removed as there is no need for subject. Can just use code directly on favbuttonpressed
 
   constructor(private routingService: RoutingService) { }
@@ -38,7 +39,7 @@ export class RouteDataTableComponent implements OnInit {
 
   private async deleteFromDB(routeId: number) {
     await this.routingService.deleteUserDefinedRouteOnDB(this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.databaseRouteId).toPromise().then(
-      async (result) => {
+      (result) => {
         this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.isFavourite = false;
         this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.databaseRouteId = null;
       }
@@ -47,7 +48,7 @@ export class RouteDataTableComponent implements OnInit {
 
   private async addToDB(routeId: number) {
     await this.routingService.createUserDefinedRoute(this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation).toPromise().then(
-      async (result) => {
+      (result) => {
         this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.isFavourite = true;
         this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.databaseRouteId = result.routeId.toString();
       }
@@ -57,9 +58,9 @@ export class RouteDataTableComponent implements OnInit {
   ngOnInit() {
     this.getFavouriteObserver().subscribe(
       async (routeId) => {
-        if (this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.isFavourite) await this.deleteFromDB(routeId);
-        else await this.addToDB(routeId);
-        
+        if (this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.isFavourite) { await this.deleteFromDB(routeId); }
+        else { await this.addToDB(routeId); }
+
         this.changeFavouriteStatus(routeId);
     });
 
@@ -90,17 +91,18 @@ export class RouteDataTableComponent implements OnInit {
     let that = this;
 
     const selectRowFunc = function() {
-      let selectRowOutcome = true;
+      let isHighlightingRow: boolean;
 
       if ($(this).hasClass('selected')) {
         $(this).removeClass('selected');
-        selectRowOutcome = false;
+        isHighlightingRow = false;
       } else {
         table.$('tr.selected').removeClass('selected');
         $(this).addClass('selected');
+        isHighlightingRow = true;
       }
 
-      componentScope.SelectRowAction.emit(table.row(this).data()[0]);
+      componentScope.SelectRowAction.emit({ focusedRouteId: table.row(this).data()[0], isHighlightedRow: isHighlightingRow });
     };
 
     that = this;
@@ -126,10 +128,8 @@ export class RouteDataTableComponent implements OnInit {
     $('#table_id').on('click', 'tr', selectRowFunc);
   }
 
-  private removeRouteEntirely(routeId: number): void {
-    this.deleteFromDB(routeId);
-    this.routingService.removeRouteAndWeatherInformationOfrouteId(routeId);
-    this.routeDeleted.emit(routeId);
+  public clearTable(): void {
+    $('#table_id').DataTable().clear().draw();
   }
 
   public addRouteToTable(routeInformation: RouteInformation, overallScores: string[]) {
@@ -165,6 +165,15 @@ export class RouteDataTableComponent implements OnInit {
     this.routeInfoButtonPressed.emit(routeId);
   }
 
+  private removeRouteEntirely(routeId: number): void {
+    if (this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.databaseRouteId != null) {
+      this.deleteFromDB(routeId);
+    }
+
+    this.routingService.removeRouteAndWeatherInformationOfrouteId(routeId);
+    this.routeDeleted.emit(routeId);
+  }
+
   private favouriteClicked(routeId: number) {
     this.favouritePressedSubject.next(routeId);
   }
@@ -185,30 +194,32 @@ export class RouteDataTableComponent implements OnInit {
     return iconNames;
   }
 
-  public selectRowByRouteId(routeId: number) {
-    const table = $('#table_id').DataTable();
-    //table.$('tr.selected').removeClass('selected');
+  public selectRowByRouteId(routeId: number) { // TODO: DOESNT WORK CLICKING ON ROUTE IN GUI TO SELECT ON MAP
+    // const table = $('#table_id').DataTable();
+    // //table.$('tr.selected').removeClass('selected');
 
-    let rowIsSelected = false;
+    // let rowIsSelected = false;
 
-    for (let i = 0; i < table.rows().count(); i++) { // check count
+    // for (let i = 0; i < table.rows().count(); i++) { // check count
 
-      const focusedRouteId = table.row(i).data()[0];
+    //   const focusedRouteId = table.row(i).data()[0];
 
-      let node = $(table.row(i).node());
+    //   let node = $(table.row(i).node());
 
-      if (routeId === focusedRouteId) {
-        if (node.hasClass('selected')) {
-          node.removeClass('selected');
-        } else {
-          node.addClass('selected');
-          rowIsSelected = true;
-        }
-      } else {
-        node.removeClass('selected');
-      }
-    }
+    //   let isHighlightingRow: boolean;
 
-    this.SelectRowAction.emit(routeId); // emitting whats passed in. have to emit to update gui, not happy with solution.
+    //   if (routeId === focusedRouteId) {
+    //     if (node.hasClass('selected')) {
+    //       node.removeClass('selected');
+    //     } else {
+    //       node.addClass('selected');
+    //       rowIsSelected = true;
+    //     }
+    //   } else {
+    //     node.removeClass('selected');
+    //   }
+    // }
+
+    // this.SelectRowAction.emit(routeId); // emitting whats passed in. have to emit to update gui, not happy with solution.
   }
 }
