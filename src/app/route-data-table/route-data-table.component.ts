@@ -195,31 +195,28 @@ export class RouteDataTableComponent implements OnInit {
   }
 
   public selectRowByRouteId(routeId: number) { // TODO: DOESNT WORK CLICKING ON ROUTE IN GUI TO SELECT ON MAP
-    // const table = $('#table_id').DataTable();
-    // //table.$('tr.selected').removeClass('selected');
+    const table = $('#table_id').DataTable();
 
-    // let rowIsSelected = false;
+    let isHighlightingRow = false;
 
-    // for (let i = 0; i < table.rows().count(); i++) { // check count
+    for (let i = 0; i < table.rows().count(); i++) { // check count
 
-    //   const focusedRouteId = table.row(i).data()[0];
+      const focusedRouteId = table.row(i).data()[0];
 
-    //   let node = $(table.row(i).node());
+      let node = $(table.row(i).node());
 
-    //   let isHighlightingRow: boolean;
+      if (routeId === focusedRouteId) {
+        if (node.hasClass('selected')) {
+          node.removeClass('selected');
+        } else {
+          node.addClass('selected');
+          isHighlightingRow = true;
+        }
+      } else {
+        node.removeClass('selected');
+      }
+    }
 
-    //   if (routeId === focusedRouteId) {
-    //     if (node.hasClass('selected')) {
-    //       node.removeClass('selected');
-    //     } else {
-    //       node.addClass('selected');
-    //       rowIsSelected = true;
-    //     }
-    //   } else {
-    //     node.removeClass('selected');
-    //   }
-    // }
-
-    // this.SelectRowAction.emit(routeId); // emitting whats passed in. have to emit to update gui, not happy with solution.
+    this.SelectRowAction.emit({ focusedRouteId: routeId, isHighlightedRow: isHighlightingRow });
   }
 }
