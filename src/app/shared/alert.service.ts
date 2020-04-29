@@ -14,15 +14,15 @@ export class AlertService {
     return this.subject.asObservable();
   }
 
-  success(message: string) {
-    this.subject.next({ type: AlertType.SUCCESS, message: message });
+  success(header: string, message: string) {
+    this.subject.next({ type: AlertType.SUCCESS, header, message });
   }
-  
-  warning(message: string) {
-    this.subject.next({ type: AlertType.WARNING, message: message });
+
+  warning(header: string, message: string) {
+    this.subject.next({ type: AlertType.WARNING, header, message });
   }
-  
-  error(message: string) {
-    this.subject.next({ type: AlertType.ERROR, message: message });
+
+  error(header: string, message: string) {
+    this.subject.next({ type: AlertType.ERROR, header, message });
   }
 }

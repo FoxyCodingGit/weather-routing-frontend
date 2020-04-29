@@ -1,6 +1,6 @@
 <div *ngIf="alerts.length"> <!-- role amnd data-dismiss -->
     <div *ngFor="let alert of alerts" [ngClass]="alert.cssClass" role="alert">
-        <strong>Holy guacamole!</strong> {{alert.message}}
+        <strong>{{alert.header}}</strong> {{alert.message}}
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>

@@ -18,7 +18,7 @@ export class AlertComponent implements OnInit {
   ngOnInit() {
     this.subscription = this.alertService.getAlert()
     .subscribe(alert => {
-      let alertGUI: AlertGUI = new AlertGUI;
+      let alertGUI: AlertGUI = new AlertGUI();
 
       switch (alert.type) {
         case AlertType.SUCCESS:
@@ -33,9 +33,7 @@ export class AlertComponent implements OnInit {
       }
 
       alertGUI.message = alert.message;
-
-      console.log(alert.message);
-
+      alertGUI.header = alert.header;
       this.alerts.push(alertGUI);
     });
   }

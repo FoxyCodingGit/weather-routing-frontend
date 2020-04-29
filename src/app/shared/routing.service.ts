@@ -70,7 +70,7 @@ export class RoutingService {
       return routeInfo;
     }
 
-    this.alertService.error("Can't find route of id " + routeId + ". Returning first route in list.")
+    this.alertService.error("no route information for route of id " + routeId, "Returning first route in list")
     return this.routeAndWeatherInformation[0];
   }
 
@@ -130,7 +130,7 @@ export class RoutingService {
       for (let i = 0; i < newRoutesFormat.length; i++) {
         let newRoutes: RouteAndWeatherInformation[] = [];
         if (this.isRouteOverFourtyMinutes(newRoutesFormat[i].travelTimeInSeconds)) {
-          this.alertService.warning("Can't add route that takes longer than 40 minutes.");
+          this.alertService.warning("Can't add route that takes longer than 40 minutes.", "Weather data provider does not provide weather information after this timescale");
           this.routeCreationOnError.next();
         } else {
           await this.createRouteWithWeatherInfo(databaseRouteId, isFavourite, newRoutesFormat[i], routeName, travelMode).then(route => {
@@ -140,7 +140,7 @@ export class RoutingService {
         }
       }
     }, (error) => {
-      this.alertService.error("Creation of routes was unsuccessful. " + error.toString());
+      this.alertService.error("Creation of routes was unsuccessful", error.toString());
     });
   }
 

@@ -51,8 +51,22 @@ export class RouteCreationComponent implements OnInit {
   }
 
   public onRoutingSubmit(data: any) {
-    this.routeCreationLoading = true;
+    if ((this.startLat == null || this.startLng == null) && (this.endLat == null || this.endLng == null)) {
+      this.alertService.warning("can't create route", "No starting point or destination")
+      return;
+    }
 
+    if (this.startLat == null || this.startLng == null) {
+      this.alertService.warning("can't create route", "No starting point")
+      return;
+    }
+
+    if (this.endLat == null || this.endLng == null) {
+      this.alertService.warning("can't create route", "No destination")
+      return;
+    }
+
+    this.routeCreationLoading = true;
     this.routingService.alalalal(null, false, data.name, data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng);
   }
 
@@ -81,7 +95,7 @@ export class RouteCreationComponent implements OnInit {
       },
       reason => {
         this.startingPoint = this.calculatedStartLocation;
-        this.alertService.error(reason);
+        this.alertService.error("Could not get location name", reason);
       });
     } else {
       if (this.areAllLatLngValuesTheSame(this.endLat, this.lastFocusedEndLat, this.endLng, this.lastFocusedEndLng)) {
@@ -97,7 +111,7 @@ export class RouteCreationComponent implements OnInit {
       },
       reason => {
         this.destination = this.calculatedEndLocation;
-        this.alertService.error(reason);
+        this.alertService.error("Could not get location name", reason);
       });
     }
   }
@@ -140,7 +154,7 @@ export class RouteCreationComponent implements OnInit {
     },
       reason => { 
         newLocation = calculatedLocation;
-        this.alertService.error(reason);
+        this.alertService.error("could not place marker", reason);
     });
   }
 
