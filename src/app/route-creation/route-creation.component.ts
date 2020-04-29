@@ -17,12 +17,8 @@ export class RouteCreationComponent implements OnInit {
   @Output() searchForEnd: EventEmitter<any> = new EventEmitter();
 
   constructor(private routingService: RoutingService, private alertService: AlertService) { }
-  
-  ngOnInit(): void {
-    this.routingService.getRouteCreationOnError().subscribe(() => {this.routeCreationLoading = false});
-  }
 
-  public canClickMapForMarker: boolean = false;
+  public canClickMapForMarker = false;
 
   public showStartLatLng = false;
   public showEndLatLng = false;
@@ -36,19 +32,23 @@ export class RouteCreationComponent implements OnInit {
   public defaultRouteName = 'My Route';
   public selectedTravelMode = 'pedestrian';
 
-  public startLat = 55.583156;
-  public lastFocusedStartLat;
-  public startLng = -1.922514;
-  public lastFocusedStartLng;
-  public endLat = 55.575684;
-  public lastFocusedEndLat;
-  public endLng = -1.920110;
-  public lastFocusedEndLng;
+  public startLat: number;
+  public lastFocusedStartLat: number;
+  public startLng: number;
+  public lastFocusedStartLng: number;
+  public endLat: number;
+  public lastFocusedEndLat: number;
+  public endLng: number;
+  public lastFocusedEndLng: number;
 
   public isStartingLocationClickableFocused = false;
   public isDestinationClickableFocused = false;
 
   public routeCreationLoading = false;
+
+  ngOnInit(): void {
+    this.routingService.getRouteCreationOnError().subscribe(() => { this.routeCreationLoading = false; });
+  }
 
   public onRoutingSubmit(data: any) {
     this.routeCreationLoading = true;
@@ -67,8 +67,7 @@ export class RouteCreationComponent implements OnInit {
   }
 
   public async updateLocationInputAdress(isStartMarker: boolean) {
-    if (isStartMarker)
-    {
+    if (isStartMarker) {
       if (this.areAllLatLngValuesTheSame(this.startLat, this.lastFocusedStartLat, this.startLng, this.lastFocusedStartLng)) {
         return;
       }
@@ -84,9 +83,7 @@ export class RouteCreationComponent implements OnInit {
         this.startingPoint = this.calculatedStartLocation;
         this.alertService.error(reason);
       });
-    }
-    else
-    {
+    } else {
       if (this.areAllLatLngValuesTheSame(this.endLat, this.lastFocusedEndLat, this.endLng, this.lastFocusedEndLng)) {
         return;
       }
