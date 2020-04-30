@@ -126,7 +126,7 @@ export class WeatherService {
       timeAccumulator += timeTonextWeatherStation;
     }
 
-    return (shareOfRoute / timeAccumulator).toString();
+    return (shareOfRoute / timeAccumulator).toFixed(2).toString();
   }
 
   private getTimeToTravelDistnanceinSeconds(distance: number, travelMode: TravelMode) { // move to routing service?
