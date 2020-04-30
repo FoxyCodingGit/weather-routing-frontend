@@ -20,10 +20,16 @@ import { AuthenticationService } from '../login/services/authentification.servic
 })
 export class RoutingService {
   private newRoutesSubject = new Subject<RouteAndWeatherInformation[]>();
+  private logUserOutSubject = new Subject<void>();
+
   private routeCreationOnError = new Subject<void>();
 
   public getNewRoutes(): Observable<RouteAndWeatherInformation[]> {
     return this.newRoutesSubject.asObservable();
+  }
+
+  public getUserShouldBeLoggedOut(): Observable<void> {
+    return this.logUserOutSubject.asObservable();
   }
 
   public getRouteCreationOnError(): Subject<void> {
@@ -116,6 +122,13 @@ export class RoutingService {
 
     await this.GetReadableUserDefinedRoutes().toPromise().then(result => {
       userSavedRoutes = result;
+    }, error => {
+      if (error.status === 401) {
+        this.alertService.warning("User logged out", "Token expires after an hour");
+        this.logUserOutSubject.next();
+      } else {
+        this.alertService.error("Could not apply user defined route", error.message);
+      }
     });
 
     for (let i = 0; i < userSavedRoutes.length; i++) {

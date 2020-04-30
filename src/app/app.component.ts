@@ -20,6 +20,10 @@ import { RouteSelectedState } from './shared/Models/RouteSelectedState';
 export class AppComponent implements OnInit {
 
   ngOnInit(): void {
+    this.routingService.getUserShouldBeLoggedOut().subscribe(() => { // here is observables being used to com from service to component.
+      this.logOut();
+    });
+
     this.routingService.getNewRoutes().subscribe((newRoutes) => {
       this.processNewRoutes(newRoutes);
     });
@@ -40,8 +44,8 @@ export class AppComponent implements OnInit {
   title = 'WeatherRoutingFrontend';
 
   constructor(private weatherService: WeatherService, private authenticationService: AuthenticationService, private routingService: RoutingService) {
-                this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
-              }
+    this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
+  }
 
   public processNewRoutes(newRoutes: RouteAndWeatherInformation[]): void {
     newRoutes.forEach(route => {

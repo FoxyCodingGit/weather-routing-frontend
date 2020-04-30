@@ -1,11 +1,11 @@
 <div id="map"></div>
 <div class="mapOptions wrapper">
     <h6>Show?</h6>
-    <div class="option">
+    <div class="option wrapper">
         <label for="weatherMakerCheckbox">Weather Markers</label>
         <input name="weatherMakerCheckbox" type="checkbox" [checked]="weatherMarkerVisibilities" (change)="showWeatherMarkers($event.path[0].checked)">
     </div>
-    <div class="option">
+    <div class="option wrapper">
         <label for="rainIndicatorCheckbox">Rain Indicators</label>
         <input name="rainIndicatorCheckbox" type="checkbox" [checked]="rainIndicatorVisibilities" (change)="showRainIndicators($event.path[0].checked)">
     </div>

@@ -11,6 +11,7 @@ h1 {
     text-align: center;
     color: white;
     margin-top: 10px;
+    font-size: 28px;
 }
 
 hr {
@@ -30,18 +31,18 @@ h2 {
     display: flex;
 
     label {
-        font-size: small;
+        margin-top: 2px;
+        font-size: 10px;
         font-style: italic;
     }
 
     input {
-        margin-top: 2px;
-        margin: 4px 0 0 10px;
+        margin: 3px 0 0 10px;
     }
 }
 
 form {
-    margin: 0 40px;
+    margin: 0 20px;
 }
 
 .firstColumn {
@@ -63,8 +64,8 @@ form {
 }
 
 button {
-    height: 48px;
-    margin-top: 24px;
+    height: 36px;
+    margin-top: 17px;
     background-color: darkgrey;
 }
 
@@ -77,8 +78,8 @@ button {
 }
 
 .ClickToSetMarkerButton {
-    width: 100px;
-    margin-left: 20px;
+    width: 80px;
+    margin-left: 10px;
     border-radius: 5px;
 }
 
@@ -97,7 +98,11 @@ h1, label {
 
 label {
     display: block;
-    margin: 0;
+    margin: 0;  
+}
+
+label, input, select {
+    font-size: 12px;
 }
 
 .isFocused {
@@ -118,9 +123,8 @@ label {
 }
 
 input[type=text], select {
+    height: 36px;
     min-width: 100%;
-    padding: 12px 20px;
-    //margin: 8px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
@@ -129,7 +133,7 @@ input[type=text], select {
     background-position: 10px;
     background-repeat: no-repeat;
     padding-left: 40px;
-    background-size: 24px;
+    background-size: 18px;
 
     &[name=name] {
         background-image: url($name-icon);

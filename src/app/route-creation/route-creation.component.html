@@ -20,8 +20,8 @@
       <label for="startingPoint">Starting Point</label>
       <input type="text" name="startingPoint" [(ngModel)]="startingPoint"> <!-- input but not saved anywhere (yet?)-->
     </div>
-    <button class="searchLocationButton" type="button" (click)="setNewLocationByName(calculatedStartLocation, startingPoint, searchForStart, true)"><i class="fas fa-search-location fa-lg"></i></button>
-    <button class="ClickToSetMarkerButton" type="button" [ngClass]="{'buttonIsClickableHighlighted': isStartingLocationClickableFocused}" (click)="startingLocationInClickableState()"><i class="fas fa-map-pin fa-lg"></i></button>
+    <button class="searchLocationButton" type="button" (click)="setNewLocationByName(calculatedStartLocation, startingPoint, searchForStart, true)"><i class="fas fa-search-location"></i></button>
+    <button class="ClickToSetMarkerButton" type="button" [ngClass]="{'buttonIsClickableHighlighted': isStartingLocationClickableFocused}" (click)="startingLocationInClickableState()"><i class="fas fa-map-pin"></i></button>
   </div>
   <div class="note">
     <label for="startingPoint">Show Lat/Lng?</label>
@@ -50,8 +50,8 @@
       <label for="destination">Destination</label>
       <input type="text" name="destination" [(ngModel)]="destination"> <!-- input but not saved anywhere (yet?)-->
     </div>
-    <button class="searchLocationButton" type="button" (click)="setNewLocationByName(calculatedEndLocation, destination, searchForEnd, false)"><i class="fas fa-search-location fa-lg"></i></button>
-    <button class="ClickToSetMarkerButton" type="button" [ngClass]="{'buttonIsClickableHighlighted': isDestinationClickableFocused}" (click)="destinationLocationInClickableState()"><i class="fas fa-map-pin fa-lg"></i></button>
+    <button class="searchLocationButton" type="button" (click)="setNewLocationByName(calculatedEndLocation, destination, searchForEnd, false)"><i class="fas fa-search-location"></i></button>
+    <button class="ClickToSetMarkerButton" type="button" [ngClass]="{'buttonIsClickableHighlighted': isDestinationClickableFocused}" (click)="destinationLocationInClickableState()"><i class="fas fa-map-pin "></i></button>
   </div>
   <div class="note">
     <label for="showEndLatLng">Show Lat/Lng?</label>

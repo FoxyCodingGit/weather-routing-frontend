@@ -4,7 +4,7 @@
     <a *ngIf="currentUsername == null; else logout" (click)="login()">Login</a>
     <ng-template #logout>
         <div class="box">
-            <h3 class="wee"><i class="fas fa-user"></i>{{currentUsername}}</h3>
+            <h3 class="currentUser"><i class="fas fa-user"></i>{{currentUsername}}</h3>
         </div>
         <a (click)="logOut()">logOut</a>
     </ng-template>
