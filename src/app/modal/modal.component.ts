@@ -7,6 +7,7 @@ import * as bootstrap from 'bootstrap'; // This works DONT REMOVE
 import { Currently } from '../shared/Models/Currently';
 import { IconTextThings } from '../icon-text/Models/IconTextThings';
 import { CurrentWeatherHelper } from './CurrentWeatherHelper';
+import { RoutingService } from '../shared/routing.service';
 // https://stackoverflow.com/questions/32735396/error-ts2339-property-modal-does-not-exist-on-type-jquery
 
 @Component({
@@ -17,21 +18,23 @@ import { CurrentWeatherHelper } from './CurrentWeatherHelper';
 export class ModalComponent implements OnInit {
   @ViewChild('rainInfo', {static: false}) rainInfoGraph: GraphComponent;
   @ViewChild('totalRain', {static: false}) totalRainGraph: GraphComponent;
-
+  
   private iconTextThings: IconTextThings[];
+  private weatherInformationToBeUsed: RouteAndWeatherInformation;
 
-  constructor() { }
+  constructor(private routingService: RoutingService) { }
 
   ngOnInit() { }
 
-  public open(routes: RouteAndWeatherInformation[], focusedRouteId: number): void {
-    this.assignCurrentWeatherInfo(routes[focusedRouteId].currentWeather);
+  public open(focusedRouteId: number): void {
+    this.weatherInformationToBeUsed = this.routingService.getRouteAndWeatherInformationById(focusedRouteId);
+    this.assignCurrentWeatherInfo(this.weatherInformationToBeUsed.currentWeather);
 
     $('#exampleModal').modal();
 
-    // TODO: change [focusedRoute] to check id.
-    this.rainInfoGraph.graphIntensityandProb(routes[focusedRouteId].rainIntensities, routes[focusedRouteId].rainProbabilitiesAverage);
-    this.totalRainGraph.graphExpectedTotalRainOnRoute(routes, 0, focusedRouteId);
+    this.rainInfoGraph.graphIntensityandProb(this.weatherInformationToBeUsed.rainIntensities, this.weatherInformationToBeUsed.rainProbabilitiesAverage);
+    this.totalRainGraph.graphExpectedTotalRainOnRoute(0, focusedRouteId); // TODO: do oterh departure times.
+
   }
 
   private assignCurrentWeatherInfo(currentWeather: Currently) {

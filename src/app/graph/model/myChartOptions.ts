@@ -1,121 +1,162 @@
-import { ChartOptions } from 'chart.js';
+import { ChartOptions } from "chart.js";
 
 export class myChartOptions {
+  public static noLabelBeginAtZero: ChartOptions = {
+    responsive: true,
+    scales: {
+      yAxes: [
+        {
+          scaleLabel: {
+            display: true,
+            labelString:
+              "Soakness Scoring [how much rain you will hit, rain intensity over how long you will be there] (mm)",
+          },
+          ticks: {
+            beginAtZero: true,
+          },
+        },
+      ],
+      xAxes: [
+        {
+          scaleLabel: {
+            display: true,
+            labelString: "Routes",
+          },
+        },
+      ],
+    },
+    legend: {
+      display: false,
+    },
+  };
 
-    public static noLabelBeginAtZero: ChartOptions = {
-        responsive: true,
-        scales: {
-            yAxes: [{
-            ticks: {
-            beginAtZero: true
-            }
-            }]
+  public static totalExpectedRainOption: ChartOptions = {
+    responsive: true,
+    scales: {
+      yAxes: [
+        {
+          ticks: {
+            beginAtZero: true,
+          },
         },
-        legend: {
-            display: false
-        }
-    };
+      ],
+    },
+    legend: {
+      display: false,
+    },
+  };
 
-    public static elevationOptions: ChartOptions = {
-        responsive: true,
-        scales: {
-            yAxes: [{
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Elevation (meters)'
-                }
-            }],
-            xAxes: [{
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Distance (meters)'
-                },
-                ticks: {
-                    autoSkip: true,
-                    maxTicksLimit: 4
-                }
-            }]
+  public static elevationOptions: ChartOptions = {
+    responsive: true,
+    scales: {
+      yAxes: [
+        {
+          scaleLabel: {
+            display: true,
+            labelString: "Elevation (meters)",
+          },
         },
-        legend: {
-            display: false
+      ],
+      xAxes: [
+        {
+          scaleLabel: {
+            display: true,
+            labelString: "Distance (meters)",
+          },
+          ticks: {
+            autoSkip: true,
+            maxTicksLimit: 4,
+          },
         },
-        hover: {
-            mode: 'index',
-            intersect: false
+      ],
+    },
+    legend: {
+      display: false,
+    },
+    hover: {
+      mode: "index",
+      intersect: false,
+    },
+    tooltips: {
+      mode: "index",
+      intersect: false,
+      callbacks: {
+        label: function (tooltipItems, data) {
+          return Number.parseFloat(tooltipItems.yLabel as string).toFixed(2);
         },
-        tooltips: {
-            mode: 'index',
-            intersect: false,
-            callbacks: {
-                label: function(tooltipItems, data) {
-                    return Number.parseFloat(tooltipItems.yLabel as string).toFixed(2);
-                }
-            }
-         }        
-    };
+      },
+    },
+  };
 
-    public static upToHundred: ChartOptions = {
-        responsive: true,
-        scales: {
-            yAxes: [{
-            ticks: {
-                beginAtZero: true,
-                max : 100
-            }
-            }]
-            // xAxes: [{
-            //     type: 'linear',
-            //     display: true,
-            //     scaleLabel: {
-            //         display: true,
-            //         labelString: 'When to Leave'
-            //     }
-            // }]                
-        }
-    };
-
-    public static rainIntensityAndProb: ChartOptions = {
-        responsive: true,
-        scales: {
-            yAxes: [{
-                id: 'rainIntensity',
-                display: true,
-                type: 'linear',
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Rain Intensity (mm per hour)'
-                },
-                position: 'left',
-                gridLines: {
-                    display: false
-                },
-                ticks: {
-                beginAtZero: true
-                }
-                }, {
-                id: 'rainProbability',
-                display: true,
-                type: 'linear',
-                scaleLabel: {
-                    display: true,
-                    labelString: 'Rain Probability (%)'
-                },
-                position: 'right',
-                ticks: {
-                    beginAtZero: true,
-                    max : 100
-                }
-            }],
-            xAxes: [{
-                display: true,
-                scaleLabel: {
-                    display: true,
-                    labelString: 'When to Leave (minutes)'
-                }
-            }]
+  public static upToHundred: ChartOptions = {
+    responsive: true,
+    scales: {
+      yAxes: [
+        {
+          ticks: {
+            beginAtZero: true,
+            max: 100,
+          },
         },
-        legend: {
-            display: false
-        }
-    };
+      ],
+      // xAxes: [{
+      //     type: 'linear',
+      //     display: true,
+      //     scaleLabel: {
+      //         display: true,
+      //         labelString: 'When to Leave'
+      //     }
+      // }]
+    },
+  };
+
+  public static rainIntensityAndProb: ChartOptions = {
+    responsive: true,
+    scales: {
+      yAxes: [
+        {
+          id: "rainIntensity",
+          display: true,
+          type: "linear",
+          scaleLabel: {
+            display: true,
+            labelString: "Rain Intensity (mm per hour)",
+          },
+          position: "left",
+          gridLines: {
+            display: false,
+          },
+          ticks: {
+            beginAtZero: true,
+          },
+        },
+        {
+          id: "rainProbability",
+          display: true,
+          type: "linear",
+          scaleLabel: {
+            display: true,
+            labelString: "Rain Probability (%)",
+          },
+          position: "right",
+          ticks: {
+            beginAtZero: true,
+            max: 100,
+          },
+        },
+      ],
+      xAxes: [
+        {
+          display: true,
+          scaleLabel: {
+            display: true,
+            labelString: "When to Leave (minutes)",
+          },
+        },
+      ],
+    },
+    legend: {
+      display: false,
+    },
+  };
 }

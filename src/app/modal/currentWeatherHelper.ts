@@ -49,7 +49,7 @@ export class CurrentWeatherHelper {
         return {
             title: 'Cloud Coverage',
             icons: ['/assets/images/cloud-coverage/' + this.workOutCloudCoverageIcon(cloudCover) + '.png'],
-            text: cloudCover * 100 + '%'
+            text: (cloudCover * 100).toFixed(0) + '%'
         };
     }
 
@@ -67,14 +67,16 @@ export class CurrentWeatherHelper {
         return {
             title: 'UV Index',
             icons: ['/assets/images/uv-index/' + uvIndex + '.png'],
-            text: '' // TODO: Advise people what to do depending on uc index.
+            text: this.workOutUv(uvIndex)
+            + '<br>' +
+            this.workOutUvProtectionNeeded(uvIndex)
         };
     }
 
     private static workOutRainIntensity(rainIntensity: number): string {
         if (rainIntensity < 0.01) {
-            return Rain.NONE
-        }        
+            return Rain.NONE;
+        }
         if (rainIntensity < 0.5) {
             return Rain.DRIZZLE;
         }
@@ -83,8 +85,8 @@ export class CurrentWeatherHelper {
         }
         if (rainIntensity < 4) {
             return Rain.MODERATE;
-        }        
-        return Rain.HEAVY;   
+        }
+        return Rain.HEAVY;
     }
 
     private static workOutBearing(bearing: number): string {
@@ -127,7 +129,7 @@ export class CurrentWeatherHelper {
         }
     }
 
-    private static workOutWindSpeedIntensity(windSpeed: number) { // https://en.wikipedia.org/wiki/Beaufort_scale
+    private static workOutWindSpeedIntensity(windSpeed: number): string { // https://en.wikipedia.org/wiki/Beaufort_scale
         if (windSpeed < 0.5) {
             return WindSpeed.CALM;
         } else if (windSpeed < 1.5) {
@@ -170,6 +172,34 @@ export class CurrentWeatherHelper {
             return Visibility.MODERATE;
         } else {
             return Visibility.GOOD;
+        }
+    }
+
+    private static workOutUv(uvIndex: number) {
+        if (uvIndex <= 2) {
+            return UvIntensity.LOW;
+        } else if (uvIndex <= 5) {
+            return UvIntensity.MEDIUM;
+        } else if (uvIndex <= 7) {
+            return UvIntensity.HIGH;
+        } else if (uvIndex <= 10) {
+            return UvIntensity.VERY_HIGH;
+        } else {
+            return UvIntensity.EXTREMELY_HIGH;
+        }
+    }
+
+    private static workOutUvProtectionNeeded(uvIndex: number) {
+        if (uvIndex <= 2) {
+            return "No Protection Needed";
+        } else if (uvIndex <= 5) {
+            return  "Some Protection Needed";
+        } else if (uvIndex <= 7) {
+            return "Protection Essential";
+        } else if (uvIndex <= 10) {
+            return "Extra Protection Essential";
+        } else {
+            return "STAY INSIDE!!!";
         }
     }
 }
@@ -222,4 +252,12 @@ export enum Visibility {
     POOR = 'poor',
     MODERATE = 'moderate',
     GOOD = 'good'
+}
+
+export enum UvIntensity {
+    LOW = 'Low',
+    MEDIUM = 'Medium',
+    HIGH = 'High',
+    VERY_HIGH = 'Very High',
+    EXTREMELY_HIGH = 'Extremely High'
 }

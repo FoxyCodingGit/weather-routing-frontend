@@ -5,6 +5,7 @@ import { myChartOptions } from './model/myChartOptions';
 import { WeatherService } from '../shared/weather.service';
 import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformation';
 import { Color } from 'ng2-charts';
+import { RoutingService } from '../shared/routing.service';
 // ng2-charts is needed to allow canvas to be used to show the graph. Removed @types/chart.js as i dont think this added anything.
 
 @Component({
@@ -14,6 +15,7 @@ import { Color } from 'ng2-charts';
 export class GraphComponent {
   @Output() graphHoveredOn: EventEmitter<number> = new EventEmitter();
 
+  public title: string;
   public chartData: ChartDataSets[];
   public chartLabels: string[];
   public chartColours: Color[];
@@ -22,7 +24,7 @@ export class GraphComponent {
 
   public static elevationGraphDistanceIntervalInMeters = 20; // move all this values to config file or something to have all in one place?
 
-  constructor(private weatherService: WeatherService) { }
+  constructor(private routingService: RoutingService, private weatherService: WeatherService) { }
 
   private setupCanvas(mainChartType: ChartType, chartOptions: ChartOptions) {
     this.chartData = [];
@@ -33,32 +35,37 @@ export class GraphComponent {
   }
 
   public graphIntensityandProb(rainIntensities: number[][], rainProbs: number[]) {
+    this.title = 'rain Intensity and Probability at Different departure times';
     this.setupCanvas('bar', myChartOptions.rainIntensityAndProb);
     this.addRainIntensities(rainIntensities, 'rainIntensity');
     this.addRainPercentages(rainProbs, undefined, 'rgba(255, 99, 132, 0.2)', 'rainProbability');
   }
 
   public JustIntensity(rainIntensities: number[][]) {
+    this.title = 'rain Intensity at Different departure times';
     this.setupCanvas('bar', myChartOptions.noLabelBeginAtZero);
     this.addRainIntensities(rainIntensities);
   }
 
   public graphRainPercentageForRoute(percentages: number[], route: RouteInformation) {
+    this.title = 'rain Probability at Different departure times';
     this.setupCanvas('line', myChartOptions.upToHundred);
     this.addRainPercentages(percentages, route.name, route.color + ', 0.6)');
   }
 
-  public graphExpectedTotalRainOnRoute(routeWeatherInfo: RouteAndWeatherInformation[], departureTime: number, focusedRouteId: number) {
+  public graphExpectedTotalRainOnRoute(departureTime: number, focusedRouteId: number) {
+    this.title = "Total Expected Rain On All Routes";
     this.chartData = [];
     this.chartColours = [];
     this.mainChartType = 'bar';
     this.chartOptions = myChartOptions.noLabelBeginAtZero;
-    this.generateLabelsForRoutes(routeWeatherInfo);
+    this.generateLabelsForRoutes();
 
-    this.displayTotalRainPerRoute(routeWeatherInfo, departureTime, focusedRouteId);
+    this.displayTotalRainPerRoute(departureTime, focusedRouteId);
   }
 
   public graphElevation(routeInfo: RouteInformation) {
+    this.title = "Elevation"
     this.chartData = [];
     this.chartColours = [];
     this.mainChartType = "line";
@@ -136,7 +143,8 @@ export class GraphComponent {
     }
   }
 
-  private generateLabelsForRoutes(routeWeatherInfo: RouteAndWeatherInformation[]) {
+  private generateLabelsForRoutes() {
+    let routeWeatherInfo = this.routingService.getRouteAndWeatherInformation();
     this.chartLabels = [];
     routeWeatherInfo.forEach(info => {
       this.chartLabels.push(info.routeInformation.name);
@@ -173,12 +181,13 @@ export class GraphComponent {
     this.chartColours.push({backgroundColor: colour});
   }
 
-  private displayTotalRainPerRoute(routeWeatherInfo: RouteAndWeatherInformation[], departureTime: number, focusedRouteId: number): void {
+  private displayTotalRainPerRoute(departureTime: number, focusedRouteId: number): void {
     let totalRainForAllRoutes: number[] = [];
     let colours: Array<ChartColor> = [];
     let borderWidths: Array<number> = [];
 
-    routeWeatherInfo.forEach(routeAndWeather => {
+    
+    this.routingService.getRouteAndWeatherInformation().forEach(routeAndWeather => {
       let rainThatWillHitPersonInmm = this.weatherService.calculateTotalExpectedRainYouAreGoingToHitBasedOnTimeTOTakeRoute(routeAndWeather, departureTime);
 
       let avdmmPerHourOfRoute = this.weatherService.workOutmmPerHourFromRouteDurationAndmmThatHitsPersonInThatTime(rainThatWillHitPersonInmm, routeAndWeather.routeInformation.travelTimeInSeconds)

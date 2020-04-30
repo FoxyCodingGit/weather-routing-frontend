@@ -68,7 +68,7 @@ export class ElevationInfo {
     }
 
     private calculateLargestSlantAngle(cumulativeDistances: number[]) {
-        let distanceBetweenTwoPoints: number;
+        let elevationDifferenceBetweenTwoPoints: number;
         let lastElevationValue = this.elevations[0].elevation;
         let focusedSlantAngle = 0;
         let maxSlantAngle = 0;
@@ -76,14 +76,14 @@ export class ElevationInfo {
 
         for (let i = 0; i < this.elevations.length; i++) {
             if (this.elevations[i].elevation > lastElevationValue) {
-                distanceBetweenTwoPoints = this.elevations[i].elevation - lastElevationValue;
+                elevationDifferenceBetweenTwoPoints = this.elevations[i].elevation - lastElevationValue;
 
-                focusedSlantAngle = this.sohcahtoa(distanceBetweenTwoPoints, cumulativeDistances[i] - cumulativeDistances[i - 1]);
+                focusedSlantAngle = this.sohcahtoa(elevationDifferenceBetweenTwoPoints, cumulativeDistances[i] - cumulativeDistances[i - 1]);
 
                 if (focusedSlantAngle > maxSlantAngle) {
                     maxSlantAngle = focusedSlantAngle;
                     greatestInclineStartingIndex = i - 1;
-                } 
+                }
             }
             lastElevationValue = this.elevations[i].elevation;
         }

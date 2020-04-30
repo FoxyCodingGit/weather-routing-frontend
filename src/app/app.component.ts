@@ -94,7 +94,7 @@ export class AppComponent implements OnInit {
   }
 
   public routeInfoButtonPressed(routeId: number): void {
-    this.modal.open(this.routingService.getRouteAndWeatherInformation(), routeId);
+    this.modal.open(routeId);
   }
 
   public login(): void { // again, do funcs that only are used in html have to be public??
