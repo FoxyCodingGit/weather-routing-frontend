@@ -82,7 +82,7 @@ export class RouteDataTableComponent implements OnInit {
         { title: 'Leave in 5 Mins', width: "10%" },
         { title: 'Leave in 10 Mins', width: "10%" },
         { title: 'Leave in 15 Mins', width: "10%" },
-        { title: 'Leave in 20 Mins', width: "10%" },
+        { title: 'Leave in 20 Mins', width: "10%" }
        ],
        pageLength: 5
     };
@@ -158,9 +158,9 @@ export class RouteDataTableComponent implements OnInit {
   
       this.getcolouredRainIOntesiry(averageRouteRainIntensities[0]) + "(" + averageRouteRainIntensities[0] + " mm/h)",
       this.getcolouredRainIOntesiry(averageRouteRainIntensities[1]) + "(" + averageRouteRainIntensities[1] + " mm/h)" + scoreComparisonIcons[0],
-      this.getcolouredRainIOntesiry(averageRouteRainIntensities[2]) + "(" + averageRouteRainIntensities[2] + " mm/h)" + scoreComparisonIcons[1],
-      this.getcolouredRainIOntesiry(averageRouteRainIntensities[3]) + "(" + averageRouteRainIntensities[3] + " mm/h)" + scoreComparisonIcons[2],
-      this.getcolouredRainIOntesiry(averageRouteRainIntensities[4]) + "(" + averageRouteRainIntensities[4] + " mm/h)" + scoreComparisonIcons[3]
+      this.getcolouredRainIOntesiry(averageRouteRainIntensities[2]) + "(" + averageRouteRainIntensities[2] + " mm/h)" + scoreComparisonIcons[0],
+      this.getcolouredRainIOntesiry(averageRouteRainIntensities[3]) + "(" + averageRouteRainIntensities[3] + " mm/h)" + scoreComparisonIcons[0],
+      this.getcolouredRainIOntesiry(averageRouteRainIntensities[4]) + "(" + averageRouteRainIntensities[4] + " mm/h)" + scoreComparisonIcons[0]
     ]).draw();
 
     this.routeCreationComplete.emit();

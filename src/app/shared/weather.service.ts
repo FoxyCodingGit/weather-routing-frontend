@@ -180,10 +180,12 @@ export class WeatherService {
   public static getRainIntensityDescriptor(rainIntensitymmPerHour: number) {
     //https://www.baranidesign.com/faq-articles/2020/1/19/practical-guide-to-determining-rainfall-rate-and-rain-intensity-error
 
-    if (rainIntensitymmPerHour < 0.01) {
+    if (rainIntensitymmPerHour === 0) {
       return "no rain";
-    } else if (rainIntensitymmPerHour >= 0.01 && rainIntensitymmPerHour < 0.25) {
+    } else if (rainIntensitymmPerHour < 0.01) {
       return "spitting";
+    } else if (rainIntensitymmPerHour >= 0.01 && rainIntensitymmPerHour < 0.25) {
+      return "drizzle";
     } else if (rainIntensitymmPerHour >= 0.25 && rainIntensitymmPerHour < 0.5) {
       return "very light rain";
     } else if (rainIntensitymmPerHour >= 0.5 && rainIntensitymmPerHour < 1) {
@@ -200,6 +202,7 @@ export class WeatherService {
   }
 
   public static getColourForRouteRainIntensity(rainIntensitymmPerHour: number): string { // using here and in map so making static and public so available // prob can be in better place
+    const WHEAT = 'rgb(245, 222, 179)';
     const VERY_LIGHT_BLUE = 'rgb(190, 230, 255)';
     const LIGHT_BLUE = 'rgb(170, 210, 240)';
     const BLUE = 'rgb(125, 165, 230)';
@@ -210,6 +213,8 @@ export class WeatherService {
     const RED = 'rgb(255, 0, 0)';
 
     if (rainIntensitymmPerHour < 0.01) {
+      return WHEAT;
+    } else if (rainIntensitymmPerHour < 0.01) {
       return VERY_LIGHT_BLUE;
     } else if (rainIntensitymmPerHour >= 0.01 && rainIntensitymmPerHour < 0.25) {
       return LIGHT_BLUE;

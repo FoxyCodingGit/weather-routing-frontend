@@ -8,7 +8,7 @@
     </div>
     <div class="travelModeSection">
       <label for="travelMode">Mode of Transport</label>
-      <select name=travelMode [(ngModel)]="selectedTravelMode" [ngClass]="{'ped': selectedTravelMode == 'pedestrian', 'bike': selectedTravelMode == 'bicycle', 'car': selectedTravelMode == 'car' }" class>
+      <select name=travelMode [(ngModel)]="selectedTravelMode" [ngClass]="{'ped': selectedTravelMode == 'pedestrian', 'bike': selectedTravelMode == 'bicycle', 'car': selectedTravelMode == 'car' }">
         <option value="pedestrian">Pedestrian</option>
         <option value="bicycle">Bicycle</option>
         <option value="car">Car</option>

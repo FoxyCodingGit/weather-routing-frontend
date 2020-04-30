@@ -18,23 +18,29 @@ import { RoutingService } from '../shared/routing.service';
 export class ModalComponent implements OnInit {
   @ViewChild('rainInfo', {static: false}) rainInfoGraph: GraphComponent;
   @ViewChild('averageRainIntensity', {static: false}) averageRainIntensityGraph: GraphComponent;
-  
+
+  public selectedDepartureTime = 0;
   private iconTextThings: IconTextThings[];
   private weatherInformationToBeUsed: RouteAndWeatherInformation;
+  private focusedRouteId: number;
 
   constructor(private routingService: RoutingService) { }
 
   ngOnInit() { }
 
   public open(focusedRouteId: number): void {
+    this.focusedRouteId = focusedRouteId;
     this.weatherInformationToBeUsed = this.routingService.getRouteAndWeatherInformationById(focusedRouteId);
     this.assignCurrentWeatherInfo(this.weatherInformationToBeUsed.currentWeather);
 
     $('#exampleModal').modal();
 
     this.rainInfoGraph.graphIntensityandProb(this.weatherInformationToBeUsed.rainIntensities, this.weatherInformationToBeUsed.rainProbabilitiesAverage);
-    this.averageRainIntensityGraph.graphAverageRainIntensityOfAllRoutes(0, focusedRouteId); // TODO: do oterh departure times.
+    this.averageRainIntensityGraph.graphAverageRainIntensityOfAllRoutes(this.selectedDepartureTime, focusedRouteId);
+  }
 
+  public departureTimeChange() {
+    this.averageRainIntensityGraph.graphAverageRainIntensityOfAllRoutes(this.selectedDepartureTime, this.focusedRouteId);
   }
 
   private assignCurrentWeatherInfo(currentWeather: Currently) {
