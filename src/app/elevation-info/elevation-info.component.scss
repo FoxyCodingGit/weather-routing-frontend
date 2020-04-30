@@ -2,12 +2,18 @@ $travel-car-icon: '/assets/images/car.png';
 $total-elevation-change-icon: '/assets/images/elevation/upDown.png';
 $total-incline-icon: '/assets/images/elevation/up.png';
 
+h2 {
+    font-size: 18px;
+    margin-left: auto;
+    padding-top: 4px;
+}
+
 h2, p {
     text-align: center;
 }
 
 label, p {
-    font-size: 12px;
+    font-size: 10px;
 }
 
 p {
@@ -28,12 +34,12 @@ label {
 .descriptionIcon {
     background-color: white;
     background-repeat: no-repeat;
-    padding: 10px;
-    background-size: 60px;
-    width: 60px;
-    height: 60px;
+    background-size: 30px;
+    width: 30px;
+    height: 30px;
     border-radius: 5px;
-    margin: 15px auto;
+    margin-right: auto;
+    margin-left: 10px;
 
     background-image: url($travel-car-icon); 
 }
