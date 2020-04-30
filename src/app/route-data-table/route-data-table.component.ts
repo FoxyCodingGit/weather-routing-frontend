@@ -30,11 +30,10 @@ export class RouteDataTableComponent implements OnInit {
     const table = $('#table_id').DataTable();
 
     if (this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.isFavourite) {
-      table.cell({row: routeId, column: 11}).data('<i class="fas fa-star"></i><i class="fas fa-trash"></i>');
+      table.cell({row: routeId, column: 1}).data('<i class="fas fa-star"></i><i class="fas fa-trash"></i><button style="margin-left:10px" class="weatherInfo">Current Weather</button>');
     } else {
-      table.cell({row: routeId, column: 11}).data('<i class="far fa-star"></i><i class="fas fa-trash"></i>');
+      table.cell({row: routeId, column: 1}).data('<i class="far fa-star"></i><i class="fas fa-trash"></i><button style="margin-left:10px" class="weatherInfo">Current Weather</button>');
     }
-
     $('#table_id').DataTable().draw();
   }
 
@@ -72,20 +71,19 @@ export class RouteDataTableComponent implements OnInit {
     const tableSettings: DataTables.Settings = {
       columns: [
         { title: 'id', visible: false },
-        { title: 'Name' },
-        { title: 'Start' },
-        { title: 'End' },
-        { title: 'Duration', width: '5%' },
-        { title: 'Distance', width: '5%' },
-        { title: 'Leave Now', width: '10%' },
-        { title: 'Leave in 5 Mins', width: '12%' },
-        { title: 'Leave in 10 Mins', width: '12%' },
-        { title: 'Leave in 15 Mins', width: '12%' },
-        { title: 'Leave in 20 Mins', width: '12%' },
-        { title: '' },
-        { title: '' }
+        { title: '', width: "10%", orderable: false },
+        { title: 'Name', width: "10%" },
+        { title: 'Start', width: "10%" },
+        { title: 'End', width: "10%" },
+        { title: 'Duration' },
+        { title: 'Distance' },
+        { title: 'Leave Now', width: "10%"},
+        { title: 'Leave in 5 Mins', width: "10%" },
+        { title: 'Leave in 10 Mins', width: "10%" },
+        { title: 'Leave in 15 Mins', width: "10%" },
+        { title: 'Leave in 20 Mins', width: "10%" },
        ],
-       pageLength: 4
+       pageLength: 5
     };
 
     $('#table_id').DataTable(tableSettings);
@@ -149,6 +147,7 @@ export class RouteDataTableComponent implements OnInit {
 
     $('#table_id').DataTable().row.add([
       routeInformation.id,
+      '<i class="' + starIconType + ' fa-star"></i><i class="fas fa-trash"></i><button style="margin-left:10px" class="weatherInfo">Current Weather</button>',
       '<div class="wrapper"><div class="square" style="background-color: ' + routeInformation.color + ', 1); color: ' + routeInformation.basicContrastColour + '">'+ routeInformation.id + '</div>' + routeInformation.name + '</div>',
       routeInformation.startLocation, // move html to function for readability?
       routeInformation.endLocation,
@@ -158,9 +157,7 @@ export class RouteDataTableComponent implements OnInit {
       overallScores[1] + scoreComparisonIcons[0],
       overallScores[2] + scoreComparisonIcons[1],
       overallScores[3] + scoreComparisonIcons[2],
-      overallScores[4] + scoreComparisonIcons[3],
-      '<i class="' + starIconType + ' fa-star"></i><i class="fas fa-trash"></i>', // TODO: button no work. do on select row for dev.
-      '<button class="weatherInfo">Current Weather</button>'
+      overallScores[4] + scoreComparisonIcons[3]
     ]).draw();
 
     this.routeCreationComplete.emit();
