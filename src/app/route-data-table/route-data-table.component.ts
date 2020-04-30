@@ -5,6 +5,7 @@ import { RouteInformation } from '../map/Model/RouteInformation';
 import { Subject, Observable } from 'rxjs';
 import { RoutingService } from '../shared/routing.service';
 import { RouteSelectedState } from '../shared/Models/RouteSelectedState';
+import { AuthenticationService } from '../login/services/authentification.service';
 
 @Component({
   selector: 'app-route-data-table',
@@ -19,7 +20,7 @@ export class RouteDataTableComponent implements OnInit {
 
   private favouritePressedSubject = new Subject<number>(); // This can be removed as there is no need for subject. Can just use code directly on favbuttonpressed
 
-  constructor(private routingService: RoutingService) { }
+  constructor(private routingService: RoutingService, private authService: AuthenticationService) { }
 
   public getFavouriteObserver(): Observable<number> {
     return this.favouritePressedSubject.asObservable();
@@ -58,6 +59,10 @@ export class RouteDataTableComponent implements OnInit {
   ngOnInit() {
     this.getFavouriteObserver().subscribe(
       async (routeId) => {
+        if (this.authService.currentUserValue == null) {
+          return;
+        }
+
         if (this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.isFavourite) { await this.deleteFromDB(routeId); }
         else { await this.addToDB(routeId); }
 
@@ -80,7 +85,7 @@ export class RouteDataTableComponent implements OnInit {
         { title: '' },
         { title: '' }
        ],
-       pageLength: 5
+       pageLength: 4
     };
 
     $('#table_id').DataTable(tableSettings);

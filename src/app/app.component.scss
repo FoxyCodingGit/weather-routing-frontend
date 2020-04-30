@@ -4,13 +4,14 @@ app-map {
 
 app-map, app-route-creation {
     border-radius: 5px 0 0 0;
+    border-bottom: 5px black dashed;
 }
 
 app-route-creation {
     width: 25%;
-    background-color: lightgray;
     border-radius: 0 5px 0 0;
     overflow-y: scroll;
+    padding-bottom: 60px;
 }
 
 app-alert {

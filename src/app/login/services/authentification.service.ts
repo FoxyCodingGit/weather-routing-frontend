@@ -12,7 +12,7 @@ export class AuthenticationService {
     public currentUser: Observable<UserToken>;
 
     constructor(private http: HttpClient) {
-        this.currentUserSubject = new BehaviorSubject<UserToken>(JSON.parse(localStorage.getItem('currentUser')));
+        this.currentUserSubject = new BehaviorSubject<UserToken>(JSON.parse(localStorage.getItem('currentUser'))); // talk why used behaviour
         this.currentUser = this.currentUserSubject.asObservable();
     }
 
