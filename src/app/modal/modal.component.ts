@@ -17,7 +17,7 @@ import { RoutingService } from '../shared/routing.service';
 })
 export class ModalComponent implements OnInit {
   @ViewChild('rainInfo', {static: false}) rainInfoGraph: GraphComponent;
-  @ViewChild('totalRain', {static: false}) totalRainGraph: GraphComponent;
+  @ViewChild('averageRainIntensity', {static: false}) averageRainIntensityGraph: GraphComponent;
   
   private iconTextThings: IconTextThings[];
   private weatherInformationToBeUsed: RouteAndWeatherInformation;
@@ -33,7 +33,7 @@ export class ModalComponent implements OnInit {
     $('#exampleModal').modal();
 
     this.rainInfoGraph.graphIntensityandProb(this.weatherInformationToBeUsed.rainIntensities, this.weatherInformationToBeUsed.rainProbabilitiesAverage);
-    this.totalRainGraph.graphExpectedTotalRainOnRoute(0, focusedRouteId); // TODO: do oterh departure times.
+    this.averageRainIntensityGraph.graphAverageRainIntensityOfAllRoutes(0, focusedRouteId); // TODO: do oterh departure times.
 
   }
 

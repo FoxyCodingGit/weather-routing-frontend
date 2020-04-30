@@ -1,7 +1,7 @@
 import { ChartOptions } from "chart.js";
 
 export class myChartOptions {
-  public static noLabelBeginAtZero: ChartOptions = {
+  public static AverageRainIntensitiesOptions: ChartOptions = {
     responsive: true,
     scales: {
       yAxes: [
@@ -9,7 +9,7 @@ export class myChartOptions {
           scaleLabel: {
             display: true,
             labelString:
-              "Soakness Scoring [how much rain you will hit, rain intensity over how long you will be there] (mm)",
+              "Average Rain Intensity (mm per hour)",
           },
           ticks: {
             beginAtZero: true,

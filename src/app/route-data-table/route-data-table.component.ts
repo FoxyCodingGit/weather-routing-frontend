@@ -6,6 +6,7 @@ import { Subject, Observable } from 'rxjs';
 import { RoutingService } from '../shared/routing.service';
 import { RouteSelectedState } from '../shared/Models/RouteSelectedState';
 import { AuthenticationService } from '../login/services/authentification.service';
+import { WeatherService } from '../shared/weather.service';
 
 @Component({
   selector: 'app-route-data-table',
@@ -153,14 +154,22 @@ export class RouteDataTableComponent implements OnInit {
       routeInformation.endLocation,
       Math.round(routeInformation.travelTimeInSeconds / 60) + ' mins',
       routeInformation.distance + 'm',
-      overallScores[0],
-      overallScores[1] + scoreComparisonIcons[0],
-      overallScores[2] + scoreComparisonIcons[1],
-      overallScores[3] + scoreComparisonIcons[2],
-      overallScores[4] + scoreComparisonIcons[3]
+
+  
+      this.getcolouredRainIOntesiry(overallScores[0]) + "(" + overallScores[0] + " mm/h)",
+      this.getcolouredRainIOntesiry(overallScores[1]) + "(" + overallScores[1] + " mm/h)" + scoreComparisonIcons[0],
+      this.getcolouredRainIOntesiry(overallScores[2]) + "(" + overallScores[2] + " mm/h)" + scoreComparisonIcons[1],
+      this.getcolouredRainIOntesiry(overallScores[3]) + "(" + overallScores[3] + " mm/h)" + scoreComparisonIcons[2],
+      this.getcolouredRainIOntesiry(overallScores[4]) + "(" + overallScores[4] + " mm/h)" + scoreComparisonIcons[3]
     ]).draw();
 
     this.routeCreationComplete.emit();
+  }
+
+  private getcolouredRainIOntesiry(rainintensitymmperhour: string) {
+    let desc = WeatherService.getRainIntensityDescriptor(+rainintensitymmperhour);
+    let colour = WeatherService.getColourForRouteRainIntensity(+rainintensitymmperhour);
+    return "<div class=\"rainIntensityIndictor\" style=\"background-color: " + colour + ";\">" + desc + "</div>";
   }
 
   public sendRouteInfoButtonPressedOutput(routeId: number): void {

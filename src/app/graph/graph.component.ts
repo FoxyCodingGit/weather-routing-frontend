@@ -41,27 +41,27 @@ export class GraphComponent {
     this.addRainPercentages(rainProbs, undefined, 'rgba(255, 99, 132, 0.2)', 'rainProbability');
   }
 
-  public JustIntensity(rainIntensities: number[][]) {
-    this.title = 'rain Intensity at Different departure times';
-    this.setupCanvas('bar', myChartOptions.noLabelBeginAtZero);
-    this.addRainIntensities(rainIntensities);
-  }
+  // public JustIntensity(rainIntensities: number[][]) {
+  //   this.title = 'rain Intensity at Different departure times';
+  //   this.setupCanvas('bar', myChartOptions.AverageRainIntensitiesOptions);
+  //   this.addRainIntensities(rainIntensities);
+  // }
 
-  public graphRainPercentageForRoute(percentages: number[], route: RouteInformation) {
-    this.title = 'rain Probability at Different departure times';
-    this.setupCanvas('line', myChartOptions.upToHundred);
-    this.addRainPercentages(percentages, route.name, route.color + ', 0.6)');
-  }
+  // public graphRainPercentageForRoute(percentages: number[], route: RouteInformation) {
+  //   this.title = 'rain Probability at Different departure times';
+  //   this.setupCanvas('line', myChartOptions.upToHundred);
+  //   this.addRainPercentages(percentages, route.name, route.color + ', 0.6)');
+  // }
 
-  public graphExpectedTotalRainOnRoute(departureTime: number, focusedRouteId: number) {
-    this.title = "Total Expected Rain On All Routes";
+  public graphAverageRainIntensityOfAllRoutes(departureTime: number, focusedRouteId: number) {
+    this.title = "Average Rain Intensity of all routes";
     this.chartData = [];
     this.chartColours = [];
     this.mainChartType = 'bar';
-    this.chartOptions = myChartOptions.noLabelBeginAtZero;
+    this.chartOptions = myChartOptions.AverageRainIntensitiesOptions;
     this.generateLabelsForRoutes();
 
-    this.displayTotalRainPerRoute(departureTime, focusedRouteId);
+    this.displayAverageRainIntensityOfAllRoutes(departureTime, focusedRouteId);
   }
 
   public graphElevation(routeInfo: RouteInformation) {
@@ -181,65 +181,35 @@ export class GraphComponent {
     this.chartColours.push({backgroundColor: colour});
   }
 
-  private displayTotalRainPerRoute(departureTime: number, focusedRouteId: number): void {
-    let totalRainForAllRoutes: number[] = [];
+  private displayAverageRainIntensityOfAllRoutes(departureTime: number, focusedRouteId: number): void {
+    let IntensityAverages: number[] = [];
     let colours: Array<ChartColor> = [];
     let borderWidths: Array<number> = [];
 
-    
     this.routingService.getRouteAndWeatherInformation().forEach(routeAndWeather => {
-      let rainThatWillHitPersonInmm = this.weatherService.calculateTotalExpectedRainYouAreGoingToHitBasedOnTimeTOTakeRoute(routeAndWeather, departureTime);
+      let IntensityAverage = this.weatherService.workOutRainIntensityAverageOfRoute(routeAndWeather, departureTime);
+      IntensityAverages.push(+IntensityAverage);
+      console.log("average mm per hour for route is (for each weather point do intesity until next one. divide by total time) :" + IntensityAverage);
 
-      let avdmmPerHourOfRoute = this.weatherService.workOutmmPerHourFromRouteDurationAndmmThatHitsPersonInThatTime(rainThatWillHitPersonInmm, routeAndWeather.routeInformation.travelTimeInSeconds)
-      console.log("average mm per hour for route is :" + avdmmPerHourOfRoute);
-
-      colours.push(GraphComponent.getColourForRouteRainIntensity(avdmmPerHourOfRoute));
-
-      if (focusedRouteId !== null) {
-        if (routeAndWeather.routeInformation.id === focusedRouteId) {
-          borderWidths.push(10);
-        } else {
-          borderWidths.push(0);
-        }
-      }
-
-      totalRainForAllRoutes.push(rainThatWillHitPersonInmm);
+      colours.push(WeatherService.getColourForRouteRainIntensity(+IntensityAverage));
+      this.highLightCurrrentRouteIntensityAverage(focusedRouteId, routeAndWeather, borderWidths);
     });
 
     this.chartData.push({
-      data: totalRainForAllRoutes,
+      data: IntensityAverages,
       backgroundColor: colours,
       borderColor: 'rgb(255,0,0)',
       borderWidth: borderWidths
     });
   }
 
-  public static getColourForRouteRainIntensity(rainIntensitymmPerHour: number): string { // using here and in map so making static and public so available // prob can be in better place
-    const VERY_LIGHT_BLUE = 'rgb(190, 230, 255)';
-    const LIGHT_BLUE = 'rgb(170, 210, 240)';
-    const BLUE = 'rgb(125, 165, 230)';
-    const DARK_BLUE = 'rgb(75, 115, 225)';
-    const OLIVE = 'rgb(125, 125, 0)';
-    const YELLOW = 'rgb(255, 200, 0)';
-    const ORANGE = 'rgb(255, 150, 0)';
-    const RED = 'rgb(255, 0, 0)';
-
-    if (rainIntensitymmPerHour < 0.01) {
-      return VERY_LIGHT_BLUE;
-    } else if (rainIntensitymmPerHour >= 0.01 && rainIntensitymmPerHour < 0.25) {
-      return LIGHT_BLUE;
-    } else if (rainIntensitymmPerHour >= 0.25 && rainIntensitymmPerHour < 0.5) {
-      return BLUE;
-    } else if (rainIntensitymmPerHour >= 0.5 && rainIntensitymmPerHour < 1) {
-      return DARK_BLUE;
-    } else if (rainIntensitymmPerHour >= 1 && rainIntensitymmPerHour < 2) {
-      return OLIVE;
-    } else if (rainIntensitymmPerHour >= 2 && rainIntensitymmPerHour < 4) {
-      return YELLOW;
-    } else if (rainIntensitymmPerHour >= 4 && rainIntensitymmPerHour < 8) {
-      return ORANGE;
-    } else {
-      return RED;
+  private highLightCurrrentRouteIntensityAverage(focusedRouteId: number, routeAndWeather: RouteAndWeatherInformation, borderWidths: Array<number>) {
+    if (focusedRouteId !== null) {
+      if (routeAndWeather.routeInformation.id === focusedRouteId) {
+        borderWidths.push(10);
+      } else {
+        borderWidths.push(0);
+      }
     }
   }
 }

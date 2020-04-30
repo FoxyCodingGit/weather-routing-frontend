@@ -24,20 +24,6 @@ export class WeatherService {
 
   constructor(private http: HttpClient) { }
 
-  public generateOverallRouteScore(routeAndWeatherInformation: RouteAndWeatherInformation, whenRouteisStartedFromNow: number = 0): string {
-    let thing: string = "";
-    const ree = this.calculateTotalExpectedRainYouAreGoingToHitBasedOnTimeTOTakeRoute(routeAndWeatherInformation, whenRouteisStartedFromNow);
-
-    if (ree === 0) {
-      thing = '-';
-    } else {
-      thing += ree + 'mm';
-      thing += ' (' + this.workOutmmPerHourFromRouteDurationAndmmThatHitsPersonInThatTime(ree, routeAndWeatherInformation.routeInformation.travelTimeInSeconds).toFixed(3) + ' mm/h)';
-    }
-
-    return thing; // might want to take away from 100 so bigger number is better.
-  }
-
   public async addWeatherInformationToRoute(thisRoute: RouteInformation): Promise<RouteAndWeatherInformation> {
     return await this.getMinutelyData(thisRoute).then(async minutelyRainData => {
       const refactorMe: ProbsAndIntensitiesPerWeatherPointPerDepartureTime =
@@ -120,45 +106,37 @@ export class WeatherService {
     return rainDataForEachInterval;
   }
 
-  public calculateTotalExpectedRainYouAreGoingToHitBasedOnTimeTOTakeRoute(route: RouteAndWeatherInformation, departureTime: number = 0): number { // TODO: covnersion aint right!
-    let totalExpectedRain = 0;
-    let focusedWeatherStation = 0;
+  public workOutRainIntensityAverageOfRoute(route: RouteAndWeatherInformation, departureTime: number = 0): string {
     let previousDistance = 0;
+    let distacneToNext: number;
+    let focusedRainIntensity: number;
+    let timeAccumulator = 0;
+    let timeTonextWeatherStation: number;
 
-    route.routeInformation.weatherPoints.forEach(weatherPoint => {
-      const distanceToNext =  weatherPoint.distance - previousDistance;
-      previousDistance = weatherPoint.distance;
+    let shareOfRoute = 0;
 
-      console.log("distanceToNext" + distanceToNext);
+    for (let i = 0; i < route.routeInformation.weatherPoints.length - 1; i++) {
+      distacneToNext =  route.routeInformation.weatherPoints[i + 1].distance - previousDistance;
+      focusedRainIntensity = route.rainIntensities[departureTime / 5][i];
 
-      const secondToHourConverstionRatio = 1 / 3600;
+      timeTonextWeatherStation = this.getTimeToTravelDistnanceinSeconds(distacneToNext, route.routeInformation.travelMode);
+      shareOfRoute += focusedRainIntensity * timeTonextWeatherStation;
 
-      var timeOfLeginhours: number;
+      previousDistance = distacneToNext;
+      timeAccumulator += timeTonextWeatherStation;
+    }
 
-      if (route.routeInformation.travelMode == TravelMode.PEDESTRIAN) {
-        timeOfLeginhours = (distanceToNext / WeatherService.averageWalkingSpeedMetersPerSecond) * secondToHourConverstionRatio;
-      } else if (route.routeInformation.travelMode == TravelMode.BICYCLE) {
-        timeOfLeginhours = (distanceToNext / WeatherService.averageCyclingSpeedMetersPerSecond) * secondToHourConverstionRatio;
-      } else {
-        // car
-      }
-
-     
-
-      const expectedRainForleginMM = route.rainIntensities[departureTime / 5][focusedWeatherStation] * route.rainProbabilities[departureTime / 5][focusedWeatherStation];
-
-      totalExpectedRain += timeOfLeginhours * expectedRainForleginMM;
-      focusedWeatherStation++;
-    });
-
-    const to3SigFig = totalExpectedRain.toFixed(3);
-    return +to3SigFig; // shorthand to parse to int.
+    return (shareOfRoute / timeAccumulator).toString();
   }
 
-  public workOutmmPerHourFromRouteDurationAndmmThatHitsPersonInThatTime(mmThatHitsPerson: number, durationinSeconds: number ): number {
-    const toAnHourFromSeconds = 3600 / durationinSeconds;
-
-    return mmThatHitsPerson * toAnHourFromSeconds;
+  private getTimeToTravelDistnanceinSeconds(distance: number, travelMode: TravelMode) { // move to routing service?
+    if (travelMode === TravelMode.PEDESTRIAN) {
+      return distance / WeatherService.averageWalkingSpeedMetersPerSecond;
+    } else if (travelMode === TravelMode.BICYCLE) {
+      return distance / WeatherService.averageCyclingSpeedMetersPerSecond;
+    } else {
+      // car
+    }
   }
 
   private WorkOutHowLongToTakeToGetToWeatherPointInMins(routePath: google.maps.LatLng[], weatherPointLocationInArray: number, travelMode: TravelMode): number {
@@ -194,11 +172,61 @@ export class WeatherService {
     const d = R * c; // Distance in km
     return d * 1000;
   }
-  
+
   private degreeToRadian(deg) {
     return deg * (Math.PI / 180);
   }
 
+  public static getRainIntensityDescriptor(rainIntensitymmPerHour: number) {
+    //https://www.baranidesign.com/faq-articles/2020/1/19/practical-guide-to-determining-rainfall-rate-and-rain-intensity-error
+
+    if (rainIntensitymmPerHour < 0.01) {
+      return "no rain";
+    } else if (rainIntensitymmPerHour >= 0.01 && rainIntensitymmPerHour < 0.25) {
+      return "spitting";
+    } else if (rainIntensitymmPerHour >= 0.25 && rainIntensitymmPerHour < 0.5) {
+      return "very light rain";
+    } else if (rainIntensitymmPerHour >= 0.5 && rainIntensitymmPerHour < 1) {
+      return "light right";
+    } else if (rainIntensitymmPerHour >= 1 && rainIntensitymmPerHour < 2) {
+      return "light rain v. 2";
+    } else if (rainIntensitymmPerHour >= 2 && rainIntensitymmPerHour < 4) {
+      return "moderate rain";
+    } else if (rainIntensitymmPerHour >= 4 && rainIntensitymmPerHour < 8) {
+      return "moderate";
+    } else {
+      return "heavy rain";
+    }
+  }
+
+  public static getColourForRouteRainIntensity(rainIntensitymmPerHour: number): string { // using here and in map so making static and public so available // prob can be in better place
+    const VERY_LIGHT_BLUE = 'rgb(190, 230, 255)';
+    const LIGHT_BLUE = 'rgb(170, 210, 240)';
+    const BLUE = 'rgb(125, 165, 230)';
+    const DARK_BLUE = 'rgb(75, 115, 225)';
+    const OLIVE = 'rgb(125, 125, 0)';
+    const YELLOW = 'rgb(255, 200, 0)';
+    const ORANGE = 'rgb(255, 150, 0)';
+    const RED = 'rgb(255, 0, 0)';
+
+    if (rainIntensitymmPerHour < 0.01) {
+      return VERY_LIGHT_BLUE;
+    } else if (rainIntensitymmPerHour >= 0.01 && rainIntensitymmPerHour < 0.25) {
+      return LIGHT_BLUE;
+    } else if (rainIntensitymmPerHour >= 0.25 && rainIntensitymmPerHour < 0.5) {
+      return BLUE;
+    } else if (rainIntensitymmPerHour >= 0.5 && rainIntensitymmPerHour < 1) {
+      return DARK_BLUE;
+    } else if (rainIntensitymmPerHour >= 1 && rainIntensitymmPerHour < 2) {
+      return OLIVE;
+    } else if (rainIntensitymmPerHour >= 2 && rainIntensitymmPerHour < 4) {
+      return YELLOW;
+    } else if (rainIntensitymmPerHour >= 4 && rainIntensitymmPerHour < 8) {
+      return ORANGE;
+    } else {
+      return RED;
+    }
+  }
 
   ////////////////////////////////////////////////////
   // SERVICE BEFORE MOVED WEATHER STUFF TO THIS CLASS.

@@ -61,11 +61,13 @@ export class AppComponent implements OnInit {
     let newestRoute = this.routingService.getLastRoute();
     this.map.focusOnRoute(newestRoute.routeInformation);
 
-    let overallScores: string[] = [];
+    let averageRouteRainIntensities: string[] = [];
+
     for (let departureTime = 0; departureTime <= 20; departureTime += 5) {
-      overallScores.push(this.weatherService.generateOverallRouteScore(newestRoute, departureTime)); // can delete this.whenleavingfortable
+      averageRouteRainIntensities.push(this.weatherService.workOutRainIntensityAverageOfRoute(newestRoute, departureTime)); // can delete this.whenleavingfortable
     }
-    this.routeTable.addRouteToTable(newestRoute.routeInformation, overallScores); // HOW IS THIS WORKING
+
+    this.routeTable.addRouteToTable(newestRoute.routeInformation, averageRouteRainIntensities); // HOW IS THIS WORKING
   }
 
   public placeMarker(e: any) {

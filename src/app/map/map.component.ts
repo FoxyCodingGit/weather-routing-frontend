@@ -10,6 +10,7 @@ import { RoutRainIndicators } from './Model/RouteRainIndicators';
 import { RoutePolyline } from './Model/RoutePolyline';
 import { RoutingService } from '../shared/routing.service';
 import { ElevationInfoComponent } from '../elevation-info/elevation-info.component';
+import { WeatherService } from '../shared/weather.service';
 
 @Component({
   selector: 'app-map',
@@ -357,10 +358,10 @@ export class MapComponent implements OnInit {
 
   private createRainIndicatorElement(thisRoute: RouteAndWeatherInformation, weatherPointIndex: number, focusedrainintensity: number) {
     return new google.maps.Circle({
-      strokeColor: GraphComponent.getColourForRouteRainIntensity(focusedrainintensity),
+      strokeColor: WeatherService.getColourForRouteRainIntensity(focusedrainintensity),
       strokeOpacity: 0.2,
       strokeWeight: 2,
-      fillColor: GraphComponent.getColourForRouteRainIntensity(focusedrainintensity),
+      fillColor: WeatherService.getColourForRouteRainIntensity(focusedrainintensity),
       fillOpacity: 0.35,
       map: this.map,
       center: {
