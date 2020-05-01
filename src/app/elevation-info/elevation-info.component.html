@@ -1,7 +1,7 @@
 <div class="container" *ngIf="elevationInfo != null">
     <div class="wrapper">
         <h2>{{getDescription()}}</h2>
-        <div class="descriptionIcon"></div>
+        <div class="descriptionIcon" [ngClass]="{'ped': travelMode == 'pedestrian', 'bike': travelMode == 'bicycle'}"></div>
     </div>
     <hr>
 

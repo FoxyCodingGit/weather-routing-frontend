@@ -1,4 +1,5 @@
-$travel-car-icon: '/assets/images/car.png';
+$travel-pedestrian-icon: '/assets/images/walking-person.png';
+$travel-bike-icon: '/assets/images/bike.png';
 $total-elevation-change-icon: '/assets/images/elevation/upDown.png';
 $total-incline-icon: '/assets/images/elevation/up.png';
 
@@ -34,14 +35,21 @@ label {
 .descriptionIcon {
     background-color: white;
     background-repeat: no-repeat;
-    background-size: 30px;
+    background-size: 20px;
+    background-position: 5px;
     width: 30px;
     height: 30px;
     border-radius: 5px;
     margin-right: auto;
-    margin-left: 10px;
+    margin-left: 5px;
+}
 
-    background-image: url($travel-car-icon); 
+.ped {
+    background-image: url($travel-pedestrian-icon); 
+}
+
+.bike {
+    background-image: url($travel-bike-icon); 
 }
 
 .totalElevationChangeIcon {
