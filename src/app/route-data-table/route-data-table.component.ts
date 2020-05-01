@@ -7,6 +7,7 @@ import { RoutingService } from '../shared/routing.service';
 import { RouteSelectedState } from '../shared/Models/RouteSelectedState';
 import { AuthenticationService } from '../login/services/authentification.service';
 import { WeatherService } from '../shared/weather.service';
+import { AlertService } from '../shared/alert.service';
 
 @Component({
   selector: 'app-route-data-table',
@@ -21,7 +22,7 @@ export class RouteDataTableComponent implements OnInit {
 
   private favouritePressedSubject = new Subject<number>(); // This can be removed as there is no need for subject. Can just use code directly on favbuttonpressed
 
-  constructor(private routingService: RoutingService, private authService: AuthenticationService) { }
+  constructor(private routingService: RoutingService, private authService: AuthenticationService, private alertService: AlertService) { }
 
   public getFavouriteObserver(): Observable<number> {
     return this.favouritePressedSubject.asObservable();
@@ -60,7 +61,7 @@ export class RouteDataTableComponent implements OnInit {
     this.getFavouriteObserver().subscribe(
       async (routeId) => {
         if (this.authService.currentUserValue == null) {
-          return;
+          this.alertService.warning("Can't favourite route", "There is no user logged in")
         }
 
         if (this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.isFavourite) { await this.deleteFromDB(routeId); }
@@ -90,11 +91,15 @@ export class RouteDataTableComponent implements OnInit {
     $('#table_id').DataTable(tableSettings);
 
     const componentScope = this;
-    const table = $('#table_id').DataTable();
+    const table = $('#table_id').DataTable(); // todo: call this only once and use everywhere to clean up.
 
     let that = this;
 
     const selectRowFunc = function() {
+      if (that.isClickingEmptyRow(table)) {
+        return;
+      }
+
       let isHighlightingRow: boolean;
 
       if ($(this).hasClass('selected')) {
@@ -229,5 +234,9 @@ export class RouteDataTableComponent implements OnInit {
     }
 
     this.SelectRowAction.emit({ focusedRouteId: routeId, isHighlightedRow: isHighlightingRow });
+  }
+
+  private isClickingEmptyRow(table): boolean {
+    return table.row(this).data() == null;
   }
 }
