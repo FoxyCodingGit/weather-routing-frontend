@@ -161,17 +161,17 @@ export class RouteDataTableComponent implements OnInit {
       routeInformation.distance + 'm',
 
   
-      this.getcolouredRainIOntesiry(averageRouteRainIntensities[0]) + "(" + averageRouteRainIntensities[0] + " mm/h)",
-      this.getcolouredRainIOntesiry(averageRouteRainIntensities[1]) + "(" + averageRouteRainIntensities[1] + " mm/h)" + scoreComparisonIcons[0],
-      this.getcolouredRainIOntesiry(averageRouteRainIntensities[2]) + "(" + averageRouteRainIntensities[2] + " mm/h)" + scoreComparisonIcons[0],
-      this.getcolouredRainIOntesiry(averageRouteRainIntensities[3]) + "(" + averageRouteRainIntensities[3] + " mm/h)" + scoreComparisonIcons[0],
-      this.getcolouredRainIOntesiry(averageRouteRainIntensities[4]) + "(" + averageRouteRainIntensities[4] + " mm/h)" + scoreComparisonIcons[0]
+      this.getRainIntensityIndicator(averageRouteRainIntensities[0]) + "(" + averageRouteRainIntensities[0] + " mm/h)",
+      this.getRainIntensityIndicator(averageRouteRainIntensities[1]) + "(" + averageRouteRainIntensities[1] + " mm/h)" + scoreComparisonIcons[0],
+      this.getRainIntensityIndicator(averageRouteRainIntensities[2]) + "(" + averageRouteRainIntensities[2] + " mm/h)" + scoreComparisonIcons[0],
+      this.getRainIntensityIndicator(averageRouteRainIntensities[3]) + "(" + averageRouteRainIntensities[3] + " mm/h)" + scoreComparisonIcons[0],
+      this.getRainIntensityIndicator(averageRouteRainIntensities[4]) + "(" + averageRouteRainIntensities[4] + " mm/h)" + scoreComparisonIcons[0]
     ]).draw();
 
     this.routeCreationComplete.emit();
   }
 
-  private getcolouredRainIOntesiry(rainintensitymmperhour: string) {
+  private getRainIntensityIndicator(rainintensitymmperhour: string) {
     let desc = WeatherService.getRainIntensityDescriptor(+rainintensitymmperhour);
     let colour = WeatherService.getColourForRouteRainIntensity(+rainintensitymmperhour);
     return "<div class=\"rainIntensityIndictor\" style=\"background-color: " + colour + ";\">" + desc + "</div>";

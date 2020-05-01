@@ -189,13 +189,13 @@ export class WeatherService {
     } else if (rainIntensitymmPerHour >= 0.25 && rainIntensitymmPerHour < 0.5) {
       return "very light rain";
     } else if (rainIntensitymmPerHour >= 0.5 && rainIntensitymmPerHour < 1) {
-      return "light right";
+      return "light rain";
     } else if (rainIntensitymmPerHour >= 1 && rainIntensitymmPerHour < 2) {
-      return "light rain v. 2";
+      return "light rain";
     } else if (rainIntensitymmPerHour >= 2 && rainIntensitymmPerHour < 4) {
       return "moderate rain";
     } else if (rainIntensitymmPerHour >= 4 && rainIntensitymmPerHour < 8) {
-      return "moderate";
+      return "moderate rain";
     } else {
       return "heavy rain";
     }
