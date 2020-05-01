@@ -140,12 +140,11 @@ export class RoutingService {
     });
 
     for (let i = 0; i < userSavedRoutes.length; i++) {
-      await this.alalalal(userSavedRoutes[i].readableRouteId.toString(), true, userSavedRoutes[i].routeName, userSavedRoutes[i].modeOfTransport, userSavedRoutes[i].startLat, userSavedRoutes[i].startLng, userSavedRoutes[i].endLat, userSavedRoutes[i].endLng);
+      await this.generateRoutes(userSavedRoutes[i].readableRouteId.toString(), true, userSavedRoutes[i].routeName, userSavedRoutes[i].modeOfTransport, userSavedRoutes[i].startLat, userSavedRoutes[i].startLng, userSavedRoutes[i].endLat, userSavedRoutes[i].endLng);
     }
   }
 
-  public async alalalal(databaseRouteId: string, isFavourite: boolean, routeName: string, travelMode: string, startLat: number, startLng: number, endLat: number, endLng: number) {
-    debugger;
+  public async generateRoutes(databaseRouteId: string, isFavourite: boolean, routeName: string, travelMode: string, startLat: number, startLng: number, endLat: number, endLng: number) {
     await this.getAllRoutesFromThisLocation(travelMode, startLat, startLng, endLat, endLng, this.numberOfAltRoutes).toPromise().then(async (routes: RouteFromAPI[]) => {
       let newRoutesFormat: RouteIWant[] = this.RouteFromAPIToRouteIWant(routes);
 
@@ -253,7 +252,7 @@ export class RoutingService {
     }
   }
 
-  private getPercentageOfCurrentDistancePastLastLegToNextOne(distance: number, routeInfo: RouteAndWeatherInformation, lastLegIndex: number, ) {
+  private getPercentageOfCurrentDistancePastLastLegToNextOne(distance: number, routeInfo: RouteAndWeatherInformation, lastLegIndex: number) {
     let distanceFromPrevToCurrentDistance = distance - routeInfo.routeInformation.cumulativeDistances[lastLegIndex];
     let distanceBetweenTwoNearestLegs = this.distanceToNextLatLngValue(routeInfo.routeInformation.route.getPath().getArray(), lastLegIndex);
     return distanceFromPrevToCurrentDistance / distanceBetweenTwoNearestLegs;

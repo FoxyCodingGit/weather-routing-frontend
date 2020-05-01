@@ -71,7 +71,7 @@ export class RouteCreationComponent implements OnInit {
 
     this.routeCreationLoading = true;
     this.setRouteMetaData(data.maxAltRoutes, data.weatherPointNum);
-    this.routingService.alalalal(null, false, data.name, data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng);
+    this.routingService.generateRoutes(null, false, data.name, data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng);
   }
 
   public updateLatLngInputValues(latLng: google.maps.LatLng, isStartMarker: boolean): void {

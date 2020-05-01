@@ -32,11 +32,23 @@ export class RouteDataTableComponent implements OnInit {
     const table = $('#table_id').DataTable();
 
     if (this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.isFavourite) {
-      table.cell({row: routeId, column: 1}).data('<i class="fas fa-star"></i><i class="fas fa-trash"></i><button style="margin-left:10px" class="weatherInfo">Current Weather</button>');
+      table.cell({row: this.getRowNumByRouteId(routeId), column: 1}).data('<i class="fas fa-star"></i><i class="fas fa-trash"></i><button style="margin-left:10px" class="weatherInfo">Current Weather</button>');
     } else {
-      table.cell({row: routeId, column: 1}).data('<i class="far fa-star"></i><i class="fas fa-trash"></i><button style="margin-left:10px" class="weatherInfo">Current Weather</button>');
+      table.cell({row: this.getRowNumByRouteId(routeId), column: 1}).data('<i class="far fa-star"></i><i class="fas fa-trash"></i><button style="margin-left:10px" class="weatherInfo">Current Weather</button>');
     }
     $('#table_id').DataTable().draw();
+  }
+
+  private getRowNumByRouteId(routeId: number): number {
+    const table = $('#table_id').DataTable();
+    let focusedRouteId: number;
+
+    for (let rowNumOnTable = 0; rowNumOnTable < table.rows().count(); rowNumOnTable++) {
+      focusedRouteId = table.row(rowNumOnTable).data()[0];
+      if (routeId === focusedRouteId) {
+        return rowNumOnTable;
+      }
+    }
   }
 
   private async deleteFromDB(routeId: number) {
