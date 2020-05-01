@@ -3,7 +3,6 @@ import { RoutingService } from '../shared/routing.service';
 import { TempRouteHelper } from '../shared/tempRouteHelper';
 import { AlertService } from '../shared/alert.service';
 import { HighlightState, LocationType } from '../shared/Models/HighLightState';
-import { Location } from '../shared/Models/Elevation/Location';
 
 @Component({
   selector: 'app-route-creation',
@@ -46,8 +45,12 @@ export class RouteCreationComponent implements OnInit {
 
   public routeCreationLoading = false;
 
+  public defaultMaxNumAltRoutes = 0;
+  public defaultWeatherPointsNum = 3;
+
   ngOnInit(): void {
     this.routingService.getRouteCreationOnError().subscribe(() => { this.routeCreationLoading = false; });
+    this.setRouteMetaData(this.defaultMaxNumAltRoutes, this.defaultWeatherPointsNum);
   }
 
   public onRoutingSubmit(data: any) {
@@ -67,6 +70,7 @@ export class RouteCreationComponent implements OnInit {
     }
 
     this.routeCreationLoading = true;
+    this.setRouteMetaData(data.maxAltRoutes, data.weatherPointNum);
     this.routingService.alalalal(null, false, data.name, data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng);
   }
 
@@ -134,10 +138,6 @@ export class RouteCreationComponent implements OnInit {
     }
   }
 
-  private areAllLatLngValuesTheSame(lastFocusedLat: number, newLat: number, lastFocusedLng: number, newLng: number,): boolean {
-    return lastFocusedLat == newLat  && lastFocusedLng == newLng;
-  }
-
   public async setNewLocationByName(calculatedLocation: string, newLocation: string, searchEventEmitter: EventEmitter<any>, isStartLocation: boolean) {
     if (this.isSameLocationBeingDisplayed(calculatedLocation, newLocation)) {
       searchEventEmitter.emit();
@@ -156,10 +156,6 @@ export class RouteCreationComponent implements OnInit {
         newLocation = calculatedLocation;
         this.alertService.error("could not place marker", reason);
     });
-  }
-
-  private isSameLocationBeingDisplayed(currentLocation: string, newLocation: string): boolean {
-    return currentLocation == newLocation;
   }
 
   public startingLocationInClickableState() {
@@ -186,5 +182,18 @@ export class RouteCreationComponent implements OnInit {
       this.isStartingLocationClickableFocused = false;
       this.updateLocationMarkerHighlightable.emit({location: LocationType.DESTINATION, isHighlighted: true});
     }
+  }
+
+  private setRouteMetaData(maxAltRoutes: number, weatherPointNum: number): void {
+    this.routingService.setNumberOfAltRoutes(maxAltRoutes);
+    this.routingService.setHowManyWeatherMarkerPoints(weatherPointNum);
+  }
+
+  private areAllLatLngValuesTheSame(lastFocusedLat: number, newLat: number, lastFocusedLng: number, newLng: number,): boolean {
+    return lastFocusedLat === newLat  && lastFocusedLng === newLng;
+  }
+
+  private isSameLocationBeingDisplayed(currentLocation: string, newLocation: string): boolean {
+    return currentLocation === newLocation;
   }
 }

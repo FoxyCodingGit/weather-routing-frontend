@@ -3,8 +3,10 @@ $travel-pedestrian-icon: '/assets/images/walking-person.png';
 $travel-bike-icon: '/assets/images/bike.png';
 $travel-car-icon: '/assets/images/car.png';
 $world-icon: '/assets/images/world.png';
+$alt-route-icon: '/assets/images/altRoute.png';
 $start-marker-icon: 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png';
 $end-marker-icon: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png';
+$weather-points-icon: '/assets/images/multiplePins.png';
 
 h1 {
     margin: auto;
@@ -117,7 +119,7 @@ label, input, select {
     margin-left: 10px;
 }
 
-.travelModeSection {
+.secondColumn {
     width: 50%;
 }
 
@@ -165,6 +167,14 @@ input[type=text], select {
     &[name=startLat], &[name=startLng], &[name=endLat], &[name=endLng] {
         background-image: url($world-icon);
     }
+
+    &[name=maxAltRoutes] {
+        background-image: url($alt-route-icon);
+    }
+
+    &[name=weatherPointNum] {
+        background-image: url($weather-points-icon);
+    }
 }
 
 .starting, .ending {
@@ -172,15 +182,14 @@ input[type=text], select {
 }
 
 input[type=submit], .loadingSubmit {
-    margin: 0;
-    position: fixed;
-    top: 478px;
-    width: 412px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
     
     height: 56px;
     color: white;
     border: none;
-    border-radius: 4px;
     cursor: pointer;
 }
 
@@ -209,4 +218,8 @@ input[type=submit] {
 
 input[type=submit]:hover {
     background-color: #45a049;
+}
+
+.altRoutesAndWeatherPoints label {
+    font-size: 10px;
 }

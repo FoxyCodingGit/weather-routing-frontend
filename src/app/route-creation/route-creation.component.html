@@ -6,7 +6,7 @@
       <label for="name">Name</label>
       <input type="text" name="name" [ngModel]="defaultRouteName"><br/>
     </div>
-    <div class="travelModeSection">
+    <div class="secondColumn">
       <label for="travelMode">Mode of Transport</label>
       <select name=travelMode [(ngModel)]="selectedTravelMode" [ngClass]="{'ped': selectedTravelMode == 'pedestrian', 'bike': selectedTravelMode == 'bicycle', 'car': selectedTravelMode == 'car' }">
         <option value="pedestrian">Pedestrian</option>
@@ -15,7 +15,8 @@
       </select>
     </div>
   </div>
-  <div class="wrapper">
+
+  <div *ngIf="!showStartLatLng; else startLatLng" class="wrapper">
     <div class="starting">
       <label for="startingPoint">Starting Point</label>
       <input type="text" name="startingPoint" [(ngModel)]="startingPoint"> <!-- input but not saved anywhere (yet?)-->
@@ -28,24 +29,21 @@
     <input name="showStartLatLng" type="checkbox" [checked]="showStartLatLng" (change)="showStartLatLng = !showStartLatLng">
   </div>
 
-
-
-  <div *ngIf="showStartLatLng" >
+  <ng-template #startLatLng>
     <div class="wrapper">
       <div class="firstColumn">
-        <label for="startLat">Lattitude:</label>
+        <label for="startLat">Start Lattitude:</label>
         <input type="text" name="startLat" [(ngModel)]="startLat">
       </div>
       <div class="longitudeColumn">
-        <label for="startLng" >Longitude:</label>
+        <label for="startLng" >Start Longitude:</label>
         <input type="text" name="startLng" [(ngModel)]="startLng">
       </div>
       <button class="ClickToSetMarkerButton" type="button" (click)="pp(true)"><i class="fas fa-search-location"></i></button>
     </div>
-    <hr>
-  </div>
-  
-  <div class="wrapper">
+  </ng-template>
+
+  <div *ngIf="!showEndLatLng; else endLatLng" class="wrapper">
     <div class="ending">
       <label for="destination">Destination</label>
       <input type="text" name="destination" [(ngModel)]="destination"> <!-- input but not saved anywhere (yet?)-->
@@ -58,19 +56,39 @@
     <input name="showEndLatLng" type="checkbox" [checked]="showEndLatLng" (change)="showEndLatLng = !showEndLatLng">
   </div>
 
-  <div *ngIf="showEndLatLng">
+  <ng-template #endLatLng>
     <div class="wrapper">
       <div class="firstColumn">
-        <label for="endLat">Lattitude:</label>
+        <label for="endLat">Destination Lattitude:</label>
         <input type="text" name="endLat" [(ngModel)]="endLat">
       </div>
       <div class="longitudeColumn">
-        <label for="endLng">Longitude:</label>
+        <label for="endLng">Destination Longitude:</label>
         <input type="text" name="endLng" [(ngModel)]="endLng"><br/>
       </div>
       <button class="ClickToSetMarkerButton" type="button" (click)="pp(false)"><i class="fas fa-search-location"></i></button>
     </div>
-    <hr>
+  </ng-template>
+
+  <div class="wrapper altRoutesAndWeatherPoints">
+    <div class="firstColumn">    
+      <label for="maxAltRoutes">Maximum Alternative Routes</label>
+      <select name="maxAltRoutes" [ngModel]="defaultMaxNumAltRoutes">
+        <option value='0'>0</option>
+        <option value='1'>1</option>
+        <option value='2'>2</option>
+      </select>      
+    </div>
+    <div class="secondColumn">
+      <label for="weatherPointNum">Number of weather Points</label>
+      <select name="weatherPointNum" [ngModel]="defaultWeatherPointsNum">
+        <option value='3'>3</option>
+        <option value='4'>4</option>
+        <option value='5'>5</option>
+        <option value='6'>6</option>
+        <option value='7'>7</option>
+      </select>
+    </div>
   </div>
 
   

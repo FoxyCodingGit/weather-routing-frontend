@@ -8,10 +8,9 @@ app-map, app-route-creation {
 }
 
 app-route-creation {
+    position: relative;
     width: 25%;
     border-radius: 0 5px 0 0;
-    overflow-y: scroll;
-    padding-bottom: 60px;
 }
 
 app-alert {

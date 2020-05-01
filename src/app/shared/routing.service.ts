@@ -36,10 +36,10 @@ export class RoutingService {
     return this.routeCreationOnError;
   }
 
-  private routeAndWeatherInformation: RouteAndWeatherInformation[] = [];
   public static routeId = 0;
-  private readonly numberOfAltRoutes = 0;
-  private howManyWeatherMarkerChecks = 6;
+  private routeAndWeatherInformation: RouteAndWeatherInformation[] = [];
+  private numberOfAltRoutes: number;
+  private howManyWeatherMarkerPoints: number;
 
   private baseURL = 'https://localhost:44338/routing';
   private userDefinedBaseURL = 'https://localhost:44338/api/UserDefinedRoute'; // TODO: on backend need to change the url.
@@ -48,6 +48,14 @@ export class RoutingService {
 
   public getRouteAndWeatherInformation(): RouteAndWeatherInformation[] {
     return this.routeAndWeatherInformation;
+  }
+
+  public setNumberOfAltRoutes(numberOfAltRoutes: any) {
+    this.numberOfAltRoutes = numberOfAltRoutes;
+  }
+
+  public setHowManyWeatherMarkerPoints(howManyWeatherMarkerPoints: any) {
+    this.howManyWeatherMarkerPoints = howManyWeatherMarkerPoints;
   }
 
   public getRouteInformation(): RouteInformation[] {
@@ -168,8 +176,8 @@ export class RoutingService {
   }
 
   private setWeatherLegsEqualDistanceApart(thisRoute: RouteInformation): void {
-    for (let i = 0; i < this.howManyWeatherMarkerChecks; i++) {
-      const distancePercentageAlongRoute = i * (1 / (this.howManyWeatherMarkerChecks - 1));  // if four for example -> 0 33 66 100 the middle two are 1/3 and 2/3. top begins at one and below is one less that howmanyweathermarkers
+    for (let i = 0; i < this.howManyWeatherMarkerPoints; i++) {
+      const distancePercentageAlongRoute = i * (1 / (this.howManyWeatherMarkerPoints - 1));  // if four for example -> 0 33 66 100 the middle two are 1/3 and 2/3. top begins at one and below is one less that howmanyweathermarkers
       this.calculateWithLegIsClosestToDistance(thisRoute, thisRoute.distance * distancePercentageAlongRoute);
     }
     console.log(thisRoute.weatherPoints);
@@ -284,7 +292,7 @@ export class RoutingService {
     return d * 1000;
   }
   
-  private degreeToRadian(deg) {
+  private degreeToRadian(deg: number) {
     return deg * (Math.PI / 180);
   }
 
