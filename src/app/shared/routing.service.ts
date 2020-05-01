@@ -327,6 +327,8 @@ export class RoutingService {
     await thisRoute.getStartEndLocationNameAsync();
     this.setWeatherLegsEqualDistanceApart(thisRoute);
 
+    RoutingService.routeId++; // here
+
     return await this.weatherService.addWeatherInformationToRoute(thisRoute);
   }
 
