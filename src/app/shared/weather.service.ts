@@ -6,7 +6,7 @@ import { MinutelyRainData } from '../map/Model/MinutelyRainData';
 import { RouteInformation } from '../map/Model/RouteInformation';
 import { RouteAndWeatherInformation } from '../map/Model/RouteAndWeatherInformation';
 import { ProbsAndIntensitiesPerWeatherPointPerDepartureTime } from './Models/ProbsAndIntensitiesPerWeatherPointPerDepartureTime';
-import { Currently } from './Models/Currently';
+import { Currently, IconType } from './Models/Currently';
 import { TravelMode } from './Models/travelMode';
 
 @Injectable({
@@ -52,7 +52,7 @@ export class WeatherService {
     return MinutelyDatForThisWeatherMarkers;
   }
 
-  private getWeatherInformationPerWeatherPointPerPerInterval(thisRoute: RouteInformation, MinutelyDatForThisRoute: MinutelyRainData[][]): ProbsAndIntensitiesPerWeatherPointPerDepartureTime { // cpould use model instead of array and then having intensities on index 0 and probs on 1?!
+  private getWeatherInformationPerWeatherPointPerPerInterval(thisRoute: RouteInformation, MinutelyDatForThisRoute: MinutelyRainData[][]): ProbsAndIntensitiesPerWeatherPointPerDepartureTime {
     const rainDataForEachPoint: MinutelyRainData[][] = this.getRainDataAtEachWeatherPointPerInterval(thisRoute, MinutelyDatForThisRoute);
     return this.getProbAndIntensities(rainDataForEachPoint);
   }
@@ -227,6 +227,99 @@ export class WeatherService {
     } else {
       return RED;
     }
+  }
+
+  // FAKE WEATHER INFORMATION
+
+  public async addFakeWeatherInformationToRoute(thisRoute: RouteInformation): Promise<RouteAndWeatherInformation> {
+    let minutelyRainData = this.getFakeMinutelyData(thisRoute);
+
+    const refactorMe: ProbsAndIntensitiesPerWeatherPointPerDepartureTime =
+      this.getWeatherInformationPerWeatherPointPerPerInterval(thisRoute, minutelyRainData);
+    const currentWeather: Currently = this.GetFakeCurrentForPoint(thisRoute.route.getPath().getArray()[0].lat(),
+      thisRoute.route.getPath().getArray()[0].lng());
+
+    return new RouteAndWeatherInformation(thisRoute, refactorMe.rainIntensities, refactorMe.rainProbabilites, currentWeather);
+  }
+
+  private getFakeMinutelyData(thisRoute: RouteInformation): MinutelyRainData[][] {
+    const MinutelyDatForThisWeatherMarkers: MinutelyRainData[][] = [];
+    const mapRoute = thisRoute.route.getPath().getArray();
+
+    for (let i = 0; i < thisRoute.weatherPoints.length; i++) {
+      let minutelyRainData = this.GetFakeRainMinutelyDataForWeatherPoint(mapRoute[thisRoute.weatherPoints[i].legNumberInRoute].lat(),
+        mapRoute[thisRoute.weatherPoints[i].legNumberInRoute].lng());
+      MinutelyDatForThisWeatherMarkers.push(minutelyRainData);
+    }
+
+    return MinutelyDatForThisWeatherMarkers;
+  }
+
+  public GetFakeRainMinutelyDataForWeatherPoint(lat: number, lng: number): MinutelyRainData[] { // move * 100 to percentage back to map.
+    let fakeMinutelyData: MinutelyRainData[] = [];
+    let baseRainIntensity = this.getRandomNumber(0.01, 8);
+    let rainIntensityAlteration = baseRainIntensity;
+    let baseRainProbability = this.getRandomNumber(0, 100);
+    let rainProbabilityAlteration = baseRainProbability;
+
+    for (let minute = 0; minute <= 60; minute++) {
+      rainIntensityAlteration += this.getRandomNumber(-1, 1);
+      if (rainIntensityAlteration < 0) {
+        rainIntensityAlteration = 0;
+      }
+
+      rainProbabilityAlteration += this.getRandomNumber(-20, 20);
+      if (rainProbabilityAlteration < 0) {
+        rainProbabilityAlteration = 0;
+      } else if (rainProbabilityAlteration > 100) {
+        rainProbabilityAlteration = 100;
+      }
+
+      fakeMinutelyData.push({time: 0, precipIntensity: rainIntensityAlteration, precipProbability: rainProbabilityAlteration});
+    }
+
+    return fakeMinutelyData;
+  }
+
+  private getRandomNumber(min: number, max: number): number {
+    return +(Math.random() * (min - max) + max).toFixed(2);
+  }
+
+  public GetFakeCurrentForPoint(lat: number, lng: number): Currently {
+    const url = `${this.baseURL}/currently/${lat}/${lng}`;
+
+    let randomPrecipIntensity = this.getRandomNumber(0, 16);
+    let randomPrecipProb = this.getRandomNumber(0, 1);
+    let randomTemperature = this.getRandomNumber(0, 20);
+    let randomWindBearing = this.getRandomNumber(0, 259);
+    let randomWindspeed = this.getRandomNumber(2, 10);
+    let randomCloudCoverage = this.getRandomNumber(0, 1);
+    let randomUvIndex = Math.floor(this.getRandomNumber(0, 11.9));
+    let randomVisibilty = this.getRandomNumber(2, 15);
+
+    let currently: Currently = {
+      time: null, // DONT CARE ABOUT
+      summary: 'DEBUG SUMMARY',
+      icon: IconType.SNOW,
+      nearestStormDistance: null, // DONT CARE ABOUT
+      nearestStormBearing: null, // DONT CARE ABOUT
+      precipIntensity: randomPrecipIntensity,
+      precipProbability: randomPrecipProb,
+      temperature: randomTemperature,
+      apparentTemperature: randomTemperature + this.getRandomNumber(-2, 2),
+      dewPoint: null, // DONT CARE ABOUT
+      humidity: null, // DONT CARE ABOUT
+      pressure: null, // DONT CARE ABOUT
+      windSpeed: randomWindspeed,
+      windGust: randomWindspeed + this.getRandomNumber(1, 5),
+      windBearing: randomWindBearing,
+      cloudCover: randomCloudCoverage,
+      uvIndex: randomUvIndex,
+      visibility: randomVisibilty,
+      ozone: null // DONT CARE ABOUT
+    };
+
+    return currently;
   }
 
   ////////////////////////////////////////////////////

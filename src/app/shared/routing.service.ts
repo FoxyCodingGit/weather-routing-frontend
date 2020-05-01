@@ -140,11 +140,12 @@ export class RoutingService {
     });
 
     for (let i = 0; i < userSavedRoutes.length; i++) {
-      await this.generateRoutes(userSavedRoutes[i].readableRouteId.toString(), true, userSavedRoutes[i].routeName, userSavedRoutes[i].modeOfTransport, userSavedRoutes[i].startLat, userSavedRoutes[i].startLng, userSavedRoutes[i].endLat, userSavedRoutes[i].endLng);
+      await this.generateRoutes(userSavedRoutes[i].readableRouteId.toString(), true, userSavedRoutes[i].routeName, userSavedRoutes[i].modeOfTransport, userSavedRoutes[i].startLat, userSavedRoutes[i].startLng, userSavedRoutes[i].endLat, userSavedRoutes[i].endLng, false);
     }
   }
 
-  public async generateRoutes(databaseRouteId: string, isFavourite: boolean, routeName: string, travelMode: string, startLat: number, startLng: number, endLat: number, endLng: number) {
+  public async generateRoutes(databaseRouteId: string, isFavourite: boolean, routeName: string, travelMode: string,
+                              startLat: number, startLng: number, endLat: number, endLng: number, useFakeWeatherData: boolean) {
     await this.getAllRoutesFromThisLocation(travelMode, startLat, startLng, endLat, endLng, this.numberOfAltRoutes).toPromise().then(async (routes: RouteFromAPI[]) => {
       let newRoutesFormat: RouteIWant[] = this.RouteFromAPIToRouteIWant(routes);
 
@@ -154,7 +155,7 @@ export class RoutingService {
           this.alertService.warning("Can't add route that takes longer than 40 minutes.", "Weather data provider does not provide weather information after this timescale");
           this.routeCreationOnError.next();
         } else {
-          await this.createRouteWithWeatherInfo(databaseRouteId, isFavourite, newRoutesFormat[i], routeName, travelMode).then(route => {
+          await this.createRouteWithWeatherInfo(databaseRouteId, isFavourite, newRoutesFormat[i], routeName, travelMode, useFakeWeatherData).then(route => {
             newRoutes.push(route);
           });
           this.newRoutesSubject.next(newRoutes); // needs to be here so async. Doesnt matter that multiple routes will call this one at a time.
@@ -313,7 +314,7 @@ export class RoutingService {
     return newRouteIWantFormat;
   }
 
-  private async createRouteWithWeatherInfo(databaseRouteId: string, isFavourite: boolean, routeInformation: RouteIWant, routeName: string, travelMode: string): Promise<RouteAndWeatherInformation> {
+  private async createRouteWithWeatherInfo(databaseRouteId: string, isFavourite: boolean, routeInformation: RouteIWant, routeName: string, travelMode: string, useFakeWeatherData: boolean): Promise<RouteAndWeatherInformation> {
     let mapRoute = new google.maps.Polyline({
       path: routeInformation.points,
       geodesic: true,
@@ -326,9 +327,13 @@ export class RoutingService {
     await thisRoute.getStartEndLocationNameAsync();
     this.setWeatherLegsEqualDistanceApart(thisRoute);
 
-    RoutingService.routeId++; // here
+    RoutingService.routeId++;
 
-    return await this.weatherService.addWeatherInformationToRoute(thisRoute);
+    if (useFakeWeatherData) {
+      return await this.weatherService.addFakeWeatherInformationToRoute(thisRoute);
+    } else {
+      return await this.weatherService.addWeatherInformationToRoute(thisRoute);
+    }
   }
 
   private stringToTravelType(value: string): TravelMode {

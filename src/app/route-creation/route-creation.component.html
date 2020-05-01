@@ -90,6 +90,10 @@
     </div>
   </div>
 
+  <div class="fakeWeatherData wrapper">
+    <label>DEBUG - use fake weather values</label>
+    <input name="showStartLatLng" type="checkbox" [(ngModel)]="useFakeWeatherData">
+  </div>
   
   <input *ngIf="!routeCreationLoading; else loading" type="submit" value="SUBMIT">
   <ng-template #loading>

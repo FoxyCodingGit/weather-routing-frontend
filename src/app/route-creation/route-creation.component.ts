@@ -48,6 +48,8 @@ export class RouteCreationComponent implements OnInit {
   public defaultMaxNumAltRoutes = 0;
   public defaultWeatherPointsNum = 3;
 
+  public useFakeWeatherData = false;
+
   ngOnInit(): void {
     this.routingService.getRouteCreationOnError().subscribe(() => { this.routeCreationLoading = false; });
     this.setRouteMetaData(this.defaultMaxNumAltRoutes, this.defaultWeatherPointsNum);
@@ -71,7 +73,7 @@ export class RouteCreationComponent implements OnInit {
 
     this.routeCreationLoading = true;
     this.setRouteMetaData(data.maxAltRoutes, data.weatherPointNum);
-    this.routingService.generateRoutes(null, false, data.name, data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng);
+    this.routingService.generateRoutes(null, false, data.name, data.travelMode, this.startLat, this.startLng, this.endLat, this.endLng, this.useFakeWeatherData);
   }
 
   public updateLatLngInputValues(latLng: google.maps.LatLng, isStartMarker: boolean): void {

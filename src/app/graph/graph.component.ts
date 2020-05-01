@@ -157,7 +157,7 @@ export class GraphComponent {
     for (let focusedWeatherStation = 0; focusedWeatherStation < rainIntensities[0].length; focusedWeatherStation++) {
       routeIntensities = [];
       rainIntensities.forEach(intervalIntensities => {
-        routeIntensities.push(intervalIntensities[focusedWeatherStation]);
+        routeIntensities.push(+intervalIntensities[focusedWeatherStation].toFixed(2));
       });
 
       this.chartData.push({
