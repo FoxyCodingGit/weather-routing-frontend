@@ -56,7 +56,7 @@ export class ElevationInfoComponent {
     if (gradient < 3) return "Slightly Hilly";
     if (gradient < 6) return "Hilly";
     if (gradient < 9) return "Very hilly";
-    return "extremely hilly";
+    return "Extremely hilly";
   }
 
   public onElevationChangeChecked(show: boolean) {
