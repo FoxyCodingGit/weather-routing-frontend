@@ -12,14 +12,14 @@ export class CurrentWeatherHelper {
     }
 
     public static getRain(precipIntensity: number, precipProb: number): IconTextThings { // This is rain information for current. (only first weather point).
-        const precipIntensitySummary: string = this.workOutRainIntensity(precipIntensity); 
+        const precipIntensitySummary: string = this.workOutRainIntensity(precipIntensity);
         
         return {
             title: 'Rain',
             icons: ['/assets/images/rain/' + precipIntensitySummary + '.png'],
             text: precipIntensitySummary.charAt(0).toUpperCase() + precipIntensitySummary.substring(1)
                 + '<br>' +
-                precipProb * 100 + "%"
+                precipProb * 100 + '%'
         };
     }
 
@@ -74,16 +74,16 @@ export class CurrentWeatherHelper {
     }
 
     private static workOutRainIntensity(rainIntensity: number): string {
-        if (rainIntensity < 0.01) {
+        if (rainIntensity === 0) {
             return Rain.NONE;
         }
-        if (rainIntensity < 0.5) {
+        if (rainIntensity < 0.25) {
             return Rain.DRIZZLE;
         }
-        if (rainIntensity < 1) {
+        if (rainIntensity < 2) {
             return Rain.LIGHT;
         }
-        if (rainIntensity < 4) {
+        if (rainIntensity < 8) {
             return Rain.MODERATE;
         }
         return Rain.HEAVY;
