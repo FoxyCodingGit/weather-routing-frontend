@@ -162,7 +162,7 @@ export class MapComponent implements OnInit {
         this.deleteMarker(this.focusedStartMarker);
       }
 
-      this.focusedStartMarker = new google.maps.Marker({position: latLng, map: this.map, 
+      this.focusedStartMarker = new google.maps.Marker({position: latLng, map: this.map,
         icon: {
         url: this.assetService.focusedStartMarkerFile
         }
@@ -172,7 +172,7 @@ export class MapComponent implements OnInit {
         this.deleteMarker(this.focusedEndMarker);
       }
 
-      this.focusedEndMarker = new google.maps.Marker({position: latLng, map: this.map, 
+      this.focusedEndMarker = new google.maps.Marker({position: latLng, map: this.map,
         icon: {
         url:  this.assetService.focusedEndMarkerFile
         }
@@ -433,9 +433,21 @@ export class MapComponent implements OnInit {
     this.mapClicked.emit({latLng: e.latLng, isStartMarker: this.isStartHighlightedToBeClickable});
   }
 
-  private placeStartEndMarkers(routeId: number, routePoints: google.maps.LatLng[]) {
-    var startMarker = new google.maps.Marker({position: routePoints[0], map: this.map});
-    var endMarker = new google.maps.Marker({position: routePoints[routePoints.length - 1], map: this.map});
+  private placeStartEndMarkers(routeId: number, routePoints: google.maps.LatLng[]) { // here?
+    var startMarker = new google.maps.Marker({
+      position: routePoints[0],
+      map: this.map,
+      icon: {
+        url: this.assetService.startMarkerUrl,
+        size: new google.maps.Size(20, 20),
+        anchor: new google.maps.Point(10, 10)
+      }
+    });
+
+    var endMarker = new google.maps.Marker({
+      position: routePoints[routePoints.length - 1],
+      map: this.map
+    });
 
     this.routeMarkers.push({ routeId: routeId, marker: startMarker });
     this.routeMarkers.push({ routeId: routeId, marker: endMarker });
