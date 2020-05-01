@@ -52,10 +52,10 @@ export class ElevationInfoComponent {
   }
 
   public workOutCylcingDifficultyOfGradient(gradient: number): string { // http://theclimbingcyclist.com/gradients-and-cycling-an-introduction/
-    if (gradient < 1) return "flat";
-    if (gradient < 3) return "slightly hilly";
-    if (gradient < 6) return "hilly";
-    if (gradient < 9) return "very hilly";
+    if (gradient < 1) return "Flat";
+    if (gradient < 3) return "Slightly Hilly";
+    if (gradient < 6) return "Hilly";
+    if (gradient < 9) return "Very hilly";
     return "extremely hilly";
   }
 
