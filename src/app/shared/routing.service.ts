@@ -100,7 +100,7 @@ export class RoutingService {
     return this.getRouteAndWeatherInformationById(RoutingService.routeId - 1);
   }
   
-  public GetRoutesForOneLocation(travelMode: string, startLat: number, startLng: number,
+  public getAllRoutesFromThisLocation(travelMode: string, startLat: number, startLng: number,
                    endLat: number, endLng: number, numberofAlternates: number = 0): Observable<RouteFromAPI[]> {
 
     const url = `${this.baseURL}/${travelMode}/${numberofAlternates}/${startLat}/${startLng}/${endLat}/${endLng}`;
@@ -145,7 +145,8 @@ export class RoutingService {
   }
 
   public async alalalal(databaseRouteId: string, isFavourite: boolean, routeName: string, travelMode: string, startLat: number, startLng: number, endLat: number, endLng: number) {
-    await this.GetRoutesForOneLocation(travelMode, startLat, startLng, endLat, endLng, this.numberOfAltRoutes).toPromise().then(async (routes: RouteFromAPI[]) => {
+    debugger;
+    await this.getAllRoutesFromThisLocation(travelMode, startLat, startLng, endLat, endLng, this.numberOfAltRoutes).toPromise().then(async (routes: RouteFromAPI[]) => {
       let newRoutesFormat: RouteIWant[] = this.RouteFromAPIToRouteIWant(routes);
 
       for (let i = 0; i < newRoutesFormat.length; i++) {
@@ -325,8 +326,6 @@ export class RoutingService {
     let thisRoute = new RouteInformation(this, RoutingService.routeId, mapRoute, routeInformation.travelTimeInSeconds, routeName, routeInformation.colour, routeInformation.distance, isFavourite, databaseRouteId, this.stringToTravelType(travelMode));
     await thisRoute.getStartEndLocationNameAsync();
     this.setWeatherLegsEqualDistanceApart(thisRoute);
-
-    RoutingService.routeId++; // here
 
     return await this.weatherService.addWeatherInformationToRoute(thisRoute);
   }
