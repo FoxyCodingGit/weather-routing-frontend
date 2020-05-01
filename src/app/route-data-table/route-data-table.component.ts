@@ -96,7 +96,7 @@ export class RouteDataTableComponent implements OnInit {
     let that = this;
 
     const selectRowFunc = function() {
-      if (that.isClickingEmptyRow(table)) {
+      if (table.row(this).data() == null) {
         return;
       }
 
@@ -234,9 +234,5 @@ export class RouteDataTableComponent implements OnInit {
     }
 
     this.SelectRowAction.emit({ focusedRouteId: routeId, isHighlightedRow: isHighlightingRow });
-  }
-
-  private isClickingEmptyRow(table): boolean {
-    return table.row(this).data() == null;
   }
 }
