@@ -334,7 +334,6 @@ export class RoutingService {
   private stringToTravelType(value: string): TravelMode {
     if (value.toLowerCase() === 'pedestrian') { return TravelMode.PEDESTRIAN; }
     if (value.toLowerCase() === 'bicycle') { return TravelMode.BICYCLE; }
-    if (value.toLowerCase() === 'car') { return TravelMode.CAR; }
   }
 
   private isRouteOverFourtyMinutes(durationInSeconds: number): boolean {

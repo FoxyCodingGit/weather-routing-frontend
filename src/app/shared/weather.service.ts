@@ -134,8 +134,6 @@ export class WeatherService {
       return distance / WeatherService.averageWalkingSpeedMetersPerSecond;
     } else if (travelMode === TravelMode.BICYCLE) {
       return distance / WeatherService.averageCyclingSpeedMetersPerSecond;
-    } else {
-      // car
     }
   }
 
@@ -149,8 +147,6 @@ export class WeatherService {
       return Math.round((distanceToNextPoint / WeatherService.averageWalkingSpeedMetersPerSecond) / 60);
     } else if (travelMode == TravelMode.BICYCLE) {
       return Math.round((distanceToNextPoint / WeatherService.averageCyclingSpeedMetersPerSecond) / 60);
-    } else {
-      // CAR
     }
   }
 

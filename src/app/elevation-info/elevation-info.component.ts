@@ -39,7 +39,6 @@ export class ElevationInfoComponent {
   public getDescription(): string {
     if (this.travelMode == TravelMode.PEDESTRIAN) return this.workOutHikingDifficulty(this.elevationInfo.totalInclineElevationGain, this.distance) + " Walk";
     if (this.travelMode == TravelMode.BICYCLE) return this.workOutCylcingDifficultyOfGradient(this.elevationInfo.greatestInclineAngleOverDistance) + " Cycle Ride";
-    if (this.travelMode == TravelMode.CAR) return this.workOutHikingDifficulty(this.elevationInfo.totalInclineElevationGain, this.distance); // do car
   }
 
   public workOutHikingDifficulty(elevationGain: number, distance: number) { // https://www.nps.gov/shen/planyourvisit/how-to-determine-hiking-difficulty.htm national park Service

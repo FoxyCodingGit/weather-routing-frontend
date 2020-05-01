@@ -1,7 +1,6 @@
 $name-icon: '/assets/images/star.png';
 $travel-pedestrian-icon: '/assets/images/walking-person.png';
 $travel-bike-icon: '/assets/images/bike.png';
-$travel-car-icon: '/assets/images/car.png';
 $world-icon: '/assets/images/world.png';
 $alt-route-icon: '/assets/images/altRoute.png';
 $start-marker-icon: 'http://maps.google.com/mapfiles/ms/icons/purple-dot.png';
@@ -149,10 +148,6 @@ input[type=text], select {
 
         &.bike {
             background-image: url($travel-bike-icon);
-        }
-
-        &.car {
-            background-image: url($travel-car-icon);
         }
     }   
 
