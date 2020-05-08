@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": ["googlemaps"] // https://stackoverflow.com/questions/42394697/angular2-cannot-find-namespace-google (cant find google namespace when run ng test)
   },
   "files": [
     "src/main.ts",
