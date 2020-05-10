@@ -259,7 +259,7 @@ export class WeatherService {
     let fakeMinutelyData: MinutelyRainData[] = [];
     let baseRainIntensity = this.getRandomNumber(0.01, 8);
     let rainIntensityAlteration = baseRainIntensity;
-    let baseRainProbability = this.getRandomNumber(0, 100);
+    let baseRainProbability = this.getRandomNumber(0, 1);
     let rainProbabilityAlteration = baseRainProbability;
 
     for (let minute = 0; minute <= 60; minute++) {
@@ -268,11 +268,11 @@ export class WeatherService {
         rainIntensityAlteration = 0;
       }
 
-      rainProbabilityAlteration += this.getRandomNumber(-20, 20);
+      rainProbabilityAlteration += this.getRandomNumber(-0.2, 0.2);
       if (rainProbabilityAlteration < 0) {
         rainProbabilityAlteration = 0;
-      } else if (rainProbabilityAlteration > 100) {
-        rainProbabilityAlteration = 100;
+      } else if (rainProbabilityAlteration > 1) {
+        rainProbabilityAlteration = 1;
       }
 
       fakeMinutelyData.push({time: 0, precipIntensity: rainIntensityAlteration, precipProbability: rainProbabilityAlteration});
