@@ -19,7 +19,7 @@ export class CurrentWeatherHelper {
             icons: ['/assets/images/rain/' + precipIntensitySummary + '.png'],
             text: precipIntensitySummary.charAt(0).toUpperCase() + precipIntensitySummary.substring(1)
                 + '<br>' +
-                precipProb * 100 + '%'
+                (precipProb * 100).toFixed(0) + '%'
         };
     }
 
