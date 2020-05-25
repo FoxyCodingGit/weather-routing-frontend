@@ -326,15 +326,15 @@ export class WeatherService {
   // SERVICE BEFORE MOVED WEATHER STUFF TO THIS CLASS.
   ////////////////////////////////////////////////////
 
-  public GetRainProbForPoint(lat: number, lng: number): Observable<number> {
-    const url = `${this.baseURL}/rainProb/${lat}/${lng}`;
+  // public GetRainProbForPoint(lat: number, lng: number): Observable<number> {
+  //   const url = `${this.baseURL}/rainProb/${lat}/${lng}`;
 
-    return this.http.get<number>(url)
-      .pipe(
-        map(percentage => percentage * 100),
-        catchError(this.handleError<number>(0))
-      );
-  }
+  //   return this.http.get<number>(url)
+  //     .pipe(
+  //       map(percentage => percentage * 100),
+  //       catchError(this.handleError<number>(0))
+  //     );
+  // }
 
   // conventional call
   public async GetCurrentForPoint(lat: number, lng: number): Promise<Currently> {
