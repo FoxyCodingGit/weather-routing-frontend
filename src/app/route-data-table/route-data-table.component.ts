@@ -32,9 +32,9 @@ export class RouteDataTableComponent implements OnInit {
     const table = $('#table_id').DataTable();
 
     if (this.routingService.getRouteAndWeatherInformationById(routeId).routeInformation.isFavourite) {
-      table.cell({row: this.getRowNumByRouteId(routeId), column: 1}).data('<i class="fas fa-star"></i><i class="fas fa-trash"></i><button style="margin-left:10px" class="weatherInfo">Current Weather</button>');
+      table.cell({row: this.getRowNumByRouteId(routeId), column: 1}).data('<i class="fas fa-star"></i><i class="fas fa-trash"></i><button style="margin-left:10px" class="weatherInfo">Weather Info</button>');
     } else {
-      table.cell({row: this.getRowNumByRouteId(routeId), column: 1}).data('<i class="far fa-star"></i><i class="fas fa-trash"></i><button style="margin-left:10px" class="weatherInfo">Current Weather</button>');
+      table.cell({row: this.getRowNumByRouteId(routeId), column: 1}).data('<i class="far fa-star"></i><i class="fas fa-trash"></i><button style="margin-left:10px" class="weatherInfo">Weather Info</button>');
     }
     $('#table_id').DataTable().draw();
   }
@@ -154,7 +154,7 @@ export class RouteDataTableComponent implements OnInit {
   }
 
   public addRouteToTable(routeInformation: RouteInformation, averageRouteRainIntensities: string[]) {
-    const scoreComparisonIcons = this.getCorrectIcons(averageRouteRainIntensities);
+    const scoreComparisonIcons = this.getRainIntensityComparisonIcons(averageRouteRainIntensities);
 
     let starIconType: string;
     if (routeInformation.isFavourite) {
@@ -165,7 +165,7 @@ export class RouteDataTableComponent implements OnInit {
 
     $('#table_id').DataTable().row.add([
       routeInformation.id,
-      '<i class="' + starIconType + ' fa-star"></i><i class="fas fa-trash"></i><button style="margin-left:10px" class="weatherInfo">Current Weather</button>',
+      '<i class="' + starIconType + ' fa-star"></i><i class="fas fa-trash"></i><button style="margin-left:10px" class="weatherInfo">Weather Info</button>',
       '<div class="wrapper"><div class="square" style="background-color: ' + routeInformation.color + ', 1); color: ' + routeInformation.basicContrastColour + '">'+ routeInformation.id + '</div>' + routeInformation.name + '</div>',
       routeInformation.startLocation, // move html to function for readability?
       routeInformation.endLocation,
@@ -175,9 +175,9 @@ export class RouteDataTableComponent implements OnInit {
   
       this.getRainIntensityIndicator(averageRouteRainIntensities[0]) + "(" + averageRouteRainIntensities[0] + " mm/h)",
       this.getRainIntensityIndicator(averageRouteRainIntensities[1]) + "(" + averageRouteRainIntensities[1] + " mm/h)" + scoreComparisonIcons[0],
-      this.getRainIntensityIndicator(averageRouteRainIntensities[2]) + "(" + averageRouteRainIntensities[2] + " mm/h)" + scoreComparisonIcons[0],
-      this.getRainIntensityIndicator(averageRouteRainIntensities[3]) + "(" + averageRouteRainIntensities[3] + " mm/h)" + scoreComparisonIcons[0],
-      this.getRainIntensityIndicator(averageRouteRainIntensities[4]) + "(" + averageRouteRainIntensities[4] + " mm/h)" + scoreComparisonIcons[0]
+      this.getRainIntensityIndicator(averageRouteRainIntensities[2]) + "(" + averageRouteRainIntensities[2] + " mm/h)" + scoreComparisonIcons[1],
+      this.getRainIntensityIndicator(averageRouteRainIntensities[3]) + "(" + averageRouteRainIntensities[3] + " mm/h)" + scoreComparisonIcons[2],
+      this.getRainIntensityIndicator(averageRouteRainIntensities[4]) + "(" + averageRouteRainIntensities[4] + " mm/h)" + scoreComparisonIcons[3]
     ]).draw();
 
     this.routeCreationComplete.emit();
@@ -206,13 +206,13 @@ export class RouteDataTableComponent implements OnInit {
     this.favouritePressedSubject.next(routeId);
   }
 
-  private getCorrectIcons(averageRouteRainIntensities: string[]): string[] {
+  private getRainIntensityComparisonIcons(averageRouteRainIntensities: string[]): string[] {
     const iconNames: string[] = [];
 
-    for (let i = 0; i < averageRouteRainIntensities.length; i++) {
-      if (averageRouteRainIntensities[i + 1] > averageRouteRainIntensities[i]) { // hacky hack as comparing strings, should work but fragile.
+    for (let i = 1; i < averageRouteRainIntensities.length; i++) {
+      if (averageRouteRainIntensities[i] > averageRouteRainIntensities[0]) { // hacky hack as comparing strings, should work but fragile.
         iconNames.push('<i class="fas fa-chevron-circle-up"></i>');
-      } else if (averageRouteRainIntensities[i + 1] === averageRouteRainIntensities[i]) {
+      } else if (averageRouteRainIntensities[i] === averageRouteRainIntensities[0]) {
         iconNames.push('<i class="fas fa-minus-circle"></i>');
       } else {
         iconNames.push('<i class="fas fa-chevron-circle-down"></i>');
