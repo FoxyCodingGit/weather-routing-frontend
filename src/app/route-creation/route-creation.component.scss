@@ -194,6 +194,7 @@ input[type=submit] {
 
 .loadingSubmit {
     background-color: #45a049;
+    cursor: default;
 }
 
 .loadingSpinner {
@@ -203,7 +204,7 @@ input[type=submit] {
     width: 30px;
     height: 30px;
     animation: spin 2s linear infinite;
-    margin: -2px auto 0 auto
+    margin: -2px auto 0 auto;
   }
   
   @keyframes spin {
