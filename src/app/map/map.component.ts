@@ -34,7 +34,7 @@ export class MapComponent implements OnInit {
   private highlighedStrokeWeight = 8;
   private unhighlighedStrokeWeight = 2;
 
-  public weatherMarkerVisibilities = true;
+  public markerVisabilities = true;
   public rainIndicatorVisibilities = true;
 
   private routePolylines: RoutePolyline[] = [];
@@ -79,18 +79,18 @@ export class MapComponent implements OnInit {
           icon: {
             url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
           },
-          visible: this.weatherMarkerVisibilities
+          visible: this.markerVisabilities
         })
       });
     }
   }
   
-  public showWeatherMarkers(isVisible: boolean): void {
+  public showRouteMarkers(isVisible: boolean): void {
     this.routeMarkers.forEach(routeMarker => {
       routeMarker.marker.setVisible(isVisible);
     });
 
-    this.weatherMarkerVisibilities = isVisible;
+    this.markerVisabilities = isVisible;
   }
 
   public placeRainIndicatorsAtWeatherPoints(thisRoute: RouteAndWeatherInformation) {
