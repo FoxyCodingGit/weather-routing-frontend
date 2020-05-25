@@ -2,8 +2,8 @@
 <div class="mapOptions wrapper">
     <h6>Show?</h6>
     <div class="option wrapper">
-        <label for="weatherMakerCheckbox">Weather Markers</label>
-        <input name="weatherMakerCheckbox" type="checkbox" [checked]="weatherMarkerVisibilities" (change)="showWeatherMarkers($event.path[0].checked)">
+        <label for="makerCheckbox">Markers</label>
+        <input name="makerCheckbox" type="checkbox" [checked]="markerVisabilities" (change)="showRouteMarkers($event.path[0].checked)">
     </div>
     <div class="option wrapper">
         <label for="rainIndicatorCheckbox">Rain Indicators</label>
