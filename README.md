@@ -54,15 +54,20 @@ It will then go on to associate weather information to this route. Before commun
 This is a formula that when entered two coordinates each with a latitude and longitude value, it will tell you the distance apart. The haversine Formula works on a sphere, we use the radius of the Earth however we all know that Earth is not a sphere but rather a lumpy oblate spheroid. This means that formula will not produce a 100% accurate result. It depends on where you are on Earth and the elevation of the Earth. I have however performed experiments and what I have found is that the minor changes in elevation and the vaired shape of Earth does not alter the result. This is because these small variations are such a relatively small component, so they make no change to the output. A route distance is defined in meters. The result I get back is always very similar to the true value. This means that this formula is sufficient to use in my program as this level of accuracy is required.
 
 ![Equidistance Example 1](readmeImages/EquidistantExample1.png)
-![Equidistance Example 2](readmeImages/EquidistantExample2.png)
+
 ![Equidistance Example 2](readmeImages/EquidistantExample2.png)
 
-I have also  added functionality that if there are less legs than weather points it uses the number of legs.
+![Equidistance Example 2](readmeImages/EquidistantExample3.png)
+
+I have also  added functionality that if there are less legs than weather points it uses the number of legs. The following image was when 7 weather points where defined.
 
 ![Marker Reduced Number Example](readmeImages/markerReducedNum.png)
-(This was when 7 weather points where defined).
 
-... rest of route service ...
+### Backend Routing Object to Frontend Object.
+This service includes object manipulation to get the data in a format from the backend to a state that can be used by the frontend. This obejct is then worked on to work out greater routing details. 
+
+### Get Lat/Lng Values From Location Name (vice-versa)
+This communicates with the backend to get the location name or lat/lng depending on what is entered. If the name is returned it is then formatted to include only the most important information to reduce clutter.
 
 ## Weather Service
 This service is what adds weather information to a route and communicates with the backend with weather relating queries.
@@ -76,12 +81,12 @@ For example, if the person leaves at a departure time of 15 minutes and I have w
 
 Finally, the current weather is added to the object finalising the weather information for the route.
 
-(1)
+![Weather data being generated displayed on the dev tools console](readmeImages/generationOfWeatherData.png)
 
 ### Rain Descriptor
 This is also where I calculate the rained scripter, based on the rain intensity passed in you will be given a descriptor and colour depicting how intense the rain is.
 
-(2)
+![Rain Descriptor being used in table](readmeImages/rainDescriptors.png)
 
 ... rest of weahter service ...
 
