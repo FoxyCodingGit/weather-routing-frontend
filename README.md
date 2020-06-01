@@ -4,7 +4,7 @@ this is a angular framework appliction that is user facing. Below is information
 ## Services
 Services are injected into components to abstract away data manipulation; it also isolates the code so it is easier to manage. Service injection makes the program more loosly coupled and allows for easier testing.
 
-In the backend there are four services that i have created, each which are designed to consolidate areas of information:
+There are four services that i have created, each which are designed to consolidate areas of information:
 1. Authentification Service
 2. Alert Service
 3. Routing Service
