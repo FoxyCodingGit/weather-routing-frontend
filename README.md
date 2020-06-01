@@ -59,10 +59,9 @@ This is a formula that when entered two coordinates each with a latitude and lon
 
 ![Equidistance Example 2](readmeImages/EquidistantExample3.png)
 
-I have also  added functionality that if there are less legs than weather points it uses the number of legs.
+I have also  added functionality that if there are less legs than weather points it uses the number of legs. The following image was when 7 weather points where defined.
 
 ![Marker Reduced Number Example](readmeImages/markerReducedNum.png)
-(This was when 7 weather points where defined).
 
 ... rest of route service ...
 
