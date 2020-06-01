@@ -79,7 +79,7 @@ The second part is that for each departure, we get the rain intensities and prob
 
 For example, if the person leaves at a departure time of 15 minutes and I have worked out that it will take 4 minutes to get to the first weather point. I look at the rain values for 19 minutes in. 
 
-Finally, the current weather is added to the object finalising the weather information for the route.
+Finally, the current weather is added to the object finalising the weather information for the route. This is retrieved by a call to the backend.
 
 ![Weather data being generated displayed on the dev tools console](readmeImages/generationOfWeatherData.png)
 
