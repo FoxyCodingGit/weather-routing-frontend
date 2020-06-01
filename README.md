@@ -6,23 +6,23 @@ this is a angular framework appliction that is user facing. Below is information
 ### Languages
 There are many languages I had to use for this coursework. This increases the complexity of the application by the introduction alone. The knowledge then needs to exponentially grow outwards to not only cover the foundations of the languages, however, to do the advanced processes and code in a clean way. This is a large technical achievement in its own right.
 
-Html
+#### Html
 Html is used in the frontend to define the structure of a webpage. I use Angular directives such as NgIf, NgClass, ng-template, ng-click, {{}} etc. I use regularly two-way binding using ngModel. Angular allows for easy advanced manipulation of html documents.
 
-Sass
+#### Sass
 I decided to use Sass. This is a reputable and well-known language extension on CSS. CSS, and therefore Sass, is the language that controls the design of the web pages. I decided to use sass over CSS mainly for the ability to write cleaner code. This is achieved by using selector indentation and variables.
 
-TypeS¬cript
+#### TypeScript
 TypeScript is a language which builds on top of JavaScript, its main benefit is that it adds static type definitions. For me personally, strong typing allowing for quick error catching process and the ability to save objects really helps me code in OOP and avoid development problems down the road.
 Typescript adds the component logic in the Angular framework. I have worked with Angular before this so that helped with the implementation of code.
 
-JavaScript and jQuery
+#### JavaScript and jQuery
 jQuery is a JavaScript language that helps simplify the use of JavaScript. I have had to use jQuery and subsequently JavaScript in the “table” component on the datatables.net table. This was used to grab the table element from the DOM and to perform interactions on the rows such as highlighting the route or retrieving the route id on click. This added another layer of complexity.
 
-C#
+#### C#
 This is the programming language that comprises the backend. I have used C# and the .Net Core before, so this helped with creating the controllers, using attributes etc.
 
-SQL and T-SQL
+#### SQL and T-SQL
 SQL is the language I used to generate the tables and relationships to make up my database. T-SQL is a programming extension which adds functionality additions such as the use of variables. I use T-SQL to create stored procedures which is the industry standard to communicate between the database and the backend. 
 
 ### Componentisation
