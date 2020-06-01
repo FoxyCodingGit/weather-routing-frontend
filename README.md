@@ -1,6 +1,60 @@
 # WeatherRoutingFrontEnd
 this is a angular framework appliction that is user facing. Below is information that is more technical so is here in the technical documentation rahter than the report.
 
+## Technical Achievments
+
+### Languages
+There are many languages I had to use for this coursework. This increases the complexity of the application by the introduction alone. The knowledge then needs to exponentially grow outwards to not only cover the foundations of the languages, however, to do the advanced processes and code in a clean way. This is a large technical achievement in its own right.
+
+Html
+Html is used in the frontend to define the structure of a webpage. I use Angular directives such as NgIf, NgClass, ng-template, ng-click, {{}} etc. I use regularly two-way binding using ngModel. Angular allows for easy advanced manipulation of html documents.
+
+Sass
+I decided to use Sass. This is a reputable and well-known language extension on CSS. CSS, and therefore Sass, is the language that controls the design of the web pages. I decided to use sass over CSS mainly for the ability to write cleaner code. This is achieved by using selector indentation and variables.
+
+TypeS¬cript
+TypeScript is a language which builds on top of JavaScript, its main benefit is that it adds static type definitions. For me personally, strong typing allowing for quick error catching process and the ability to save objects really helps me code in OOP and avoid development problems down the road.
+Typescript adds the component logic in the Angular framework. I have worked with Angular before this so that helped with the implementation of code.
+
+JavaScript and jQuery
+jQuery is a JavaScript language that helps simplify the use of JavaScript. I have had to use jQuery and subsequently JavaScript in the “table” component on the datatables.net table. This was used to grab the table element from the DOM and to perform interactions on the rows such as highlighting the route or retrieving the route id on click. This added another layer of complexity.
+
+C#
+This is the programming language that comprises the backend. I have used C# and the .Net Core before, so this helped with creating the controllers, using attributes etc.
+
+SQL and T-SQL
+SQL is the language I used to generate the tables and relationships to make up my database. T-SQL is a programming extension which adds functionality additions such as the use of variables. I use T-SQL to create stored procedures which is the industry standard to communicate between the database and the backend. 
+
+### Componentisation
+Angular brings an excellent platform to perform componentisation. This is the act of splitting and isolation code based on their area of concern. This helps with enforcing Single Responsibility principle and keeping code from becoming an anti-pattern of spaghetti code. I am confident in saying that the way I have split my program has been done correctly and if someone was to be working alongside me, we could work on each part independently (apart from services calls).
+
+The use of models as well is a great way to clearly define OOP principles for the storing, generation, and usage of data. This again helps to consolidate data management to promote loose coupling.
+
+### Services and Dependency Injection
+Alongside Components are services. Services are in control of the data access; components should focus on presenting data. I have implanted this format by many services mainly routing Service and weather Service.
+
+I have then performed dependency injection by passing these services through the constructor. This allows for loose coupling.
+### Component Communication
+I have implemented Component Communication. This is done through output component properties to emit events to the parent. Parent to child communication happens through the ViewChild Property to access child methods and properties.
+
+### Observers, promises, subscriptions
+I use observables for passing information between components in the application. These can then be subscribed to. What this allows me to use the observer pattern. The beauty of this implementation is that multiple components can receive the same data. Also the fact that you can subscribe and forget about it, then perform actions based on subscription triggering.
+
+I use promises when I need just a simple return from an external call, this is because these are easier to await.
+
+### Map and filtering of responses
+I have used advanced logic of mapping and filtering to alter data in a uniform way to map correctly to objects to be used in the frontend.
+
+### await, async
+I used async code when communicating with the backend to make sure that the application does not freeze. I use await to make sure that calls to external processes finish before code following is executed stopping errors from occurring.
+
+### Ability to use Fake weather information 
+I created the feature of using fake weather data. This bypasses the call to Dark Sky (the API service I call to get weather information). I have done this for two reasons.
+
+The first being that my application produces graphs on rain information. If there is no rain information anywhere in the country (which has happened) I would not be able to show this part of the system. By adding this feature, I can show how rain data is displayed even when there is no rain for the demo.
+
+The second reason is that I have a capped 1000 calls to the API before I have to start paying. By using fake data, I can continue to use or work on development of my application without paying. This is not a problem with the other two APIs I use (google maps and TomTom) as I do not call those enough to go over the free number of calls given each month.
+
 ## Services
 Services are injected into components to abstract away data manipulation; it also isolates the code so it is easier to manage. Service injection makes the program more loosly coupled and allows for easier testing.
 
