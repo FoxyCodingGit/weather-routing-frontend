@@ -141,3 +141,6 @@ Finally, the current weather is added to the object finalising the weather infor
 This is also where I calculate the rained scripter, based on the rain intensity passed in you will be given a descriptor and colour depicting how intense the rain is.
 
 ![Rain Descriptor being used in table](readmeImages/rainDescriptors.png)
+
+## Testing
+I decided to do manual testing for this project...DO MORE
