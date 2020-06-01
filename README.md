@@ -53,12 +53,18 @@ It will then go on to associate weather information to this route. Before commun
 ### Haversine Formula
 This is a formula that when entered two coordinates each with a latitude and longitude value, it will tell you the distance apart. The haversine Formula works on a sphere, we use the radius of the Earth however we all know that Earth is not a sphere but rather a lumpy oblate spheroid. This means that formula will not produce a 100% accurate result. It depends on where you are on Earth and the elevation of the Earth. I have however performed experiments and what I have found is that the minor changes in elevation and the vaired shape of Earth does not alter the result. This is because these small variations are such a relatively small component, so they make no change to the output. A route distance is defined in meters. The result I get back is always very similar to the true value. This means that this formula is sufficient to use in my program as this level of accuracy is required.
 
+Example 1:
 ![Equidistance Example 1](readmeImages/EquidistantExample1.png)
+
+Example 2:
 ![Equidistance Example 2](readmeImages/EquidistantExample2.png)
-![Equidistance Example 2](readmeImages/EquidistantExample2.png)
+
+Example 3:
+![Equidistance Example 2](readmeImages/EquidistantExample3.png)
 
 I have also  added functionality that if there are less legs than weather points it uses the number of legs.
 
+Marker Reduced Number Example:
 ![Marker Reduced Number Example](readmeImages/markerReducedNum.png)
 (This was when 7 weather points where defined).
 
