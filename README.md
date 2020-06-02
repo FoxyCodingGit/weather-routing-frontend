@@ -1,4 +1,4 @@
-# WeatherRoutingFrontEnd
+# WeatherRoutingFrontEnd Technical Achievements
 this is a angular framework appliction that is user facing. Below is information that is more technical so is here in the technical documentation rahter than the report.
 
 ## Languages
@@ -23,8 +23,8 @@ This is the programming language that comprises the backend. I have used C# and 
 ### SQL and T-SQL
 SQL is the language I used to generate the tables and relationships to make up my database. T-SQL is a programming extension which adds functionality additions such as the use of variables. I use T-SQL to create stored procedures which is the industry standard to communicate between the database and the backend. 
 
-## Technical Achievements
-There are many techincal achievements of this project. The size and strucutre alone is complex in itself. Labelled below are technical achievements that i wanted to display here in the technical documentation due to the logical complexity.
+## Notable Advanced Logic
+There are many techincal achievements of this project. The size and structure alone is complex in itself. Labelled below are technical achievements that i wanted to display here in the technical documentation due to the logical complexity.
 
 ### Componentisation
 Angular brings an excellent platform to perform componentisation. This is the act of splitting and isolation code based on their area of concern. This helps with enforcing Single Responsibility principle and keeping code from becoming an anti-pattern of spaghetti code. I am confident in saying that the way I have split my program has been done correctly and if someone was to be working alongside me, we could work on each part independently (apart from services calls).
@@ -35,6 +35,7 @@ The use of models as well is a great way to clearly define OOP principles for th
 Alongside Components are services. Services are in control of the data access; components should focus on presenting data. I have implanted this format by many services mainly routing Service and weather Service.
 
 I have then performed dependency injection by passing these services through the constructor. This allows for loose coupling.
+
 ### Component Communication
 I have implemented Component Communication. This is done through output component properties to emit events to the parent. Parent to child communication happens through the ViewChild Property to access child methods and properties.
 
