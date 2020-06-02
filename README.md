@@ -145,4 +145,28 @@ This is also where I calculate the rained scripter, based on the rain intensity 
 ![Rain Descriptor being used in table](readmeImages/rainDescriptors.png)
 
 ## Testing
-I decided to do manual testing for this project...DO MORE
+I decided to do manual testing for this project. This is due to the smaller timescale.
+
+There were two forms of testing i performed, unit and integratin testing. I performed edge cases on both these testing methods. This was the act of not only using correct data, but also using boundary and errornous infromation. This was used to make sure that when incorrect details were passed, that the application knew what to do next, not crashing and informing the user accordingly.
+
+### Unit Testing
+Unit testing is the act of testing code that performs one responsibility. This is tol ensire that no bugs or defects arise by making sure that methods perform their task perfectly and with the correct logic.   
+
+I performed manual unit testing focusing on one responsbility, this would be a method due to the way i have coded to ensure the Single Responsibility Principle. This would mean that if a bug arose i could quickly find the problem due to isolated areas of concern.
+
+### Integration Testing 
+I also performed integation testing. These were done by going through use cases, i would use the system as how a user would. This would help define defects of code not working as intended.
+
+Integration testing is all about testing different reponsbility and layers of code to perform a full action. This means that i would perform each test and see how the layers of communication would interact with eachother. 
+
+### Automated Testing
+I did not do this due to the time constraint and also most of the code present on the database and backend layer are not unit testable without the use of mocking.
+
+To show however that i can write unit tests i did an example on a method present in the backend. I used Xunit to Achieve this. I use the logical framework of Arrange, Act and Assert (AAA) to maintain test logic throughout the code. I use the naming scheme for the test names:  methodName_whatIsPerfomed_WhatIsTheExpectedOutcome
+
+To run these tests it is inredbily simple
+1. Open Visual Studio
+2. Click on the "Test" tab
+3. Press "Run All Tests"
+
+The program will build and the test explorer will appear, showing all the tests and if they have passed or failed. If a test fails an message and line number will help debug why the test failed.
