@@ -1,5 +1,5 @@
 # General Technical Achievements
-this is a angular framework appliction that is user facing. Below is information that is more technical so is here in the technical documentation rahter than the report.
+GitLab holds the code and version control of my application. It is split between three layers and three different projects.
 
 ## Languages
 There are many languages I had to use for this coursework. This increases the complexity of the application by the introduction alone. The knowledge then needs to exponentially grow outwards to not only cover the foundations of the languages, however, to do the advanced processes and code in a clean way. This is a large technical achievement in its own right.
@@ -51,6 +51,7 @@ To run these tests it is inredbily simple
 The program will build and the test explorer will appear, showing all the tests and if they have passed or failed. If a test fails an message and line number will help debug why the test failed.
 
 # WeatherRoutingFrontEnd Technical Achievements
+This is a angular framework appliction that is user facing. Below is information that is more technical so is here in the technical documentation rahter than the report.
 
 ## Notable Advanced Logic
 There are many techincal achievements of this project. The size and structure alone is complex in itself. Labelled below are technical achievements that i wanted to display here in the technical documentation due to the logical complexity.
