@@ -69,18 +69,18 @@ I have then performed dependency injection by passing these services through the
 ### Component Communication
 I have implemented Component Communication. This is done through output component properties to emit events to the parent. Parent to child communication happens through the ViewChild Property to access child methods and properties.
 
-### Observers, promises, subscriptions
+### Observers, Promises, Subscriptions
 I use observables for passing information between components in the application. These can then be subscribed to. What this allows me to use the observer pattern. The beauty of this implementation is that multiple components can receive the same data. Also the fact that you can subscribe and forget about it, then perform actions based on subscription triggering.
 
 I use promises when I need just a simple return from an external call, this is because these are easier to await.
 
-### Map and filtering of responses
+### Map and Filtering of Responses
 I have used advanced logic of mapping and filtering to alter data in a uniform way to map correctly to objects to be used in the frontend.
 
 ### await, async
 I used async code when communicating with the backend to make sure that the application does not freeze. I use await to make sure that calls to external processes finish before code following is executed stopping errors from occurring.
 
-### Ability to use Fake weather information 
+### Ability to Use Fake Weather Information 
 I created the feature of using fake weather data. This bypasses the call to Dark Sky (the API service I call to get weather information). I have done this for two reasons.
 
 The first being that my application produces graphs on rain information. If there is no rain information anywhere in the country (which has happened) I would not be able to show this part of the system. By adding this feature, I can show how rain data is displayed even when there is no rain for the demo.
