@@ -77,7 +77,7 @@ I use promises when I need just a simple return from an external call, this is b
 ### Map and Filtering of Responses
 I have used advanced logic of mapping and filtering to alter data in a uniform way to map correctly to objects to be used in the frontend.
 
-### await, async
+### Await and Async
 I used async code when communicating with the backend to make sure that the application does not freeze. I use await to make sure that calls to external processes finish before code following is executed stopping errors from occurring.
 
 ### Ability to Use Fake Weather Information 
