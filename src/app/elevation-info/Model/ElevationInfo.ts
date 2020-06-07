@@ -97,24 +97,28 @@ export class ElevationInfo {
         let currentIncline = 0;
         let currentDistance = 0;
 
+        let focusedInclineStartingIndex = null;
+
         let inclines: number[] = [];
         let inclineDistances: number[] = [];
         let inclineStartIndexes: number[] = [];
         let inclineEndIndexes: number[] = [];
 
-        for (let i = 0; i < this.elevations.length; i++) {
+        for (let i = 1; i < this.elevations.length; i++) {
             if (this.elevations[i].elevation > lastElevationValue) {
-                if (inclineStartIndexes.length === inclineEndIndexes.length) {
-                    inclineStartIndexes.push(i);
+                if (focusedInclineStartingIndex === null) {
+                    focusedInclineStartingIndex = i - 1;
                 }
                 currentIncline += this.elevations[i].elevation - lastElevationValue;
                 currentDistance += cumulativeDistances[i] - cumulativeDistances[i - 1];
             } else {
-                if (inclineStartIndexes.length - inclineEndIndexes.length > 0 && currentDistance != 0) {
+                if (currentDistance != 0) {
+                    inclineStartIndexes.push(focusedInclineStartingIndex);
                     this.setSubRouteInformation(currentIncline, currentDistance, i, inclines, inclineDistances, inclineStartIndexes, inclineEndIndexes);
                     currentIncline = 0;
                     currentDistance = 0;
-                } 
+                    focusedInclineStartingIndex = null;
+                }
             }
             lastElevationValue = this.elevations[i].elevation;
         }
