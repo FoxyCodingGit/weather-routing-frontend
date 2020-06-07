@@ -99,15 +99,18 @@ export class ElevationInfo {
 
         let inclines: number[] = [];
         let inclineDistances: number[] = [];
-        let inclineStartIndexes: number[] = [0];
+        let inclineStartIndexes: number[] = [];
         let inclineEndIndexes: number[] = [];
 
         for (let i = 0; i < this.elevations.length; i++) {
             if (this.elevations[i].elevation > lastElevationValue) {
+                if (inclineStartIndexes.length === inclineEndIndexes.length) {
+                    inclineStartIndexes.push(i);
+                }
                 currentIncline += this.elevations[i].elevation - lastElevationValue;
                 currentDistance += cumulativeDistances[i] - cumulativeDistances[i - 1];
             } else {
-                if (currentDistance != 0) {
+                if (inclineStartIndexes.length - inclineEndIndexes.length > 0 && currentDistance != 0) {
                     this.setSubRouteInformation(currentIncline, currentDistance, i, inclines, inclineDistances, inclineStartIndexes, inclineEndIndexes);
                     currentIncline = 0;
                     currentDistance = 0;
