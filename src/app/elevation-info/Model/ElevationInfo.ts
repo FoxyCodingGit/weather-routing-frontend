@@ -143,7 +143,14 @@ export class ElevationInfo {
         let indexOfStartEndLegNum = 0;
 
         if (inclineDistances.some(distance => distance > 40)) { // positive inclines over 40m will be used if one exists.
-            inclineDistances = inclineDistances.filter(distance => distance > 40);
+            for (let i = 0; i < inclineDistances.length; i++) {
+                if (inclineDistances[i] < 40) {
+                    inclines.splice(i, 1);
+                    inclineDistances.splice(i, 1);
+                    inclineStartIndexes.splice(i, 1);
+                    inclineEndIndexes.splice(i, 1);
+                }
+            }
         }
 
         for (let i = 0; i < inclines.length; i++) {
