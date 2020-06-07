@@ -114,7 +114,7 @@ export class ElevationInfo {
             } else {
                 if (currentDistance != 0) {
                     inclineStartIndexes.push(focusedInclineStartingIndex);
-                    this.setSubRouteInformation(currentIncline, currentDistance, i, inclines, inclineDistances, inclineStartIndexes, inclineEndIndexes);
+                    this.setSubRouteInformation(currentIncline, currentDistance, i, inclines, inclineDistances, inclineEndIndexes);
                     currentIncline = 0;
                     currentDistance = 0;
                     focusedInclineStartingIndex = null;
@@ -124,16 +124,15 @@ export class ElevationInfo {
         }
 
         if (currentDistance != 0) {
-            this.setSubRouteInformation(currentIncline, currentDistance, this.elevations.length, inclines, inclineDistances, inclineStartIndexes, inclineEndIndexes);
+            this.setSubRouteInformation(currentIncline, currentDistance, this.elevations.length, inclines, inclineDistances, inclineEndIndexes);
         }
 
         this.setLargestAngleSubsetInfo(inclines, inclineDistances, inclineStartIndexes, inclineEndIndexes);
     }
 
-    private setSubRouteInformation(currentIncline: number, currentDistance: number, i: number, inclines: number[], inclineDistances: number[], inclineStartIndexes: number[], inclineEndIndexes: number[]) {
+    private setSubRouteInformation(currentIncline: number, currentDistance: number, i: number, inclines: number[], inclineDistances: number[], inclineEndIndexes: number[]) {
         inclines.push(currentIncline);
         inclineDistances.push(currentDistance);
-        inclineStartIndexes.push(i);
         inclineEndIndexes.push(i - 1);
     }
 
