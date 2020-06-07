@@ -127,7 +127,7 @@ export class ElevationInfo {
             this.setSubRouteInformation(currentIncline, currentDistance, this.elevations.length, inclines, inclineDistances, inclineEndIndexes);
         }
 
-        this.setLargestAngleSubsetInfo(inclines, inclineDistances, inclineStartIndexes, inclineEndIndexes);
+        this.setLargestAngleOfPositiveIncline(inclines, inclineDistances, inclineStartIndexes, inclineEndIndexes);
     }
 
     private setSubRouteInformation(currentIncline: number, currentDistance: number, i: number, inclines: number[], inclineDistances: number[], inclineEndIndexes: number[]) {
@@ -136,19 +136,23 @@ export class ElevationInfo {
         inclineEndIndexes.push(i - 1);
     }
 
-    private setLargestAngleSubsetInfo(inclines: number[], inclineDistances: number[], inclineStartIndexes: number[], inclineEndIndexes: number[]) {
+    private setLargestAngleOfPositiveIncline(inclines: number[], inclineDistances: number[], inclineStartIndexes: number[], inclineEndIndexes: number[]) {
         let maxAngle: number = 0;
         let subRouteAngle: number = 0;
         let distanceOfMaxAngle: number = 0;
         let indexOfStartEndLegNum = 0;
 
-        for(let i = 0; i < inclines.length; i++) {
-            subRouteAngle = this.sohcahtoa(inclines[i], inclineDistances[i])
+        if (inclineDistances.some(distance => distance > 40)) { // positive inclines over 40m will be used if one exists.
+            inclineDistances = inclineDistances.filter(distance => distance > 40);
+        }
+
+        for (let i = 0; i < inclines.length; i++) {
+            subRouteAngle = this.sohcahtoa(inclines[i], inclineDistances[i]);
             if (subRouteAngle > maxAngle) {
                 maxAngle = subRouteAngle;
                 distanceOfMaxAngle = inclineDistances[i];
                 indexOfStartEndLegNum = i;
-            } 
+            }
         }
 
         this.greatestInclineAngleOverDistance = maxAngle;
