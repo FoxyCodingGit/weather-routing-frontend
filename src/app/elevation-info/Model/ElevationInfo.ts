@@ -149,6 +149,7 @@ export class ElevationInfo {
                     inclineDistances.splice(i, 1);
                     inclineStartIndexes.splice(i, 1);
                     inclineEndIndexes.splice(i, 1);
+                    i--;
                 }
             }
         }
