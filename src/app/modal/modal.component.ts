@@ -16,11 +16,11 @@ import { RoutingService } from '../shared/routing.service';
   styleUrls: ['./modal.component.scss']
 })
 export class ModalComponent implements OnInit {
-  @ViewChild('rainInfo', {static: false}) rainInfoGraph: GraphComponent;
-  @ViewChild('averageRainIntensity', {static: false}) averageRainIntensityGraph: GraphComponent;
+  @ViewChild('rainInfo') rainInfoGraph: GraphComponent;
+  @ViewChild('averageRainIntensity') averageRainIntensityGraph: GraphComponent;
 
   public selectedDepartureTime = 0;
-  private iconTextThings: IconTextThings[];
+  public iconTextThings: IconTextThings[];
   private weatherInformationToBeUsed: RouteAndWeatherInformation;
   private focusedRouteId: number;
 

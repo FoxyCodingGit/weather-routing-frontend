@@ -97,7 +97,7 @@
   
   <input *ngIf="!routeCreationLoading; else loading" type="submit" value="SUBMIT">
   <ng-template #loading>
-    <button type="button" class="loadingSubmit" *ngIf="currentUsername == null; else logout">
+    <button type="button" class="loadingSubmit">
       <div class=loadingSpinner></div>
   </button>
   </ng-template>

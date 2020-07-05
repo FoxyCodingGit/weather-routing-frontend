@@ -19,7 +19,7 @@
             <h5>Rain Information</h5>
             <div class="wrapper leaveWhen">
                 <label>Leave </label>
-                <select name=departureTime [(ngModel)]="selectedDepartureTime" (ngModelChange)="departureTimeChange($event)">
+                <select name=departureTime [(ngModel)]="selectedDepartureTime" (ngModelChange)="departureTimeChange()">
                     <option value="0">now</option>
                     <option value="5">in 5 mins</option>
                     <option value="10">in 10 mins</option>

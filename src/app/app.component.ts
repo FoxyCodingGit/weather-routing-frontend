@@ -33,11 +33,11 @@ export class AppComponent implements OnInit {
     }
   }
 
-  @ViewChild(MapComponent, {static: false}) map: MapComponent;
-  @ViewChild(RouteDataTableComponent, {static: false}) routeTable: RouteDataTableComponent;
-  @ViewChild(RouteCreationComponent, {static: false}) routeCreation: RouteCreationComponent;
-  @ViewChild(ModalComponent, {static: false}) modal: ModalComponent;
-  @ViewChild(LoginModalComponent, {static: false} ) loginModal: LoginModalComponent;
+  @ViewChild(MapComponent) map: MapComponent;
+  @ViewChild(RouteDataTableComponent) routeTable: RouteDataTableComponent;
+  @ViewChild(RouteCreationComponent) routeCreation: RouteCreationComponent;
+  @ViewChild(ModalComponent) modal: ModalComponent;
+  @ViewChild(LoginModalComponent) loginModal: LoginModalComponent;
 
   private currentUser: UserToken;
 

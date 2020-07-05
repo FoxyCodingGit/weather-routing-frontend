@@ -20,8 +20,8 @@ import { WeatherService } from '../shared/weather.service';
 export class MapComponent implements OnInit {
 
   constructor(private assetService: AssetService, private routingService: RoutingService) { }
-  @ViewChild(ElevationInfoComponent, {static: false}) elevationInfo: ElevationInfoComponent;
-  @ViewChild('elevation', {static: false}) elevationGraph: GraphComponent;
+  @ViewChild(ElevationInfoComponent) elevationInfo: ElevationInfoComponent;
+  @ViewChild('elevation') elevationGraph: GraphComponent;
 
   @Output() mapClicked: EventEmitter<any> = new EventEmitter();
 
